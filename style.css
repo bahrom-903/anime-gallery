@@ -1,4 +1,4 @@
-/* --- НАЧАЛО ФАЙЛА style.css (ИСПРАВЛЕННЫЙ) --- */
+/* --- НАЧАЛО ФАЙЛА style.css --- */
 
 /* --- Стили для кнопок "Назад" и "Закрыть" --- */
 .panel-header .panel-close-btn, .panel-header .panel-back-btn {
@@ -27,7 +27,6 @@
 :root { --bg-color: #1f2937; --bg-color-rgb: 31,41,55; --text-color: #f9fafb; --panel-bg: #111827; --panel-bg-rgb: 17,24,39; --button-bg: #10b981; --button-text: #ffffff; --input-bg: #374151; --input-border: #4b5563; --error-color: #ef4444; }
 body.theme-light { --bg-color: #f9fafb; --bg-color-rgb: 249,250,251; --text-color: #111827; --panel-bg: #ffffff; --panel-bg-rgb: 255,255,255; --button-bg: #3b82f6; --button-text: #ffffff; --input-bg: #e5e7eb; --input-border: #d1d5db; }
 body.theme-retro { --bg-color: #f4e9d8; --bg-color-rgb: 244,233,216; --text-color: #5a3e2b; --panel-bg: #fff8e1; --panel-bg-rgb: 255,248,225; --button-bg: #8d6e63; --button-text: #ffffff; --input-bg: #efebe9; --input-border: #d7ccc8; }
-/* ... (остальные темы остаются без изменений) ... */
 body.theme-dark { --bg-color: #1f2937; --bg-color-rgb: 31,41,55; --text-color: #f9fafb; --panel-bg: #111827; --panel-bg-rgb: 17,24,39; --button-bg: #10b981; --button-text: #ffffff; --input-bg: #374151; --input-border: #4b5563; }
 body.theme-gray { --bg-color: #d1d5db; --bg-color-rgb: 209,213,219; --text-color: #111827; --panel-bg: #e5e7eb; --panel-bg-rgb: 229,231,235; --button-bg: #6b7280; --button-text: #ffffff; --input-bg: #f9fafb; --input-border: #9ca3af; }
 body.theme-dracula { --bg-color: #282a36; --bg-color-rgb: 40,42,54; --text-color: #f8f8f2; --panel-bg: #21222c; --panel-bg-rgb: 33,34,44; --button-bg: #bd93f9; --button-text: #282a36; --input-bg: #44475a; --input-border: #6272a4; }
@@ -45,7 +44,6 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 .container { max-width:1200px; margin:auto; padding:20px; box-sizing: border-box; }
 .generator-area, .gallery-wrapper { background: var(--panel-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 body.has-custom-bg { background-image: var(--bg-image-url); background-size: cover; background-position: center center; background-attachment: fixed; }
-/* ИЗМЕНЕНО: Прозрачность изменена на 0.75 */
 body.has-custom-bg .generator-area, body.has-custom-bg .gallery-wrapper { background-color: rgba(var(--panel-bg-rgb), 0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
 h1, h2 { text-align: center; }
 h1::after { content: 'DEMO'; font-size: 0.4em; vertical-align: super; margin-left: 8px; padding: 2px 6px; border-radius: 4px; background-color: var(--button-bg); color: var(--button-text); opacity: 0.8; }
@@ -98,5 +96,4 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 .changelog-content li { margin-bottom: 8px; }
 .changelog-content .contributor-thanks { margin-top: 25px; padding: 10px; background-color: rgba(var(--button-bg-rgb), 0.1); border-left: 3px solid var(--button-bg); }
 .preview-box.theme-dark { background-color: #1f2937; } .preview-box.theme-light { background-color: #f9fafb; } .preview-box.theme-gray { background-color: #d1d5db; } .preview-box.theme-retro { background-color: #f4e9d8; } .preview-box.theme-dracula { background-color: #282a36; } .preview-box.theme-nord { background-color: #2e3440; } .preview-box.theme-solarized { background-color: #002b36; } .preview-box.theme-gruvbox { background-color: #282828; } .preview-box.theme-monokai { background-color: #272822; } .preview-box.theme-tomorrow_night { background-color: #1d1f21; } .preview-box.theme-one_dark { background-color: #282c34; } .preview-box.theme-cyberpunk { background-color: #0d0221; } .preview-box.theme-matrix { background-color: #000000; } .preview-box.theme-crimson { background-color: #1a1a1a; } .preview-box.theme-synthwave { background-color: #261c4f; }
-
 /* --- КОНЕЦ ФАЙЛА style.css --- */
