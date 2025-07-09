@@ -11,61 +11,47 @@ app.use(express.json());
 app.use(express.static('.'));
 
 const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 const BROWSER_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    'Accept-Language': 'en-US,en;q=0.9,ru;q=0.8',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'none',
-    'Sec-Fetch-User': '?1',
-    'Upgrade-Insecure-Requests': '1',
+    'Accept-Language': 'en-US,en;q=0.9,ru;q=0.8'
 };
 
-// ==========================================================
-//           ⭐ ОБНОВЛЕННЫЙ БЛОК /generate-image ⭐
-// ==========================================================
+// ====================================================================
+//           ⭐ ГЛАВНЫЙ АПГРЕЙД! КАРТА МОДЕЛЕЙ AI ⭐
+// ====================================================================
+const MODEL_MAP = {
+    // Для аниме-категорий используем спец. модель Anything V5
+    'waifu': 'cjwbw/anything-v5-v5-0:1a765378bc3e89ac1097a452b861753c5453628e4e466c4068134d163d819b88',
+    'anime_gif': 'cjwbw/anything-v5-v5-0:1a765378bc3e89ac1097a452b861753c5453628e4e466c4068134d163d819b88',
+    // Для всего остального - универсальная модель
+    'default': 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4'
+};
+
 app.post('/generate-image', async (req, res) => {
     try {
-        // Получаем из запроса категорию
         const { prompt, negative_prompt, category } = req.body;
         if (!prompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
 
-        let finalPrompt = prompt;
-        // Убедимся, что negative_prompt не пустой, чтобы к нему можно было добавлять слова
-        let finalNegativePrompt = negative_prompt || ''; 
+        // Выбираем нужную модель из нашей карты или модель по умолчанию
+        const model = MODEL_MAP[category] || MODEL_MAP['default'];
+        console.log(`-> GENERATE: Категория: "${category}", Используется модель: "${model}"`);
 
-        // Карта обязательных слов для категорий
-        const mandatoryKeywords = {
-            waifu: ['anime girl', 'waifu', 'anime style'],
-            anime_gif: ['anime girl', 'anime boy', 'anime style'],
-            supercars: ['supercar', 'sportscar'],
+        // Добавляем улучшающие слова в промпт
+        const qualityPrompt = "masterpiece, best quality, ultra-detailed, sharp focus";
+        const finalPrompt = `${prompt}, ${qualityPrompt}`;
+
+        // Добавляем улучшающие слова в негативный промпт
+        const baseNegativePrompt = "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name";
+        const finalNegativePrompt = `${baseNegativePrompt}, ${negative_prompt || ''}`;
+
+        console.log(`-> PROMPT: "${finalPrompt}" | NEGATIVE: "${finalNegativePrompt}"`);
+
+        const input = {
+            prompt: finalPrompt,
+            negative_prompt: finalNegativePrompt,
         };
-
-        // Проверяем, есть ли для текущей категории обязательные слова
-        if (category && mandatoryKeywords[category]) {
-            const keywords = mandatoryKeywords[category];
-            const hasKeyword = keywords.some(keyword => prompt.toLowerCase().includes(keyword));
-            
-            // Если нет, ставим ключевое слово В НАЧАЛО промпта для большего веса
-            if (!hasKeyword) {
-                finalPrompt = `${keywords[0]}, ${prompt}`;
-                console.log(`-> PROMPT-FIX: Добавлено слово "${keywords[0]}" для категории "${category}"`);
-            }
-        }
-
-        // Добавляем к негативному промпту слова, чтобы избежать реализма
-        const antiRealismNegative = "photo, realistic, 3d, render, photography, real life, photorealistic";
-        finalNegativePrompt = `${antiRealismNegative}, ${finalNegativePrompt}`;
-
-        console.log(`-> GENERATE: Промпт: "${finalPrompt}" | Негативный: "${finalNegativePrompt}"`);
-        const model = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4";
-        
-        // Используем наши доработанные промпты для отправки в Replicate
-        const input = { prompt: finalPrompt, negative_prompt: finalNegativePrompt };
         
         const output = await replicate.run(model, { input });
 
@@ -76,13 +62,11 @@ app.post('/generate-image', async (req, res) => {
         }
     } catch (error) {
         console.error('!!! ОШИБКА REPLICATE:', error.message);
-        res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, закончились кредиты.' });
+        res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, закончились кредиты или модель недоступна.' });
     }
 });
 
-// ==========================================================
-//           ⭐ БЛОК /get-image-from-source (уже исправлен) ⭐
-// ==========================================================
+
 app.post('/get-image-from-source', async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL источника не указан.' });
@@ -90,7 +74,6 @@ app.post('/get-image-from-source', async (req, res) => {
     try {
         const response = await fetch(url, { headers: BROWSER_HEADERS });
         if (!response.ok) {
-            console.error(`!!! ОШИБКА GET-IMAGE: Статус ответа от ${url}: ${response.status}`);
             throw new Error(`Внешний сервис недоступен (статус: ${response.status})`);
         }
         
@@ -100,15 +83,10 @@ app.post('/get-image-from-source', async (req, res) => {
             if (!imageUrl) { imageUrl = data.url; }
 
             if (!imageUrl) {
-                console.error('!!! ОШИБКА API: Не найден URL изображения в ответе от', url, 'Ответ:', JSON.stringify(data));
                 throw new Error('API не вернул правильный формат ответа.');
             }
-            
-            console.log(`-> API-OK: Найден URL: ${imageUrl}`);
             res.json({ imageUrl: imageUrl });
-
         } else {
-            console.log(`-> DIRECT-LINK-OK: Прямая ссылка: ${response.url}`);
             res.json({ imageUrl: response.url });
         }
     } catch (error) {
@@ -117,47 +95,36 @@ app.post('/get-image-from-source', async (req, res) => {
     }
 });
 
-// ==========================================================
-//           ⭐ ОБНОВЛЕННЫЙ БЛОК /feedback (с отладкой) ⭐
-// ==========================================================
+
 app.post('/feedback', async (req, res) => {
     try {
         const { type, message } = req.body;
         if (!type || !message) {
-            console.log('-> FEEDBACK: Получен неполный запрос.');
             return res.status(400).json({ error: 'Тип и сообщение обязательны.' });
         }
 
-        // --- Наши "жучки" для отладки ---
-        console.log("--- Проверка переменных окружения для Telegram ---");
-        console.log("TELEGRAM_BOT_TOKEN определен:", !!TELEGRAM_BOT_TOKEN);
-        console.log("TELEGRAM_CHAT_ID определен:", !!TELEGRAM_CHAT_ID);
-        console.log("-------------------------------------------------");
+        const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+        const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
         
         if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-            console.error('!!! КРИТИЧЕСКАЯ ОШИБКА: Секреты TELEGRAM не найдены в переменных окружения!');
+            console.error('!!! КРИТИЧЕСКАЯ ОШИБКА: Переменные окружения TELEGRAM не найдены!');
             return res.status(500).json({ error: 'Сервер не настроен для приема отзывов.' });
         }
         
-        console.log(`-> FEEDBACK: Попытка отправки в Telegram... Тип: ${type}`);
+        console.log(`-> FEEDBACK: Получен отзыв типа "${type}". Отправка в Telegram...`);
         const title = type === 'bug' ? '🐞 Новый баг-репорт' : '💡 Новое предложение';
         const text = `<b>${title}</b>\n\n<pre>${message}</pre>`;
         const telegramApiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
         
         const tgResponse = await fetch(telegramApiUrl, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'User-Agent': BROWSER_HEADERS['User-Agent']
-            },
+            headers: { 'Content-Type': 'application/json', 'User-Agent': BROWSER_HEADERS['User-Agent'] },
             body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'HTML' }),
         });
         
-        console.log(`-> TELEGRAM API STATUS: ${tgResponse.status}`);
         const responseData = await tgResponse.json();
-
         if (!responseData.ok) {
-            console.error(`!!! ОШИБКА TELEGRAM API: ${responseData.description}`, responseData);
+            console.error(`!!! ОШИБКА TELEGRAM API: ${responseData.description}`);
             throw new Error(`Telegram API Error: ${responseData.description}`);
         }
         
