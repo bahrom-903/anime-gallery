@@ -1,6 +1,6 @@
-// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v5 - ВСЕ ВКЛЮЧЕНО) ---
+// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v5 - СТАРЫЙ СПОСОБ) ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- СПИСОК AI-МОДЕЛЕЙ (исправленные имена) ---
+    // --- СПИСОК AI-МОДЕЛЕЙ ---
     const AI_MODELS = [
         { name: "Аниме (Яркий стиль)", id: "p1xts/anime-pastel-dream:66b263166158739343ba8295b281f654b4243b7431215b4971a8143a579d479c" },
         { name: "Аниме (Реалистичный)", id: "cagliostrolab/animagine-xl-3.1:549a1a72c3a514de13e512495dcf74a3878d4948b3b7437876a44300305e7143" },
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         { name: "Фэнтези (Детальный)", id: "p1xts/dreamshaper-v8:3c5291f9b8577262051684c9f7375279b324003013eb194dd446f28b293cc54f" },
         { name: "SD 2.1 (Быстрый)", id: "stability-ai/stable-diffusion-2-1:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf" },
     ];
-    // --- ССЫЛКИ НА ФОНЫ (с внешнего хостинга, чтобы не было ошибок) ---
+    // --- ССЫЛКИ НА ФОНЫ (с внешнего хостинга) ---
     const defaultBackgroundSources = [
         { name: 'cyberpunk', url: 'https://i.ibb.co/VtBwQGf/cyberpunk.jpg'}, { name: 'night-tokyo', url: 'https://i.ibb.co/Tmg7VqS/night-tokyo.jpg'},
         { name: 'canyon', url: 'https://i.ibb.co/3fd2z8c/canyon.jpg'}, { name: 'mountain-river', url: 'https://i.ibb.co/9vY7NTS/mountain-river.jpg'},
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const setupDefaultBackgrounds = async () => {
         try {
-            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_9');
+            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_10');
             if (installed) return;
             setUIGeneratorState(true, 'Первичная загрузка фонов...');
             await dbRequest(STORE_BACKGROUNDS, 'clear');
@@ -94,15 +94,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(e => console.error(`Не удалось загрузить фон: ${source.name}`, e))
             );
             await Promise.all(promises);
-            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_9');
+            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_10');
             alert('Фоны успешно загружены! Страница будет перезагружена.');
             window.location.reload();
         } catch (e) { showError("Не удалось загрузить фоны. Попробуйте обновить страницу."); }
         finally { setUIGeneratorState(false); }
     };
     
-    // --- ПОЛНОСТЬЮ РАБОЧИЙ БЛОК ПОДКЛЮЧЕНИЯ КНОПОК ---
-    const attachEventListeners = () => {
+    // --- ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ---
+    const init = async () => {
+        // --- ЗАПОЛНЕНИЕ ДИНАМИЧЕСКИХ ЭЛЕМЕНТОВ ---
         AI_MODELS.forEach(model => { const option = document.createElement('option'); option.value = model.id; option.textContent = model.name; elements.modelSelector.appendChild(option); });
         
         Object.keys(categories).forEach(id => { 
@@ -117,6 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         document.querySelector('#category-controls button')?.classList.add('active-category');
 
+        // --- ПОДКЛЮЧЕНИЕ ВСЕХ КНОПОК (ГЛАВНЫЙ ФИКС) ---
         elements.generateBtn.addEventListener('click', handleAiGeneration);
         elements.randomImageBtn.addEventListener('click', getRandomImage);
         elements.findSimilarBtn.addEventListener('click', () => alert('Эта функция в разработке!'));
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.selectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = true); });
         elements.deselectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = false); });
         
+        // --- УПРАВЛЕНИЕ ПАНЕЛЯМИ ---
         elements.settingsOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'flex'; });
         elements.bugReportOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.bugReportPanel.style.display = 'flex'; });
         elements.suggestionOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.suggestionPanel.style.display = 'flex'; });
@@ -143,16 +146,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
         });
+
+        // --- ЗАПУСК НАСТРОЙКИ ФОНОВ ---
+        try {
+            await openDb();
+            await setupDefaultBackgrounds();
+        } catch (e) {
+            showError(e.message);
+        }
     };
 
-    // --- ФИНАЛЬНЫЙ ЗАПУСК ПРИЛОЖЕНИЯ ---
-    try {
-        await openDb();
-        attachEventListeners(); // СНАЧАЛА подключаем кнопки
-        await setupDefaultBackgrounds(); // ПОТОМ пытаемся загрузить фоны
-    } catch(e) {
-        showError(e.message);
-        attachEventListeners(); // Даже если DB упала, кнопки должны работать!
-    }
+    init(); // ЗАПУСКАЕМ ВСЕ ПРИЛОЖЕНИЕ
 });
 // --- КОНЕЦ ФАЙЛА client.js ---

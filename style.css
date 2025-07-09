@@ -27,7 +27,7 @@ textarea, select, input[type="number"] { width: 100%; padding: 10px; border: 1px
 .setting-group .dimensions { display: flex; align-items: center; gap: 5px; }
 .setting-group .dimensions input { width: 70px; margin-bottom: 0; }
 .selection-controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
-.checkbox-btn { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 12px; border-radius: 5px; transition: background-color 0.2s, color 0.2s; background-color: var(--input-bg); border: 1px solid var(--input-border); }
+.checkbox-btn { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 12px; border-radius: 5px; transition: background-color 0.2s, color 0.2s; background-color: var(--input-bg); border: 1px solid var(--input-border); font-size: 14px; color: var(--text-color); }
 .checkbox-btn::before { content: '🔲'; font-size: 1.2em; transition: transform 0.2s; }
 .checkbox-btn:hover { background-color: var(--button-bg); color: var(--button-text); }
 .checkbox-btn#select-all-btn::before { content: '✅';}
