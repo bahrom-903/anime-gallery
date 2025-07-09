@@ -1,4 +1,4 @@
-<!-- НАЧАЛО ФАЙЛА index.html -->
+<!-- НАЧАЛО ФАЙЛА index.html (ФИНАЛЬНАЯ ВЕРСИЯ) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -20,27 +20,28 @@
         <div class="result-area"><div id="loader" class="hidden"><div class="spinner"></div><span id="loader-text"></span></div><div id="result-image-container"></div><p id="error-message" class="error hidden"></p></div>
         <div class="generator-controls"><button id="save-btn" class="hidden" data-lang-key="save">💾 Сохранить</button><button id="preview-btn" class="hidden" data-lang-key="preview">🔍 Предпросмотр</button></div>
     </div>
-   <!-- index.html -->
-<div class="gallery-wrapper">
-    <h2 data-lang-key="gallery">📁 Галерея</h2>
-    <div id="category-controls" class="gallery-controls"></div>
-    <div class="gallery-controls">
-        <!-- Кнопки "Выбрать всё" и "Отменить всё" отсюда УДАЛЕНЫ -->
-        <hr class="controls-separator">
-        <button id="upload-btn" data-lang-key="upload_yours">📥 Загрузить своё</button>
-        <!-- ...остальные кнопки... -->
-    </div>
+    <div class="gallery-wrapper">
+        <h2 data-lang-key="gallery">📁 Галерея</h2>
+        <div id="category-controls" class="gallery-controls"></div>
+        <div class="gallery-controls">
+            <!-- Старые кнопки "Выбрать всё" и "Отменить всё" УДАЛЕНЫ -->
+            <hr class="controls-separator">
+            <button id="upload-btn" data-lang-key="upload_yours">📥 Загрузить своё</button><input id="upload-input" type="file" accept="image/*" class="hidden"/>
+            <button id="export-selected-btn" data-lang-key="export">📤 Экспорт</button>
+            <button id="set-bg-from-gallery-btn" data-lang-key="set_as_bg">🏞️ Сделать фоном</button>
+            <button id="delete-selected-btn" data-lang-key="delete">🗑 Удалить</button>
+        </div>
+        
+        <!-- НОВЫЙ БЛОК ДЛЯ ВЫБОРА -->
+        <div id="selection-controls" class="selection-controls hidden">
+            <label>
+                <input type="checkbox" id="select-all-checkbox">
+                <span data-lang-key="select_all_label">Выбрать всё на странице</span>
+            </label>
+        </div>
 
-    <!-- 👇 ВОТ СЮДА ВСТАВЛЯЕМ НОВЫЙ БЛОК 👇 -->
-    <div id="selection-controls" class="selection-controls hidden">
-        <label>
-            <input type="checkbox" id="select-all-checkbox">
-            <span data-lang-key="select_all_label">Выбрать всё на странице</span>
-        </label>
+        <div class="gallery" id="gallery"></div>
     </div>
-
-    <div class="gallery" id="gallery"></div>
-  </div>
 </div>
 <!-- Панели -->
 <div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">⚙️ Настройки</h2><button class="panel-close-btn">✖</button></div><div class="panel-items"><button class="panel-button" id="theme-panel-open-btn" data-lang-key="choose_theme">🎨 Выбрать тему</button><button class="panel-button" id="background-panel-open-btn" data-lang-key="background">🖼️ Фон</button><button class="panel-button" id="sort-panel-open-btn" data-lang-key="sorting">🔀 Сортировка</button><hr><button class="panel-button" id="changelog-open-btn" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button class="panel-button" id="bug-report-open-btn" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button class="panel-button" id="suggestion-open-btn" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button class="panel-button" id="gallery-clear-btn" style="color: var(--error-color);" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
