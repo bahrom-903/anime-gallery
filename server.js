@@ -24,21 +24,48 @@ const BROWSER_HEADERS = {
     'Upgrade-Insecure-Requests': '1',
 };
 
+// server.js
+// 👇 ЗАМЕНИ ВСЮ ФУНКЦИЮ ЦЕЛИКОМ НА ЭТОТ КОД 👇
 app.post('/generate-image', async (req, res) => {
-  try {
-    const { prompt, negative_prompt } = req.body;
-    if (!prompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
-    console.log(`-> GENERATE: Промпт: "${prompt}"`);
-    const model = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4";
-    const input = { prompt, negative_prompt };
-    const output = await replicate.run(model, { input });
-    if (output && output.length > 0) {
-      res.json({ imageUrl: output[0] });
-    } else { throw new Error('Replicate API не вернул изображение.'); }
-  } catch (error) {
-    console.error('!!! ОШИБКА REPLICATE:', error.message);
-    res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, закончились кредиты.' });
-  }
+    try {
+        // Получаем категорию из запроса
+        const { prompt, negative_prompt, category } = req.body;
+        if (!prompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
+
+        let finalPrompt = prompt;
+
+        // Наша новая логика проверки обязательных слов
+        const mandatoryKeywords = {
+            waifu: ['girl', 'woman', 'waifu', 'female'],
+            supercars: ['car', 'supercar', 'sportscar', 'automobile']
+            // Можно добавить другие категории, например: 'nature': ['landscape', 'nature', 'tree']
+        };
+
+        if (category && mandatoryKeywords[category]) {
+            const keywords = mandatoryKeywords[category];
+            // Проверяем, есть ли в промпте хоть одно из обязательных слов
+            const hasKeyword = keywords.some(keyword => prompt.toLowerCase().includes(keyword));
+            
+            if (!hasKeyword) {
+                // Если ни одного ключевого слова нет, добавляем первое из списка в начало промпта
+                finalPrompt = `${keywords[0]}, ${prompt}`;
+                console.log(`-> PROMPT-FIX: Добавлено слово "${keywords[0]}" для категории "${category}"`);
+            }
+        }
+        
+        console.log(`-> GENERATE: Промпт: "${finalPrompt}"`);
+        const model = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4";
+        // Используем доработанный промпт
+        const input = { prompt: finalPrompt, negative_prompt };
+        const output = await replicate.run(model, { input });
+        
+        if (output && output.length > 0) {
+            res.json({ imageUrl: output[0] });
+        } else { throw new Error('Replicate API не вернул изображение.'); }
+    } catch (error) {
+        console.error('!!! ОШИБКА REPLICATE:', error.message);
+        res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, закончились кредиты.' });
+    }
 });
 
 // server.js
