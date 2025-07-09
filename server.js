@@ -1,4 +1,6 @@
-// --- НАЧАЛО ФАЙЛА server.js (ФИНАЛЬНАЯ ВЕРСИЯ) ---
+// =================================================================
+//          👇 КОПИРУЙ ВЕСЬ КОД НИЖЕ ДЛЯ ФАЙЛА server.js 👇
+// =================================================================
 
 import express from 'express';
 import Replicate from 'replicate';
@@ -23,42 +25,64 @@ const BROWSER_HEADERS = {
     'Upgrade-Insecure-Requests': '1',
 };
 
+// ==========================================================
+//           ⭐ ОБНОВЛЕННЫЙ БЛОК /generate-image ⭐
+// ==========================================================
 app.post('/generate-image', async (req, res) => {
     try {
+        // Получаем из запроса категорию
         const { prompt, negative_prompt, category } = req.body;
         if (!prompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
 
         let finalPrompt = prompt;
+        // Убедимся, что negative_prompt не пустой, чтобы к нему можно было добавлять слова
+        let finalNegativePrompt = negative_prompt || ''; 
 
+        // Карта обязательных слов для категорий
         const mandatoryKeywords = {
-            waifu: ['girl', 'woman', 'waifu', 'female'],
-            supercars: ['car', 'supercar', 'sportscar', 'automobile']
+            waifu: ['anime girl', 'waifu', 'anime style'],
+            anime_gif: ['anime girl', 'anime boy', 'anime style'],
+            supercars: ['supercar', 'sportscar'],
         };
 
+        // Проверяем, есть ли для текущей категории обязательные слова
         if (category && mandatoryKeywords[category]) {
             const keywords = mandatoryKeywords[category];
             const hasKeyword = keywords.some(keyword => prompt.toLowerCase().includes(keyword));
             
+            // Если нет, ставим ключевое слово В НАЧАЛО промпта для большего веса
             if (!hasKeyword) {
                 finalPrompt = `${keywords[0]}, ${prompt}`;
                 console.log(`-> PROMPT-FIX: Добавлено слово "${keywords[0]}" для категории "${category}"`);
             }
         }
-        
-        console.log(`-> GENERATE: Промпт: "${finalPrompt}"`);
+
+        // Добавляем к негативному промпту слова, чтобы избежать реализма
+        const antiRealismNegative = "photo, realistic, 3d, render, photography, real life, photorealistic";
+        finalNegativePrompt = `${antiRealismNegative}, ${finalNegativePrompt}`;
+
+        console.log(`-> GENERATE: Промпт: "${finalPrompt}" | Негативный: "${finalNegativePrompt}"`);
         const model = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4";
-        const input = { prompt: finalPrompt, negative_prompt };
-        const output = await replicate.run(model, { input });
         
+        // Используем наши доработанные промпты для отправки в Replicate
+        const input = { prompt: finalPrompt, negative_prompt: finalNegativePrompt };
+        
+        const output = await replicate.run(model, { input });
+
         if (output && output.length > 0) {
             res.json({ imageUrl: output[0] });
-        } else { throw new Error('Replicate API не вернул изображение.'); }
+        } else { 
+            throw new Error('Replicate API не вернул изображение.'); 
+        }
     } catch (error) {
         console.error('!!! ОШИБКА REPLICATE:', error.message);
         res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, закончились кредиты.' });
     }
 });
 
+// ==========================================================
+//           ⭐ БЛОК /get-image-from-source (уже исправлен) ⭐
+// ==========================================================
 app.post('/get-image-from-source', async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL источника не указан.' });
@@ -93,6 +117,9 @@ app.post('/get-image-from-source', async (req, res) => {
     }
 });
 
+// ==========================================================
+//           ⭐ ОБНОВЛЕННЫЙ БЛОК /feedback (с отладкой) ⭐
+// ==========================================================
 app.post('/feedback', async (req, res) => {
     try {
         const { type, message } = req.body;
@@ -100,8 +127,15 @@ app.post('/feedback', async (req, res) => {
             console.log('-> FEEDBACK: Получен неполный запрос.');
             return res.status(400).json({ error: 'Тип и сообщение обязательны.' });
         }
+
+        // --- Наши "жучки" для отладки ---
+        console.log("--- Проверка переменных окружения для Telegram ---");
+        console.log("TELEGRAM_BOT_TOKEN определен:", !!TELEGRAM_BOT_TOKEN);
+        console.log("TELEGRAM_CHAT_ID определен:", !!TELEGRAM_CHAT_ID);
+        console.log("-------------------------------------------------");
+        
         if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-            console.error('!!! КРИТИЧЕСКАЯ ОШИБКА: Секреты TELEGRAM не найдены!');
+            console.error('!!! КРИТИЧЕСКАЯ ОШИБКА: Секреты TELEGRAM не найдены в переменных окружения!');
             return res.status(500).json({ error: 'Сервер не настроен для приема отзывов.' });
         }
         
@@ -137,5 +171,3 @@ app.post('/feedback', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => { console.log(`Сервер запущен и слушает порт ${PORT}. Все готово к работе!`); });
-
-// --- КОНЕЦ ФАЙЛА server.js ---
