@@ -231,7 +231,25 @@ const renderGallery = async () => {
     const exportSelected = async () => { const selectedItems = document.querySelectorAll('.gallery-item .select-checkbox:checked'); if (selectedItems.length === 0) { alert("Ничего не выбрано"); return; } const zip = new JSZip(); for (const cb of selectedItems) { const item = await dbRequest(STORE_GALLERY, 'get', parseInt(cb.closest('.gallery-item').dataset.id)); if (item && item.data) { const fileName = (item.prompt ? item.prompt.replace(/[\\/:*?"<>|]/g, '').substring(0, 50) : `image_${item.id}`) || `image_${item.id}`; zip.file(`${fileName}.png`, item.data.split(',')[1], { base64: true }); } } zip.generateAsync({ type: "blob" }).then(content => { const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = `anime_gallery_${Date.now()}.zip`; a.click(); URL.revokeObjectURL(a.href); }); };
     const clearGallery = async () => { if (confirm("Вы уверены, что хотите НАВСЕГДА удалить ВСЕ изображения из галереи?")) { await dbRequest(STORE_GALLERY, 'clear'); await renderGallery(); } };
     const handleUpload = (e) => { const f = e.target.files[0]; if (!f) return; if(confirm(`Вы уверены, что хотите добавить этот файл в категорию "${(translations[state.currentLanguage] || translations.ru)[`cat_${state.currentCategory}`]}"?`)) { const r = new FileReader(); r.onload = async (ev) => { setUIGeneratorState(true, 'Загрузка...'); try { await addEntryToGallery(ev.target.result, f.name); } catch(err) { showError(err.message); } finally { setUIGeneratorState(false); } }; r.readAsDataURL(f); } e.target.value = ''; };
-    const generateRandomPrompt = () => { const promptParts = { subject: ["портрет девушки", "рыцарь в доспехах", "одинокое дерево", "фэнтези город", "космический корабль", "дракон", "старый маг", "кибер-самурай"], details: ["светящиеся глаза", "в руках посох", "нежный взгляд", "капли дождя", "боевая поза", "в окружении бабочек", "с имплантами"], style: ["в стиле аниме 90-х", "в стиле киберпанк", "эпичное фэнтези", "мрачная атмосфера", "яркие цвета", "пастельные тона"], artist: ["от Artgerm", "от Greg Rutkowski", "от Makoto Shinkai", "в стиле Ghibli", "в стиле Riot Games"] }; const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)]; elements.promptInput.value = `${getRandomElement(promptParts.subject)}, ${getRandomElement(promptParts.details)}, ${getRandomElement(promptParts.style)}, ${getRandomElement(promptParts.artist)}`; };
+    // client.js
+// 👇 ЗАМЕНИ ВСЮ ФУНКЦИЮ ЦЕЛИКОМ НА ЭТОТ КОД 👇
+const generateRandomPrompt = () => {
+    const promptParts = {
+        subject: ["портрет девушки", "рыцарь в доспехах", "одинокое дерево", "фэнтези город", "космический корабль", "дракон", "старый маг", "кибер-самурай"],
+        details: ["светящиеся глаза", "в руках посох", "нежный взгляд", "капли дождя", "боевая поза", "в окружении бабочек", "с имплантами"],
+        style: ["в стиле аниме 90-х", "в стиле киберпанк", "эпичное фэнтези", "мрачная атмосфера", "яркие цвета", "пастельные тона"],
+        artist: ["от Artgerm", "от Greg Rutkowski", "от Makoto Shinkai", "в стиле Ghibli", "в стиле Riot Games"]
+    };
+    const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    const quality = "masterpiece, best quality, ultra-detailed, intricate details, sharp focus, professional";
+    const subject = getRandomElement(promptParts.subject);
+    const details = getRandomElement(promptParts.details);
+    const style = getRandomElement(promptParts.style);
+    const artist = getRandomElement(promptParts.artist);
+
+    elements.promptInput.value = `${subject}, ${details}, ${style}, ${artist}, ${quality}`;
+};
     const applyBackground = async (imageBlob) => { try { await dbRequest(STORE_SETTINGS, 'put', imageBlob, 'customBackground'); const objectURL = URL.createObjectURL(imageBlob); document.body.style.setProperty('--bg-image-url', `url(${objectURL})`); document.body.classList.add('has-custom-bg'); } catch(e) { console.error(e); showError("Не удалось сохранить фон: " + e.message); }};
     const resetBackground = async () => { try { await dbRequest(STORE_SETTINGS, 'delete', 'customBackground'); document.body.style.removeProperty('--bg-image-url'); document.body.classList.remove('has-custom-bg'); } catch(e) { console.error(e); showError("Не удалось удалить фон: " + e.message); }};
     const setBackgroundFromDefault = async (bgId) => { try { const bg = await dbRequest(STORE_BACKGROUNDS, 'get', bgId); if (bg) await applyBackground(bg.blob); } catch(e) { console.error(e); } };
@@ -272,8 +290,10 @@ const renderGallery = async () => {
     elements.langSwitcherBtn.addEventListener('click', () => { const nextLang = state.currentLanguage === 'ru' ? 'en' : 'ru'; setLanguage(nextLang); });
     elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug'));
     elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion'));
-    elements.selectAllBtn.addEventListener('click', () => selectAllItems(true));
-    elements.deselectAllBtn.addEventListener('click', () => selectAllItems(false));
+    // client.js (в самом низу)
+elements.selectAllCheckbox.addEventListener('change', (e) => {
+    selectAllItems(e.target.checked);
+});
     elements.sortGrid.addEventListener('click', async (e) => { const sortEl = e.target.closest('[data-sort]'); if (!sortEl) return; const sortType = sortEl.dataset.sort; if (sortType === 'filter_favorite') { state.isFavFilterActive = !state.isFavFilterActive; localStorage.setItem('isFavFilterActive', state.isFavFilterActive); renderGallery(); renderSortOptions(); } else { state.currentSort = sortType; localStorage.setItem('gallerySort', state.currentSort); renderGallery(); closePanel(elements.sortPanel); }});
     elements.themeGrid.addEventListener('click', (e) => { const themeEl = e.target.closest('[data-theme]'); if (themeEl) { applyTheme(themeEl.dataset.theme); }});
     elements.backgroundGrid.addEventListener('click', (e) => { const bgCard = e.target.closest('[data-bg-id]'); if (bgCard) { setBackgroundFromDefault(bgCard.dataset.bgId); } });
