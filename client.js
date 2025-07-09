@@ -3,8 +3,15 @@
 // client.js - v10 (DIAMOND PATCH 2.0)
 document.addEventListener('DOMContentLoaded', () => {
     // Код элементов и констант
-    const elements = { selectAllBtn: document.getElementById('select-all-btn'), deselectAllBtn: document.getElementById('deselect-all-btn'), generateBtn: document.getElementById('generate-btn'), findSimilarBtn: document.getElementById('find-similar-btn'), randomImageBtn: document.getElementById('random-image-btn'), promptInput: document.getElementById('prompt-input'), loader: document.getElementById('loader'), loaderText: document.getElementById('loader-text'), imageContainer: document.getElementById('result-image-container'), errorMessage: document.getElementById('error-message'), saveBtn: document.getElementById('save-btn'), previewBtn: document.getElementById('preview-btn'), galleryContainer: document.getElementById('gallery'), uploadBtn: document.getElementById('upload-btn'), uploadInput: document.getElementById('upload-input'), exportBtn: document.getElementById('export-selected-btn'), deleteBtn: document.getElementById('delete-selected-btn'), menuBtn: document.getElementById('menu-btn'), dropdownMenu: document.getElementById('dropdownMenu'), settingsPanel: document.getElementById('settingsPanel'), settingsOpenBtn: document.getElementById('settings-open-btn'), themePanel: document.getElementById('themePanel'), themePanelOpenBtn: document.getElementById('theme-panel-open-btn'), themeResetBtn: document.getElementById('theme-reset-btn'), sortPanel: document.getElementById('sortPanel'), sortPanelOpenBtn: document.getElementById('sort-panel-open-btn'), sortGrid: document.getElementById('sortGrid'), imageViewer: document.getElementById('image-viewer'), viewerImg: document.getElementById('viewer-img'), themeGrid: document.getElementById('themeGrid'), clearGalleryBtn: document.getElementById('gallery-clear-btn'), setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'), backgroundPanel: document.getElementById('backgroundPanel'), backgroundPanelOpenBtn: document.getElementById('background-panel-open-btn'), backgroundResetBtn: document.getElementById('background-reset-btn'), backgroundGrid: document.getElementById('backgroundGrid'), backgroundUploadBtn: document.getElementById('background-upload-btn'), backgroundUploadInput: document.getElementById('background-upload-input'), randomPromptBtn: document.getElementById('random-prompt-btn'), negativePromptInput: document.getElementById('negative-prompt-input'), styleSelector: document.getElementById('style-selector'), changelogOpenBtn: document.getElementById('changelog-open-btn'), bugReportOpenBtn: document.getElementById('bug-report-open-btn'), suggestionOpenBtn: document.getElementById('suggestion-open-btn'), changelogPanel: document.getElementById('changelogPanel'), bugReportPanel: document.getElementById('bugReportPanel'), suggestionPanel: document.getElementById('suggestionPanel'), bugReportText: document.getElementById('bug-report-text'), suggestionText: document.getElementById('suggestion-text'), submitBugReportBtn: document.getElementById('submit-bug-report-btn'), submitSuggestionBtn: document.getElementById('submit-suggestion-btn'), bugReportStatus: document.getElementById('bug-report-status'), suggestionStatus: document.getElementById('suggestion-status'), contextMenu: document.getElementById('context-menu'), categoryControls: document.getElementById('category-controls'), langSwitcherBtn: document.getElementById('lang-switcher-btn'), };
-    const DB_NAME = 'AnimeGalleryDB_V18_Diamond', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
+    // client.js
+const elements = {
+    // selectAllBtn: document.getElementById('select-all-btn'), // <-- УДАЛИТЬ или закомментировать
+    // deselectAllBtn: document.getElementById('deselect-all-btn'), // <-- УДАЛИТЬ или закомментировать
+    selectionControls: document.getElementById('selection-controls'), // <-- ДОБАВИТЬ
+    selectAllCheckbox: document.getElementById('select-all-checkbox'), // <-- ДОБАВИТЬ
+    /* ...остальные элементы без изменений... */
+};
+       const DB_NAME = 'AnimeGalleryDB_V18_Diamond', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
     let state = { currentSort: 'date_desc', isFavFilterActive: false, currentCategory: 'waifu', currentLanguage: 'ru', contextedItemId: null, };
    // client.js
 const categories = {
@@ -27,9 +34,177 @@ const categories = {
     const defaultBackgroundSources = [ { name: 'cyberpunk', url: './backgrounds/cyberpunk.jpg'}, { name: 'night-tokyo', url: './backgrounds/night-tokyo.jpg'}, { name: 'canyon', url: './backgrounds/canyon.jpg'}, { name: 'mountain-river', url: './backgrounds/mountain-river.jpg'}, { name: 'dark-fantasy', url: './backgrounds/dark-fantasy.jpg'}, { name: 'noir-landscape', url: './backgrounds/noir-landscape.jpg'}, { name: 'auto-night', url: './backgrounds/auto-night.jpg'}, { name: 'anime-city', url: './backgrounds/anime-city.jpg'}, { name: 'nier-2b', url: './backgrounds/nier-2b.jpg'}, { name: 'genos', url: './backgrounds/genos.png'} ];
     const openDb = () => new Promise((resolve, reject) => { const request = indexedDB.open(DB_NAME, DB_VERSION); request.onerror = () => reject("Не удалось открыть IndexedDB."); request.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_SETTINGS)) db.createObjectStore(STORE_SETTINGS); if (!db.objectStoreNames.contains(STORE_GALLERY)) { const galleryStore = db.createObjectStore(STORE_GALLERY, { keyPath: 'id' }); galleryStore.createIndex('category', 'category', { unique: false }); } if (!db.objectStoreNames.contains(STORE_BACKGROUNDS)) db.createObjectStore(STORE_BACKGROUNDS, { keyPath: 'id' }); }; request.onsuccess = e => resolve(e.target.result); });
     const dbRequest = (storeName, type, ...args) => new Promise(async (resolve, reject) => { try { const db = await openDb(); const tx = db.transaction(storeName, type.startsWith('get') ? 'readonly' : 'readwrite'); const store = tx.objectStore(storeName); const req = store[type](...args); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(`Ошибка транзакции (${storeName}): ${req.error}`); } catch (e) { reject(e) } });
-    const translations = { en: { settings: 'Settings', language: 'Language', new_generation: 'New Generation', generate_ai: '✨ Generate AI', find_online: '🌎 Find Online', random_image: '🎲 Random', save: '💾 Save', preview: '🔍 Preview', gallery: '📁 Gallery', upload_yours: '📥 Upload Yours', export: '📤 Export', set_as_bg: '🏞️ Set as Background', delete: '🗑 Delete', select_all: '✅ Select All', deselect_all: '🔲 Deselect All', choose_theme: '🎨 Choose Theme', background: '🖼️ Background', sorting: '🔀 Sorting', changelog: '🏆 Hall of Fame & Versions', report_bug: '🐞 Report a Bug', suggest_idea: '💡 Suggest an Idea', clear_gallery: '🗑️ Clear Gallery', themes: '🎨 Themes', backgrounds: '🖼️ Backgrounds', upload_your_bg: '📤 Upload your background', sort_newest: 'Newest first', sort_oldest: 'Oldest first', sort_random: 'Random', sort_favorites: '✅ Favorites only', cat_waifu: 'Waifu', cat_anime_gif: 'Anime Gifs', cat_cyberpunk: 'Cyberpunk', cat_nature: 'Nature', cat_games: 'Games', cat_dark_anime: 'Dark Anime', cat_supercars: 'Supercars', style_no_style: '-- No Style --', style_anime: 'Anime / Waifu', style_photorealistic: 'Photorealistic', style_fantasy: 'Fantasy Art', style_cyberpunk_style: 'Cyberpunk', style_digital_painting: 'Digital Painting', style_low_poly: '3D (Low Poly)', ctx_rename: 'Rename', ctx_copy_prompt: 'Copy Prompt', prompt_placeholder: "Describe your idea here... (e.g., 'girl with red hair')", negative_prompt_placeholder: "❌ Negative prompt (what NOT to draw)", bug_report_desc: "Please describe the problem in as much detail as possible. What were you doing when it occurred?", bug_report_placeholder: "For example: When I click 'Export', nothing happens...", suggestion_desc: "Have an idea how to make the service better? Tell us!", suggestion_placeholder: "For example: It would be cool to add the ability to change the image size...", send: "Send" }, ru: { settings: 'Настройки', language: 'Язык', new_generation: 'Новая генерация', generate_ai: '✨ Сгенерировать AI', find_online: '🌎 Найти в сети', random_image: '🎲 Случайное', save: '💾 Сохранить', preview: '🔍 Предпросмотр', gallery: '📁 Галерея', upload_yours: '📥 Загрузить своё', export: '📤 Экспорт', set_as_bg: '🏞️ Сделать фоном', delete: '🗑 Удалить', select_all: '✅ Выбрать всё', deselect_all: '🔲 Отменить всё', choose_theme: '🎨 Выбрать тему', background: '🖼️ Фон', sorting: '🔀 Сортировка', changelog: '🏆 Зал Славы и Версии', report_bug: '🐞 Сообщить о проблеме', suggest_idea: '💡 Предложить идею', clear_gallery: '🗑️ Очистить галерею', themes: '🎨 Темы', backgrounds: '🖼️ Фоны', upload_your_bg: '📤 Загрузить свой фон', sort_newest: 'Сначала новые', sort_oldest: 'Сначала старые', sort_random: 'Случайно', sort_favorites: '✅ Только избранное', cat_waifu: 'Вайфу', cat_anime_gif: 'Аниме Гифки', cat_cyberpunk: 'Киберпанк', cat_nature: 'Природа', cat_games: 'Игры', cat_dark_anime: 'Dark Anime', cat_supercars: 'Суперкары', style_no_style: '-- Без стиля --', style_anime: 'Аниме / Вайфу', style_photorealistic: 'Фотореализм', style_fantasy: 'Фэнтези Арт', style_cyberpunk_style: 'Киберпанк', style_digital_painting: 'Цифровой рисунок', style_low_poly: '3D (Low Poly)', ctx_rename: 'Переименовать', ctx_copy_prompt: 'Копировать промпт', prompt_placeholder: "Опиши свою идею здесь... (например, 'девушка с красными волосами')", negative_prompt_placeholder: "❌ Негативный промпт (что НЕ нужно рисовать)", bug_report_desc: "Пожалуйста, опишите проблему как можно подробнее. Что вы делали, когда она возникла?", bug_report_placeholder: "Например: Когда я нажимаю 'Экспорт', ничего не происходит...", suggestion_desc: "Есть идея, как сделать сервис лучше? Расскажите!", suggestion_placeholder: "Например: Было бы круто добавить возможность менять размер картинки...", send: "Отправить" } };
+    // 👇 КОПИРУЙ ВСЁ ОТСЮДА 👇
+
+const translations = {
+    en: {
+        settings: 'Settings',
+        language: 'Language',
+        new_generation: 'New Generation',
+        generate_ai: '✨ Generate AI',
+        find_online: '🌎 Find Online',
+        random_image: '🎲 Random',
+        save: '💾 Save',
+        preview: '🔍 Preview',
+        gallery: '📁 Gallery',
+        upload_yours: '📥 Upload Yours',
+        export: '📤 Export',
+        set_as_bg: '🏞️ Set as Background',
+        delete: '🗑 Delete',
+        select_all: '✅ Select All',
+        deselect_all: '🔲 Deselect All',
+        select_all_label: 'Select all on page', // <-- ИЗМЕНЕНИЕ #1
+        choose_theme: '🎨 Choose Theme',
+        background: '🖼️ Background',
+        sorting: '🔀 Sorting',
+        changelog: '🏆 Hall of Fame & Versions',
+        report_bug: '🐞 Report a Bug',
+        suggest_idea: '💡 Suggest an Idea',
+        clear_gallery: '🗑️ Clear Gallery',
+        themes: '🎨 Themes',
+        backgrounds: '🖼️ Backgrounds',
+        upload_your_bg: '📤 Upload your background',
+        sort_newest: 'Newest first',
+        sort_oldest: 'Oldest first',
+        sort_random: 'Random',
+        sort_favorites: '✅ Favorites only',
+        cat_waifu: 'Waifu',
+        cat_anime_gif: 'Anime Gifs',
+        cat_cyberpunk: 'Cyberpunk',
+        cat_nature: 'Nature',
+        cat_games: 'Games',
+        cat_dark_anime: 'Dark Anime',
+        cat_supercars: 'Supercars',
+        style_no_style: '-- No Style --',
+        style_anime: 'Anime / Waifu',
+        style_photorealistic: 'Photorealistic',
+        style_fantasy: 'Fantasy Art',
+        style_cyberpunk_style: 'Cyberpunk',
+        style_digital_painting: 'Digital Painting',
+        style_low_poly: '3D (Low Poly)',
+        ctx_rename: 'Rename',
+        ctx_copy_prompt: 'Copy Prompt',
+        prompt_placeholder: "Describe your idea here... (e.g., 'girl with red hair')",
+        negative_prompt_placeholder: "❌ Negative prompt (what NOT to draw)",
+        bug_report_desc: "Please describe the problem in as much detail as possible. What were you doing when it occurred?",
+        bug_report_placeholder: "For example: When I click 'Export', nothing happens...",
+        suggestion_desc: "Have an idea how to make the service better? Tell us!",
+        suggestion_placeholder: "For example: It would be cool to add the ability to change the image size...",
+        send: "Send"
+    },
+    ru: {
+        settings: 'Настройки',
+        language: 'Язык',
+        new_generation: 'Новая генерация',
+        generate_ai: '✨ Сгенерировать AI',
+        find_online: '🌎 Найти в сети',
+        random_image: '🎲 Случайное',
+        save: '💾 Сохранить',
+        preview: '🔍 Предпросмотр',
+        gallery: '📁 Галерея',
+        upload_yours: '📥 Загрузить своё',
+        export: '📤 Экспорт',
+        set_as_bg: '🏞️ Сделать фоном',
+        delete: '🗑 Удалить',
+        select_all: '✅ Выбрать всё',
+        deselect_all: '🔲 Отменить всё',
+        select_all_label: 'Выбрать всё на странице', // <-- ИЗМЕНЕНИЕ #2
+        choose_theme: '🎨 Выбрать тему',
+        background: '🖼️ Фон',
+        sorting: '🔀 Сортировка',
+        changelog: '🏆 Зал Славы и Версии',
+        report_bug: '🐞 Сообщить о проблеме',
+        suggest_idea: '💡 Предложить идею',
+        clear_gallery: '🗑️ Очистить галерею',
+        themes: '🎨 Темы',
+        backgrounds: '🖼️ Фоны',
+        upload_your_bg: '📤 Загрузить свой фон',
+        sort_newest: 'Сначала новые',
+        sort_oldest: 'Сначала старые',
+        sort_random: 'Случайно',
+        sort_favorites: '✅ Только избранное',
+        cat_waifu: 'Вайфу',
+        cat_anime_gif: 'Аниме Гифки',
+        cat_cyberpunk: 'Киберпанк',
+        cat_nature: 'Природа',
+        cat_games: 'Игры',
+        cat_dark_anime: 'Dark Anime',
+        cat_supercars: 'Суперкары',
+        style_no_style: '-- Без стиля --',
+        style_anime: 'Аниме / Вайфу',
+        style_photorealistic: 'Фотореализм',
+        style_fantasy: 'Фэнтези Арт',
+        style_cyberpunk_style: 'Киберпанк',
+        style_digital_painting: 'Цифровой рисунок',
+        style_low_poly: '3D (Low Poly)',
+        ctx_rename: 'Переименовать',
+        ctx_copy_prompt: 'Копировать промпт',
+        prompt_placeholder: "Опиши свою идею здесь... (например, 'девушка с красными волосами')",
+        negative_prompt_placeholder: "❌ Негативный промпт (что НЕ нужно рисовать)",
+        bug_report_desc: "Пожалуйста, опишите проблему как можно подробнее. Что вы делали, когда она возникла?",
+        bug_report_placeholder: "Например: Когда я нажимаю 'Экспорт', ничего не происходит...",
+        suggestion_desc: "Есть идея, как сделать сервис лучше? Расскажите!",
+        suggestion_placeholder: "Например: Было бы круто добавить возможность менять размер картинки...",
+        send: "Отправить"
+    }
+};
+
+// 👆 И ДОСЮДА 👆
     const setLanguage = (lang) => { state.currentLanguage = lang; localStorage.setItem('language', lang); const langPack = translations[lang] || translations.ru; document.querySelectorAll('[data-lang-key]').forEach(el => { const key = el.dataset.langKey; if (langPack[key]) el.textContent = langPack[key]; }); document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => { const key = el.dataset.langPlaceholderKey; if (langPack[key]) el.placeholder = langPack[key]; }); renderCategories(); renderThemes(); renderStyles(); renderSortOptions(); };
-    const renderGallery = async () => { try { let allGalleryData = await dbRequest(STORE_GALLERY, 'getAll'); elements.galleryContainer.innerHTML = ""; let categoryData = allGalleryData.filter(item => item.category === state.currentCategory); let dataToRender = state.isFavFilterActive ? categoryData.filter(e => e.favorite) : [...categoryData]; if (state.currentSort === 'date_asc') dataToRender.sort((a, b) => a.id - b.id); else if (state.currentSort === 'date_desc') dataToRender.sort((a, b) => b.id - a.id); else if (state.currentSort === 'random') { for (let i = dataToRender.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [dataToRender[i], dataToRender[j]] = [dataToRender[j], dataToRender[i]]; } } dataToRender.forEach(entry => { const item = document.createElement('div'); item.className = "gallery-item"; item.dataset.id = entry.id; const img = document.createElement('img'); img.src = entry.data; img.loading = "lazy"; img.alt = entry.prompt; img.addEventListener('dblclick', () => viewImage(entry.data)); const controls = document.createElement('div'); controls.className = 'item-controls'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.className = 'select-checkbox'; const fav = document.createElement('div'); fav.innerText = entry.favorite ? '⭐' : '☆'; fav.className = 'favorite-star'; fav.addEventListener('click', (e) => {e.stopPropagation(); toggleFavorite(entry.id, !entry.favorite)}); const menuBtn = document.createElement('button'); menuBtn.className = 'item-menu-btn'; menuBtn.innerHTML = '⋮'; menuBtn.addEventListener('click', (e) => { e.stopPropagation(); showContextMenu(e.target, entry.id); }); controls.append(cb, fav, menuBtn); item.append(img, controls); elements.galleryContainer.appendChild(item); }); } catch (e) { showError(`Не удалось загрузить галерею: ${e.message}`); }};
+    // client.js
+const renderGallery = async () => {
+    try {
+        let allGalleryData = await dbRequest(STORE_GALLERY, 'getAll');
+        elements.galleryContainer.innerHTML = "";
+        let categoryData = allGalleryData.filter(item => item.category === state.currentCategory);
+        let dataToRender = state.isFavFilterActive ? categoryData.filter(e => e.favorite) : [...categoryData];
+
+        if (state.currentSort === 'date_asc') dataToRender.sort((a, b) => a.id - b.id);
+        else if (state.currentSort === 'date_desc') dataToRender.sort((a, b) => b.id - a.id);
+        else if (state.currentSort === 'random') {
+            for (let i = dataToRender.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [dataToRender[i], dataToRender[j]] = [dataToRender[j], dataToRender[i]];
+            }
+        }
+
+        // Показываем/скрываем панель выбора
+        if (dataToRender.length > 0) { // <-- НОВАЯ СТРОКА
+            elements.selectionControls.classList.remove('hidden'); // <-- НОВАЯ СТРОКА
+        } else { // <-- НОВАЯ СТРОКА
+            elements.selectionControls.classList.add('hidden'); // <-- НОВАЯ СТРОКА
+        } // <-- НОВАЯ СТРОКА
+        // Сбрасываем чекбокс при каждом рендере
+        if (elements.selectAllCheckbox) elements.selectAllCheckbox.checked = false; // <-- НОВАЯ СТРОКА (с проверкой)
+
+        dataToRender.forEach(entry => {
+            const item = document.createElement('div');
+            item.className = "gallery-item";
+            item.dataset.id = entry.id;
+            const img = document.createElement('img');
+            img.src = entry.data;
+            img.loading = "lazy";
+            img.alt = entry.prompt;
+            img.addEventListener('dblclick', () => viewImage(entry.data));
+            const controls = document.createElement('div');
+            controls.className = 'item-controls';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.className = 'select-checkbox';
+            const fav = document.createElement('div');
+            fav.innerText = entry.favorite ? '⭐' : '☆';
+            fav.className = 'favorite-star';
+            fav.addEventListener('click', (e) => {e.stopPropagation(); toggleFavorite(entry.id, !entry.favorite)});
+            const menuBtn = document.createElement('button');
+            menuBtn.className = 'item-menu-btn';
+            menuBtn.innerHTML = '⋮';
+            menuBtn.addEventListener('click', (e) => { e.stopPropagation(); showContextMenu(e.target, entry.id); });
+            controls.append(cb, fav, menuBtn);
+            item.append(img, controls);
+            elements.galleryContainer.appendChild(item);
+        });
+    } catch (e) { showError(`Не удалось загрузить галерею: ${e.message}`); }
+};
     const renderCategories = () => { elements.categoryControls.innerHTML = ''; const langPack = translations[state.currentLanguage] || translations.ru; for (const id of Object.keys(categories)) { const btn = document.createElement('button'); btn.dataset.categoryId = id; btn.textContent = langPack[`cat_${id}`] || id.replace(/_/g, ' '); if (id === state.currentCategory) btn.classList.add('active-category'); btn.addEventListener('click', () => handleCategoryClick(id)); elements.categoryControls.appendChild(btn); } };
     const renderThemes = () => { elements.themeGrid.innerHTML = ''; themes.forEach(t => { const c = document.createElement("div"); c.className = "preview-card"; c.dataset.theme = t.id; const themeName = t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/_/g, ' '); c.innerHTML = `<div class="preview-box theme-${t.id}"></div><div class="preview-name">${themeName}</div>`; elements.themeGrid.appendChild(c); }); };
     const renderStyles = () => { elements.styleSelector.innerHTML = ''; const langPack = translations[state.currentLanguage] || translations.ru; for (const [id, value] of Object.entries(styles)) { const option = document.createElement('option'); option.value = value; option.textContent = langPack[`style_${id}`] || id; elements.styleSelector.appendChild(option); } };
