@@ -1,5 +1,5 @@
 // =================================================================
-//          👇 КОПИРУЙ ВЕСЬ КОД НИЖЕ ДЛЯ ФАЙЛА server.js 👇
+//          СЕРВЕР. ФИНАЛЬНАЯ ВЕРСИЯ. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
 // =================================================================
 
 import express from 'express';
@@ -19,87 +19,101 @@ const BROWSER_HEADERS = {
 };
 
 // ====================================================================
-//           ⭐ СИСТЕМА "СЕКРЕТНЫХ ПРОМПТОВ" ДЛЯ КАТЕГОРИЙ ⭐
+//           ⭐ МОЗГ ГЕНЕРАТОРА: КАРТА СКРЫТЫХ ПРОМПТОВ ⭐
 // ====================================================================
-const CATEGORY_PROMPTS = {
-    'waifu': {
-        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
-        prepend_prompt: 'anime artwork, anime style, high quality, 1girl, solo,',
-        append_prompt: 'masterpiece, best quality, ultra-detailed, beautiful detailed eyes,',
-        negative_prompt: 'photo, realistic, 3d, (deformed), (bad anatomy), (bad proportions), (blurry), watermark, text,'
+const PROMPT_BRAIN = {
+    waifu: {
+        positive: 'anime artwork, anime style, key visual, vibrant, studio quality, masterpiece, best quality,',
+        negative: 'photo, realistic, 3d, render, photography, real life, text, watermark, low quality, worst quality, blurry'
     },
-    'anime_gif': {
-        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
-        prepend_prompt: 'anime artwork, anime style, high quality, 1girl, solo,',
-        append_prompt: 'masterpiece, best quality, ultra-detailed, beautiful detailed eyes,',
-        negative_prompt: 'photo, realistic, 3d, (deformed), (bad anatomy), (bad proportions), (blurry), watermark, text,'
+    anime_gif: {
+        positive: 'anime artwork, anime style, key visual, vibrant, studio quality, masterpiece, best quality,',
+        negative: 'photo, realistic, 3d, render, photography, real life, text, watermark, low quality, worst quality, blurry'
     },
-    'cyberpunk': {
-        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
-        prepend_prompt: 'cyberpunk style, concept art, futuristic, neon lights,',
-        append_prompt: 'dramatic lighting, intricate details, 4k,',
-        negative_prompt: 'person, people, man, woman, cartoon, drawing, painting, (deformed), (blurry),'
+    cyberpunk: {
+        positive: 'cyberpunk art, neon lights, futuristic city, cinematic, detailed, atmospheric, high-tech, masterpiece,',
+        negative: 'drawing, painting, anime, nature, day, bright, cartoon'
     },
-    'nature': {
-        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
-        prepend_prompt: 'beautiful landscape painting,',
-        append_prompt: 'epic, breathtaking, 4k, trending on artstation,',
-        negative_prompt: 'person, people, man, woman, building, road, (blurry), (ugly),'
+    nature: {
+        positive: 'landscape photography, national geographic, 4k, photorealistic, stunning, beautiful, detailed, masterpiece,',
+        negative: 'drawing, painting, anime, people, text, watermark, ugly'
     },
-    'default': {
-        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
-        prepend_prompt: '',
-        append_prompt: '4k, high quality, masterpiece,',
-        negative_prompt: '(blurry), (ugly), low quality,'
+    games: {
+        positive: 'video game art, fan art, splash screen, concept art, cinematic, detailed character, epic, masterpiece,',
+        negative: 'photo, real life, screenshot, text, watermark, blurry, low quality'
+    },
+    dark_anime: {
+        positive: 'dark fantasy art, gothic, horror, monster, intricate details, moody, atmospheric, masterpiece,',
+        negative: 'photo, realistic, cute, bright, day, happy, text, watermark'
+    },
+    supercars: {
+        positive: 'car photography, cinematic shot, photorealistic, hyper detailed, professional, studio lighting, 8k, masterpiece,',
+        negative: 'drawing, anime, painting, cartoon, ugly, text, watermark, people'
+    },
+    default: {
+        positive: 'masterpiece, best quality, high quality, detailed,',
+        negative: 'low quality, worst quality, blurry, text, watermark, signature'
     }
 };
 
 app.post('/generate-image', async (req, res) => {
     try {
-        const { prompt: user_prompt, negative_prompt: user_negative_prompt, category } = req.body;
-        if (!user_prompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
+        const { prompt: userPrompt, negative_prompt: userNegativePrompt, category } = req.body;
+        if (!userPrompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
 
-        // Выбираем "секретный" набор промптов для категории или набор по умолчанию
-        const presets = CATEGORY_PROMPTS[category] || CATEGORY_PROMPTS['default'];
+        // Выбираем "мозг" для текущей категории или "мозг" по умолчанию
+        const brain = PROMPT_BRAIN[category] || PROMPT_BRAIN.default;
 
-        // Собираем финальный промпт: (секрет_начало) + (промпт_пользователя) + (секрет_конец)
-        const finalPrompt = `${presets.prepend_prompt} ${user_prompt}, ${presets.append_prompt}`;
-        // Собираем финальный негативный промпт: (секретный_негатив) + (негатив_пользователя)
-        const finalNegativePrompt = `${presets.negative_prompt}, ${user_negative_prompt || ''}`;
+        // Собираем финальный промпт: сначала скрытый, потом пользовательский
+        const finalPositivePrompt = `${brain.positive} ${userPrompt}`;
         
-        console.log(`-> GENERATE: Категория: "${category}", Модель: "${presets.model}"`);
-        console.log(`-> PROMPT: "${finalPrompt}" | NEGATIVE: "${finalNegativePrompt}"`);
+        // Собираем финальный негативный промпт: сначала скрытый, потом пользовательский
+        const finalNegativePrompt = `${brain.negative}, ${userNegativePrompt || ''}`;
+
+        const model = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4";
+        
+        console.log(`-> GENERATE: Категория: "${category}", Модель: "Stable Diffusion"`);
+        console.log(`-> FINAL PROMPT: ${finalPositivePrompt}`);
+        console.log(`-> FINAL NEGATIVE: ${finalNegativePrompt}`);
 
         const input = {
-            prompt: finalPrompt,
+            prompt: finalPositivePrompt,
             negative_prompt: finalNegativePrompt,
         };
         
-        const output = await replicate.run(presets.model, { input });
+        const output = await replicate.run(model, { input });
 
         if (output && output.length > 0) {
-            res.json({ imageUrl: output[0] });
+            // Возвращаем картинку и флаг, что она от AI
+            res.json({ imageUrl: output[0], isAiGenerated: true });
         } else { 
             throw new Error('Replicate API не вернул изображение.'); 
         }
     } catch (error) {
-        console.error('!!! ОШИБКА REPLICATE:', error);
-        res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, модель временно недоступна.' });
+        console.error('!!! ОШИБКА REPLICATE:', error.message);
+        res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, закончились кредиты или модель недоступна.' });
     }
 });
 
-// Остальной код остается без изменений...
+
 app.post('/get-image-from-source', async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL источника не указан.' });
+    console.log(`-> GET-IMAGE: Проксирование запроса на: ${url}`);
     try {
         const response = await fetch(url, { headers: BROWSER_HEADERS });
-        if (!response.ok) throw new Error(`Внешний сервис недоступен (статус: ${response.status})`);
+        if (!response.ok) {
+            throw new Error(`Внешний сервис недоступен (статус: ${response.status})`);
+        }
         
-        if (url.includes('waifu.im')) {
+        if (url.includes('waifu.im') || url.includes('waifu.pics')) {
             const data = await response.json();
-            const imageUrl = data.images && data.images[0] ? data.images[0].url : null;
-            if (!imageUrl) throw new Error('API не вернул правильный формат ответа.');
+            let imageUrl = data.images && data.images[0] ? data.images[0].url : null;
+            if (!imageUrl) { imageUrl = data.url; }
+
+            if (!imageUrl) {
+                throw new Error('API не вернул правильный формат ответа.');
+            }
             res.json({ imageUrl: imageUrl });
         } else {
             res.json({ imageUrl: response.url });
@@ -110,10 +124,13 @@ app.post('/get-image-from-source', async (req, res) => {
     }
 });
 
+
 app.post('/feedback', async (req, res) => {
     try {
         const { type, message } = req.body;
-        if (!type || !message) return res.status(400).json({ error: 'Тип и сообщение обязательны.' });
+        if (!type || !message) {
+            return res.status(400).json({ error: 'Тип и сообщение обязательны.' });
+        }
 
         const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
         const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -123,6 +140,7 @@ app.post('/feedback', async (req, res) => {
             return res.status(500).json({ error: 'Сервер не настроен для приема отзывов.' });
         }
         
+        console.log(`-> FEEDBACK: Получен отзыв типа "${type}". Отправка в Telegram...`);
         const title = type === 'bug' ? '🐞 Новый баг-репорт' : '💡 Новое предложение';
         const text = `<b>${title}</b>\n\n<pre>${message}</pre>`;
         const telegramApiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -139,6 +157,7 @@ app.post('/feedback', async (req, res) => {
             throw new Error(`Telegram API Error: ${responseData.description}`);
         }
         
+        console.log('-> FEEDBACK: Сообщение успешно отправлено в Telegram.');
         res.status(200).json({ success: true, message: 'Отзыв успешно отправлен!' });
     } catch(error) {
         console.error('!!! ОШИБКА ВНУТРИ /feedback:', error.message);
