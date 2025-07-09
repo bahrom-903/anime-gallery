@@ -21,10 +21,11 @@ const BROWSER_HEADERS = {
 // ====================================================================
 //           ⭐ ГЛАВНЫЙ АПГРЕЙД! КАРТА МОДЕЛЕЙ AI ⭐
 // ====================================================================
+// server.js
 const MODEL_MAP = {
-    // Для аниме-категорий используем спец. модель Anything V5
-    'waifu': 'cjwbw/anything-v5-v5-0:1a765378bc3e89ac1097a452b861753c5453628e4e466c4068134d163d819b88',
-    'anime_gif': 'cjwbw/anything-v5-v5-0:1a765378bc3e89ac1097a452b861753c5453628e4e466c4068134d163d819b88',
+    // ⭐ Для аниме-категорий теперь используем MeinaMix v11 ⭐
+    'waifu': 'zackvin/meinamix_v11:b7d8c3991583e0a72c13054a86f76c02a7a40b08518e38817a3a31c5427c3e80',
+    'anime_gif': 'zackvin/meinamix_v11:b7d8c3991583e0a72c13054a86f76c02a7a40b08518e38817a3a31c5427c3e80',
     // Для всего остального - универсальная модель
     'default': 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4'
 };
