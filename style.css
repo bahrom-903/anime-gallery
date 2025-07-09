@@ -96,4 +96,36 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 .changelog-content li { margin-bottom: 8px; }
 .changelog-content .contributor-thanks { margin-top: 25px; padding: 10px; background-color: rgba(var(--button-bg-rgb), 0.1); border-left: 3px solid var(--button-bg); }
 .preview-box.theme-dark { background-color: #1f2937; } .preview-box.theme-light { background-color: #f9fafb; } .preview-box.theme-gray { background-color: #d1d5db; } .preview-box.theme-retro { background-color: #f4e9d8; } .preview-box.theme-dracula { background-color: #282a36; } .preview-box.theme-nord { background-color: #2e3440; } .preview-box.theme-solarized { background-color: #002b36; } .preview-box.theme-gruvbox { background-color: #282828; } .preview-box.theme-monokai { background-color: #272822; } .preview-box.theme-tomorrow_night { background-color: #1d1f21; } .preview-box.theme-one_dark { background-color: #282c34; } .preview-box.theme-cyberpunk { background-color: #0d0221; } .preview-box.theme-matrix { background-color: #000000; } .preview-box.theme-crimson { background-color: #1a1a1a; } .preview-box.theme-synthwave { background-color: #261c4f; }
+/* style.css (добавить в самый конец) */
+
+/* Стили для нового блока с чекбоксом */
+.selection-controls {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(var(--panel-bg-rgb), 0.5);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--input-border);
+}
+
+.selection-controls.hidden {
+    display: none;
+}
+
+.selection-controls label {
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none; /* Чтобы текст не выделялся при клике */
+}
+
+.selection-controls input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
 /* --- КОНЕЦ ФАЙЛА style.css --- */
