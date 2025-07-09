@@ -1,4 +1,6 @@
-<!-- НАЧАЛО ФАЙЛА index.html (ФИНАЛЬНАЯ ВЕРСИЯ) -->
+<!-- =================================================================
+          👇 КОПИРУЙ ВЕСЬ КОД НИЖЕ ДЛЯ ФАЙЛА index.html 👇
+   ================================================================= -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -23,28 +25,24 @@
     <div class="gallery-wrapper">
         <h2 data-lang-key="gallery">📁 Галерея</h2>
         <div id="category-controls" class="gallery-controls"></div>
+        
+        <!-- ⭐ НОВЫЙ ЕДИНЫЙ БЛОК УПРАВЛЕНИЯ ГАЛЕРЕЕЙ ⭐ -->
+        <div id="gallery-management-controls" class="gallery-management-controls hidden">
+            <label class="control-item"><input type="checkbox" id="select-all-checkbox"> <span data-lang-key="select_all_label">Выбрать всё</span></label>
+            <button id="sort-btn" class="control-item" data-lang-key="sorting_btn">🔀 Сортировка</button>
+        </div>
+
         <div class="gallery-controls">
-            <!-- Старые кнопки "Выбрать всё" и "Отменить всё" УДАЛЕНЫ -->
-            <hr class="controls-separator">
             <button id="upload-btn" data-lang-key="upload_yours">📥 Загрузить своё</button><input id="upload-input" type="file" accept="image/*" class="hidden"/>
             <button id="export-selected-btn" data-lang-key="export">📤 Экспорт</button>
             <button id="set-bg-from-gallery-btn" data-lang-key="set_as_bg">🏞️ Сделать фоном</button>
             <button id="delete-selected-btn" data-lang-key="delete">🗑 Удалить</button>
         </div>
-        
-        <!-- НОВЫЙ БЛОК ДЛЯ ВЫБОРА -->
-        <div id="selection-controls" class="selection-controls hidden">
-            <label>
-                <input type="checkbox" id="select-all-checkbox">
-                <span data-lang-key="select_all_label">Выбрать всё на странице</span>
-            </label>
-        </div>
-
         <div class="gallery" id="gallery"></div>
     </div>
 </div>
 <!-- Панели -->
-<div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">⚙️ Настройки</h2><button class="panel-close-btn">✖</button></div><div class="panel-items"><button class="panel-button" id="theme-panel-open-btn" data-lang-key="choose_theme">🎨 Выбрать тему</button><button class="panel-button" id="background-panel-open-btn" data-lang-key="background">🖼️ Фон</button><button class="panel-button" id="sort-panel-open-btn" data-lang-key="sorting">🔀 Сортировка</button><hr><button class="panel-button" id="changelog-open-btn" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button class="panel-button" id="bug-report-open-btn" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button class="panel-button" id="suggestion-open-btn" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button class="panel-button" id="gallery-clear-btn" style="color: var(--error-color);" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
+<div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">⚙️ Настройки</h2><button class="panel-close-btn">✖</button></div><div class="panel-items"><button class="panel-button" id="theme-panel-open-btn" data-lang-key="choose_theme">🎨 Выбрать тему</button><button class="panel-button" id="background-panel-open-btn" data-lang-key="background">🖼️ Фон</button><hr><button class="panel-button" id="changelog-open-btn" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button class="panel-button" id="bug-report-open-btn" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button class="panel-button" id="suggestion-open-btn" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button class="panel-button" id="gallery-clear-btn" style="color: var(--error-color);" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
 <div id="bugReportPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="report_bug">🐞 Сообщить о проблеме</h2><button class="panel-close-btn">✖</button></div><p data-lang-key="bug_report_desc">Пожалуйста, опишите проблему как можно подробнее. Что вы делали, когда она возникла?</p><textarea class="feedback-textarea" id="bug-report-text" data-lang-placeholder-key="bug_report_placeholder"></textarea><button id="submit-bug-report-btn" data-lang-key="send">Отправить</button><p id="bug-report-status" class="hidden"></p></div></div>
 <div id="suggestionPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="suggest_idea">💡 Предложить идею</h2><button class="panel-close-btn">✖</button></div><p data-lang-key="suggestion_desc">Есть идея, как сделать сервис лучше? Расскажите!</p><textarea class="feedback-textarea" id="suggestion-text" data-lang-placeholder-key="suggestion_placeholder"></textarea><button id="submit-suggestion-btn" data-lang-key="send">Отправить</button><p id="suggestion-status" class="hidden"></p></div></div>
 <div id="changelogPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="changelog">🏆 Зал Славы и Версии</h2><button class="panel-close-btn">✖</button></div><div class="changelog-content"><h3>v.9.0 (Polish & QoL)</h3><ul><li>Добавлены кнопки "Выбрать всё" и "Отменить всё" в галерее.</li><li>Улучшен дизайн светлых тем и прозрачность панелей.</li><li>Исправлена логика работы кнопок "назад".</li><li>Исправлена работа форм обратной связи.</li><li>Повышена стабильность получения случайных изображений.</li></ul><div class="contributor-thanks"><h4>Большое спасибо нашим первым пользователям!</h4><p>Этот раздел будет пополняться именами и ссылками тех, чьи идеи мы воплотим в жизнь. Станьте первым!</p></div></div></div></div>
@@ -56,4 +54,3 @@
 <script src="client.js" type="module"></script>
 </body>
 </html>
-<!-- КОНЕЦ ФАЙЛА index.html -->
