@@ -1,6 +1,6 @@
-// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v4 - ПОЛНЫЙ И РАБОЧИЙ) ---
+// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v5 - ВСЕ ВКЛЮЧЕНО) ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- СПИСОК AI-МОДЕЛЕЙ ---
+    // --- СПИСОК AI-МОДЕЛЕЙ (исправленные имена) ---
     const AI_MODELS = [
         { name: "Аниме (Яркий стиль)", id: "p1xts/anime-pastel-dream:66b263166158739343ba8295b281f654b4243b7431215b4971a8143a579d479c" },
         { name: "Аниме (Реалистичный)", id: "cagliostrolab/animagine-xl-3.1:549a1a72c3a514de13e512495dcf74a3878d4948b3b7437876a44300305e7143" },
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         { name: "Фэнтези (Детальный)", id: "p1xts/dreamshaper-v8:3c5291f9b8577262051684c9f7375279b324003013eb194dd446f28b293cc54f" },
         { name: "SD 2.1 (Быстрый)", id: "stability-ai/stable-diffusion-2-1:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf" },
     ];
-    // --- ССЫЛКИ НА ФОНЫ (с внешнего хостинга) ---
+    // --- ССЫЛКИ НА ФОНЫ (с внешнего хостинга, чтобы не было ошибок) ---
     const defaultBackgroundSources = [
         { name: 'cyberpunk', url: 'https://i.ibb.co/VtBwQGf/cyberpunk.jpg'}, { name: 'night-tokyo', url: 'https://i.ibb.co/Tmg7VqS/night-tokyo.jpg'},
         { name: 'canyon', url: 'https://i.ibb.co/3fd2z8c/canyon.jpg'}, { name: 'mountain-river', url: 'https://i.ibb.co/9vY7NTS/mountain-river.jpg'},
@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         { name: 'nier-2b', url: 'https://i.ibb.co/Gxhg6p2/nier-2b.jpg'}, { name: 'genos', url: 'https://i.ibb.co/T1H8Q5z/genos.jpg'}
     ];
     
-    const elementIds = ['generateBtn', 'findSimilarBtn', 'randomImageBtn', 'promptInput', 'loader', 'loaderText', 'imageContainer', 'errorMessage', 'saveBtn', 'previewBtn', 'galleryContainer', 'uploadBtn', 'uploadInput', 'exportBtn', 'deleteBtn', 'menuBtn', 'dropdownMenu', 'settingsPanel', 'settingsOpenBtn', 'themePanel', 'themePanelOpenBtn', 'themeResetBtn', 'sortPanel', 'sortPanelOpenBtn', 'sortGrid', 'imageViewer', 'viewerImg', 'themeGrid', 'clearGalleryBtn', 'setBgFromGalleryBtn', 'backgroundPanel', 'backgroundPanelOpenBtn', 'backgroundResetBtn', 'backgroundGrid', 'backgroundUploadBtn', 'backgroundUploadInput', 'randomPromptBtn', 'negativePromptInput', 'modelSelector', 'imageCount', 'imageWidth', 'imageHeight', 'bugReportPanel', 'suggestionPanel', 'bugReportText', 'suggestionText', 'submitBugReportBtn', 'submitSuggestionBtn', 'bugReportStatus', 'suggestionStatus', 'contextMenu', 'categoryControls', 'langSwitcherBtn', 'changelogOpenBtn', 'changelogPanel', 'bugReportOpenBtn', 'suggestionOpenBtn', 'selectAllBtn', 'deselectAllBtn'];
+    const elementIds = ['generateBtn', 'findSimilarBtn', 'randomImageBtn', 'promptInput', 'loader', 'loaderText', 'imageContainer', 'errorMessage', 'saveBtn', 'previewBtn', 'galleryContainer', 'uploadBtn', 'uploadInput', 'exportBtn', 'deleteBtn', 'menuBtn', 'dropdownMenu', 'settingsPanel', 'settingsOpenBtn', 'themePanel', 'themePanelOpenBtn', 'themeResetBtn', 'backgroundPanel', 'backgroundPanelOpenBtn', 'backgroundResetBtn', 'backgroundGrid', 'backgroundUploadBtn', 'backgroundUploadInput', 'randomPromptBtn', 'negativePromptInput', 'modelSelector', 'imageCount', 'imageWidth', 'imageHeight', 'bugReportPanel', 'suggestionPanel', 'bugReportText', 'suggestionText', 'submitBugReportBtn', 'submitSuggestionBtn', 'bugReportStatus', 'suggestionStatus', 'categoryControls', 'selectAllBtn', 'deselectAllBtn'];
     const elements = {};
     elementIds.forEach(id => elements[id] = document.getElementById(id));
 
-    const DB_NAME = 'AnimeGalleryDB_V20_FinalFix', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
+    const DB_NAME = 'AnimeGalleryDB_V21_FINAL', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
     let state = { currentCategory: 'waifu' };
     const categories = { 'waifu': { sources: { random: 'https://api.waifu.pics/sfw/waifu' } }, 'anime_gif': { sources: { random: 'https://api.waifu.pics/sfw/dance' } }, 'cyberpunk': { sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk,neon,rain' } }, 'nature': { sources: { random: 'https://source.unsplash.com/1600x900/?nature,landscape' } }, 'games': { sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character,art' } }, 'dark_anime': { sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,anime,art' } }, 'supercars': { sources: { random: 'https://source.unsplash.com/1600x900/?supercar,JDM' } }, };
     
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const setupDefaultBackgrounds = async () => {
         try {
-            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_8');
+            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_9');
             if (installed) return;
             setUIGeneratorState(true, 'Первичная загрузка фонов...');
             await dbRequest(STORE_BACKGROUNDS, 'clear');
@@ -94,16 +94,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(e => console.error(`Не удалось загрузить фон: ${source.name}`, e))
             );
             await Promise.all(promises);
-            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_8');
+            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_9');
             alert('Фоны успешно загружены! Страница будет перезагружена.');
             window.location.reload();
         } catch (e) { showError("Не удалось загрузить фоны. Попробуйте обновить страницу."); }
         finally { setUIGeneratorState(false); }
     };
-    
-    // --- ВСЕ ФУНКЦИИ, КОТОРЫХ НЕ ХВАТАЛО ---
-    const openPanel = (panel) => panel && (panel.style.display = 'flex');
-    const closePanel = (panel) => panel && (panel.style.display = 'none');
     
     // --- ПОЛНОСТЬЮ РАБОЧИЙ БЛОК ПОДКЛЮЧЕНИЯ КНОПОК ---
     const attachEventListeners = () => {
@@ -129,21 +125,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.selectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = true); });
         elements.deselectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = false); });
         
-        elements.settingsOpenBtn.addEventListener('click', () => openPanel(elements.settingsPanel));
-        elements.bugReportOpenBtn.addEventListener('click', () => { closePanel(elements.settingsPanel); openPanel(elements.bugReportPanel); });
-        elements.suggestionOpenBtn.addEventListener('click', () => { closePanel(elements.settingsPanel); openPanel(elements.suggestionPanel); });
-        elements.themePanelOpenBtn.addEventListener('click', () => { closePanel(elements.settingsPanel); openPanel(elements.themePanel); });
-        elements.backgroundPanelOpenBtn.addEventListener('click', () => { closePanel(elements.settingsPanel); openPanel(elements.backgroundPanel); });
-        
+        elements.settingsOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'flex'; });
+        elements.bugReportOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.bugReportPanel.style.display = 'flex'; });
+        elements.suggestionOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.suggestionPanel.style.display = 'flex'; });
+        elements.themePanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.themePanel.style.display = 'flex'; });
+        elements.backgroundPanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.backgroundPanel.style.display = 'flex'; });
+
         document.querySelectorAll('.panel-overlay').forEach(panel => {
             panel.addEventListener('click', e => {
                 const closeBtn = e.target.closest('.panel-close-btn');
                 const backBtn = e.target.closest('.panel-back-btn');
                 if (closeBtn || e.target === panel) {
-                    closePanel(panel);
+                    panel.style.display = 'none';
                 } else if (backBtn) {
-                    closePanel(panel);
-                    openPanel(elements.settingsPanel);
+                    panel.style.display = 'none';
+                    elements.settingsPanel.style.display = 'flex';
                 }
             });
         });
