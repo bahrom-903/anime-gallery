@@ -1,4 +1,6 @@
-/* --- НАЧАЛО ФАЙЛА style.css --- */
+/* =================================================================
+          👇 КОПИРУЙ ВЕСЬ КОД НИЖЕ ДЛЯ ФАЙЛА style.css 👇
+   ================================================================= */
 
 /* --- Стили для кнопок "Назад" и "Закрыть" --- */
 .panel-header .panel-close-btn, .panel-header .panel-back-btn {
@@ -6,22 +8,30 @@
 }
 .panel-header .panel-close-btn:hover, .panel-header .panel-back-btn:hover { color: var(--error-color); transform: scale(1.1); }
 
-/* --- ИСПРАВЛЕНИЕ ДЛЯ ПРОСМОТРЩИКА КАРТИНОК --- */
+/* --- ⭐ ИСПРАВЛЕНИЕ ДЛЯ ПРОСМОТРЩИКА КАРТИНОК (УБИРАЕМ ПОЛЗУНОК) ⭐ --- */
 #image-viewer {
-    /* Делаем фон всегда темным для лучшего контраста */
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.8); /* Делаем фон всегда темным для лучшего контраста */
+    padding: 2.5vh 2.5vw; /* Добавляем внешние отступы, чтобы картинка не прилипала к краям */
+    box-sizing: border-box;
 }
 #image-viewer .panel-content {
-    /* Убираем фон и рамки, чтобы была видна только картинка */
-    background: none;
+    background: none; /* Убираем фон и рамки, чтобы была видна только картинка */
     padding: 0;
     box-shadow: none;
-    /* Идеально центрируем картинку */
-    display: flex;
+    width: 100%;
+    height: 100%;
+    display: flex; /* Идеально центрируем картинку */
     justify-content: center;
     align-items: center;
 }
-#image-viewer img { max-width:95%; max-height:95%; border-radius: 8px; }
+#image-viewer img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Картинка полностью помещается без искажений */
+    border-radius: 8px;
+}
+/* --- КОНЕЦ ИСПРАВЛЕНИЯ --- */
+
 
 /* --- Остальной CSS код --- */
 :root { --bg-color: #1f2937; --bg-color-rgb: 31,41,55; --text-color: #f9fafb; --panel-bg: #111827; --panel-bg-rgb: 17,24,39; --button-bg: #10b981; --button-text: #ffffff; --input-bg: #374151; --input-border: #4b5563; --error-color: #ef4444; }
@@ -44,7 +54,7 @@ body { background-color: var(--bg-color); color: var(--text-color); font-family:
 .container { max-width:1200px; margin:auto; padding:20px; box-sizing: border-box; }
 .generator-area, .gallery-wrapper { background: var(--panel-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 body.has-custom-bg { background-image: var(--bg-image-url); background-size: cover; background-position: center center; background-attachment: fixed; }
-body.has-custom-bg .generator-area, body.has-custom-bg .gallery-wrapper { background-color: rgba(var(--panel-bg-rgb), 0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+body.has-custom-bg .generator-area, body.has-custom-bg .gallery-wrapper { background-color: rgba(var(--panel-bg-rgb), 0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
 h1, h2 { text-align: center; }
 h1::after { content: 'DEMO'; font-size: 0.4em; vertical-align: super; margin-left: 8px; padding: 2px 6px; border-radius: 4px; background-color: var(--button-bg); color: var(--button-text); opacity: 0.8; }
 button { background: var(--button-bg); color: var(--button-text); border: none; padding: 10px 20px; font-size: 1em; border-radius: 5px; cursor: pointer; margin: 5px; transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s; }
@@ -73,14 +83,7 @@ textarea { resize: vertical; } #prompt-input { height: 80px; } #negative-prompt-
 #context-menu { display: none; position: absolute; z-index: 1010; background: var(--panel-bg); border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); padding: 5px; border: 1px solid var(--input-border); }
 #context-menu button { width: 100%; background: none; border: none; color: var(--text-color); text-align: left; padding: 8px 12px; margin: 0; font-size: 14px; cursor: pointer;}
 #context-menu button:hover { background-color: rgba(255, 255, 255, 0.1); }
-/* style.css */
-#menuToggle {
-    position: fixed;
-    top: 10px;
-    right: 15px;
-    z-index: 1000;
-    transform: translateZ(0); /* Добавляем этот трюк для стабильности */
-}
+#menuToggle { position:fixed; top:10px; right:15px; z-index:1000; }
 #dropdownMenu { display:none; position:absolute; right:0; top:45px; background:var(--panel-bg); color:var(--text-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.3); padding:10px; min-width:200px; }
 #dropdownMenu button { width: 100%; text-align: left; }
 .panel-overlay { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000000bb; z-index:1001; justify-content:center; align-items:center; }
@@ -103,36 +106,3 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 .changelog-content li { margin-bottom: 8px; }
 .changelog-content .contributor-thanks { margin-top: 25px; padding: 10px; background-color: rgba(var(--button-bg-rgb), 0.1); border-left: 3px solid var(--button-bg); }
 .preview-box.theme-dark { background-color: #1f2937; } .preview-box.theme-light { background-color: #f9fafb; } .preview-box.theme-gray { background-color: #d1d5db; } .preview-box.theme-retro { background-color: #f4e9d8; } .preview-box.theme-dracula { background-color: #282a36; } .preview-box.theme-nord { background-color: #2e3440; } .preview-box.theme-solarized { background-color: #002b36; } .preview-box.theme-gruvbox { background-color: #282828; } .preview-box.theme-monokai { background-color: #272822; } .preview-box.theme-tomorrow_night { background-color: #1d1f21; } .preview-box.theme-one_dark { background-color: #282c34; } .preview-box.theme-cyberpunk { background-color: #0d0221; } .preview-box.theme-matrix { background-color: #000000; } .preview-box.theme-crimson { background-color: #1a1a1a; } .preview-box.theme-synthwave { background-color: #261c4f; }
-/* style.css (добавить в самый конец) */
-
-/* Стили для нового блока с чекбоксом */
-.selection-controls {
-    margin-bottom: 15px;
-    padding: 10px;
-    background: rgba(var(--panel-bg-rgb), 0.5);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid var(--input-border);
-}
-
-.selection-controls.hidden {
-    display: none;
-}
-
-.selection-controls label {
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    user-select: none; /* Чтобы текст не выделялся при клике */
-}
-
-.selection-controls input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-/* --- КОНЕЦ ФАЙЛА style.css --- */
