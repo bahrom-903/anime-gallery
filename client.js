@@ -84,7 +84,23 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug'));
     elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion'));
     // ⭐ --- УДАЛЕНЫ СТАРЫЕ СЛОМАННЫЕ ОБРАБОТЧИКИ --- ⭐
-    elements.sortGrid.addEventListener('click', async (e) => { const sortEl = e.target.closest('[data-sort]'); if (!sortEl) return; const sortType = sortEl.dataset.sort; if (sortType === 'filter_favorite') { state.isFavFilterActive = !state.isFavFilterActive; localStorage.setItem('isFavFilterActive', state.isFavFilterActive); renderGallery(); renderSortOptions(); } else { state.currentSort = sortType; localStorage.setItem('gallerySort', state.currentSort); renderGallery(); closePanel(elements.sortPanel); }});
+   // client.js
+elements.sortGrid.addEventListener('click', async (e) => {
+    const sortEl = e.target.closest('[data-sort]');
+    if (!sortEl) return;
+    const sortType = sortEl.dataset.sort;
+    if (sortType === 'filter_favorite') {
+        state.isFavFilterActive = !state.isFavFilterActive;
+        localStorage.setItem('isFavFilterActive', state.isFavFilterActive);
+        renderGallery();
+        renderSortOptions();
+    } else {
+        state.currentSort = sortType;
+        localStorage.setItem('gallerySort', state.currentSort);
+        renderGallery();
+        // closePanel(elements.sortPanel); // <-- Мы ее удалили (или закомментировали)
+    }
+});
     elements.themeGrid.addEventListener('click', (e) => { const themeEl = e.target.closest('[data-theme]'); if (themeEl) { applyTheme(themeEl.dataset.theme); }});
     elements.backgroundGrid.addEventListener('click', (e) => { const bgCard = e.target.closest('[data-bg-id]'); if (bgCard) { setBackgroundFromDefault(bgCard.dataset.bgId); } });
     elements.contextMenu.addEventListener('click', async (e) => { e.stopPropagation(); const action = e.target.dataset.action; if (!action || !state.contextedItemId) return; const item = await dbRequest(STORE_GALLERY, 'get', state.contextedItemId); if (!item) return; if (action === 'rename') { const newPrompt = prompt("Введите новый промпт:", item.prompt); if (newPrompt !== null && newPrompt.trim() !== "") { item.prompt = newPrompt; await dbRequest(STORE_GALLERY, 'put', item); await renderGallery(); } } if (action === 'copy-prompt') { if (item.prompt) { navigator.clipboard.writeText(item.prompt).then(() => alert('Промпт скопирован!')).catch(err => console.error('Ошибка копирования:', err)); } } hideContextMenu(); });
