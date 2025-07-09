@@ -19,34 +19,55 @@ const BROWSER_HEADERS = {
 };
 
 // ====================================================================
-//           ⭐ ГЛАВНЫЙ АПГРЕЙД! КАРТА МОДЕЛЕЙ AI ⭐
+//           ⭐ СИСТЕМА "СЕКРЕТНЫХ ПРОМПТОВ" ДЛЯ КАТЕГОРИЙ ⭐
 // ====================================================================
-// server.js
-const MODEL_MAP = {
-    // ⭐ Для аниме-категорий теперь используем MeinaMix v11 ⭐
-    'waifu': 'zackvin/meinamix_v11:b7d8c3991583e0a72c13054a86f76c02a7a40b08518e38817a3a31c5427c3e80',
-    'anime_gif': 'zackvin/meinamix_v11:b7d8c3991583e0a72c13054a86f76c02a7a40b08518e38817a3a31c5427c3e80',
-    // Для всего остального - универсальная модель
-    'default': 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4'
+const CATEGORY_PROMPTS = {
+    'waifu': {
+        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
+        prepend_prompt: 'anime artwork, anime style, high quality, 1girl, solo,',
+        append_prompt: 'masterpiece, best quality, ultra-detailed, beautiful detailed eyes,',
+        negative_prompt: 'photo, realistic, 3d, (deformed), (bad anatomy), (bad proportions), (blurry), watermark, text,'
+    },
+    'anime_gif': {
+        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
+        prepend_prompt: 'anime artwork, anime style, high quality, 1girl, solo,',
+        append_prompt: 'masterpiece, best quality, ultra-detailed, beautiful detailed eyes,',
+        negative_prompt: 'photo, realistic, 3d, (deformed), (bad anatomy), (bad proportions), (blurry), watermark, text,'
+    },
+    'cyberpunk': {
+        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
+        prepend_prompt: 'cyberpunk style, concept art, futuristic, neon lights,',
+        append_prompt: 'dramatic lighting, intricate details, 4k,',
+        negative_prompt: 'person, people, man, woman, cartoon, drawing, painting, (deformed), (blurry),'
+    },
+    'nature': {
+        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
+        prepend_prompt: 'beautiful landscape painting,',
+        append_prompt: 'epic, breathtaking, 4k, trending on artstation,',
+        negative_prompt: 'person, people, man, woman, building, road, (blurry), (ugly),'
+    },
+    'default': {
+        model: 'stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4',
+        prepend_prompt: '',
+        append_prompt: '4k, high quality, masterpiece,',
+        negative_prompt: '(blurry), (ugly), low quality,'
+    }
 };
 
 app.post('/generate-image', async (req, res) => {
     try {
-        const { prompt, negative_prompt, category } = req.body;
-        if (!prompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
+        const { prompt: user_prompt, negative_prompt: user_negative_prompt, category } = req.body;
+        if (!user_prompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
 
-        // Выбираем нужную модель из нашей карты или модель по умолчанию
-        const model = MODEL_MAP[category] || MODEL_MAP['default'];
-        console.log(`-> GENERATE: Категория: "${category}", Используется модель: "${model}"`);
+        // Выбираем "секретный" набор промптов для категории или набор по умолчанию
+        const presets = CATEGORY_PROMPTS[category] || CATEGORY_PROMPTS['default'];
 
-        // Добавляем улучшающие слова в промпт
-        const qualityPrompt = "masterpiece, best quality, ultra-detailed, sharp focus";
-        const finalPrompt = `${prompt}, ${qualityPrompt}`;
-
-        // Добавляем улучшающие слова в негативный промпт
-        const baseNegativePrompt = "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name";
-        const finalNegativePrompt = `${baseNegativePrompt}, ${negative_prompt || ''}`;
-
+        // Собираем финальный промпт: (секрет_начало) + (промпт_пользователя) + (секрет_конец)
+        const finalPrompt = `${presets.prepend_prompt} ${user_prompt}, ${presets.append_prompt}`;
+        // Собираем финальный негативный промпт: (секретный_негатив) + (негатив_пользователя)
+        const finalNegativePrompt = `${presets.negative_prompt}, ${user_negative_prompt || ''}`;
+        
+        console.log(`-> GENERATE: Категория: "${category}", Модель: "${presets.model}"`);
         console.log(`-> PROMPT: "${finalPrompt}" | NEGATIVE: "${finalNegativePrompt}"`);
 
         const input = {
@@ -54,7 +75,7 @@ app.post('/generate-image', async (req, res) => {
             negative_prompt: finalNegativePrompt,
         };
         
-        const output = await replicate.run(model, { input });
+        const output = await replicate.run(presets.model, { input });
 
         if (output && output.length > 0) {
             res.json({ imageUrl: output[0] });
@@ -62,30 +83,23 @@ app.post('/generate-image', async (req, res) => {
             throw new Error('Replicate API не вернул изображение.'); 
         }
     } catch (error) {
-        console.error('!!! ОШИБКА REPLICATE:', error.message);
-        res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, закончились кредиты или модель недоступна.' });
+        console.error('!!! ОШИБКА REPLICATE:', error);
+        res.status(500).json({ error: 'Не удалось сгенерировать изображение. Возможно, модель временно недоступна.' });
     }
 });
 
-
+// Остальной код остается без изменений...
 app.post('/get-image-from-source', async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL источника не указан.' });
-    console.log(`-> GET-IMAGE: Проксирование запроса на: ${url}`);
     try {
         const response = await fetch(url, { headers: BROWSER_HEADERS });
-        if (!response.ok) {
-            throw new Error(`Внешний сервис недоступен (статус: ${response.status})`);
-        }
+        if (!response.ok) throw new Error(`Внешний сервис недоступен (статус: ${response.status})`);
         
-        if (url.includes('waifu.im') || url.includes('waifu.pics')) {
+        if (url.includes('waifu.im')) {
             const data = await response.json();
-            let imageUrl = data.images && data.images[0] ? data.images[0].url : null;
-            if (!imageUrl) { imageUrl = data.url; }
-
-            if (!imageUrl) {
-                throw new Error('API не вернул правильный формат ответа.');
-            }
+            const imageUrl = data.images && data.images[0] ? data.images[0].url : null;
+            if (!imageUrl) throw new Error('API не вернул правильный формат ответа.');
             res.json({ imageUrl: imageUrl });
         } else {
             res.json({ imageUrl: response.url });
@@ -96,13 +110,10 @@ app.post('/get-image-from-source', async (req, res) => {
     }
 });
 
-
 app.post('/feedback', async (req, res) => {
     try {
         const { type, message } = req.body;
-        if (!type || !message) {
-            return res.status(400).json({ error: 'Тип и сообщение обязательны.' });
-        }
+        if (!type || !message) return res.status(400).json({ error: 'Тип и сообщение обязательны.' });
 
         const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
         const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -112,7 +123,6 @@ app.post('/feedback', async (req, res) => {
             return res.status(500).json({ error: 'Сервер не настроен для приема отзывов.' });
         }
         
-        console.log(`-> FEEDBACK: Получен отзыв типа "${type}". Отправка в Telegram...`);
         const title = type === 'bug' ? '🐞 Новый баг-репорт' : '💡 Новое предложение';
         const text = `<b>${title}</b>\n\n<pre>${message}</pre>`;
         const telegramApiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -129,7 +139,6 @@ app.post('/feedback', async (req, res) => {
             throw new Error(`Telegram API Error: ${responseData.description}`);
         }
         
-        console.log('-> FEEDBACK: Сообщение успешно отправлено в Telegram.');
         res.status(200).json({ success: true, message: 'Отзыв успешно отправлен!' });
     } catch(error) {
         console.error('!!! ОШИБКА ВНУТРИ /feedback:', error.message);
