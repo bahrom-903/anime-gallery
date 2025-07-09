@@ -242,10 +242,52 @@ const handleAiGeneration = async () => {
 };
     const findSimilarOnline = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.search }, 'Поиск в сети...', 'Загрузка...', `Поиск: ${category.keywords}`); };
     const getRandomImage = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.random }, 'Ищем случайное...', 'Загрузка...', `Случайное: ${category.keywords}`); };
-    const addEntryToGallery = async (dataUrl, prompt) => { const newEntry = { id: Date.now(), prompt: prompt || `image_${Date.now()}`, data: dataUrl, favorite: false, date: new Date().toISOString(), category: state.currentCategory }; try { await dbRequest(STORE_GALLERY, 'put', newEntry); await renderGallery(); alert("Сохранено!"); } catch(e) { console.error(e); showError(`Ошибка сохранения в базу данных: ${e.message}`); } };
+    // client.js
+const addEntryToGallery = async (dataUrl, prompt, options = {}) => {
+    const newEntry = {
+        id: Date.now(),
+        prompt: prompt || `image_${Date.now()}`,
+        data: dataUrl,
+        favorite: false,
+        date: new Date().toISOString(),
+        category: state.currentCategory,
+        isAiGenerated: options.isAiGenerated || false // <-- Вот оно, наше новое поле
+    };
+    try {
+        await dbRequest(STORE_GALLERY, 'put', newEntry);
+        await renderGallery();
+        alert("Сохранено!");
+    } catch(e) {
+        console.error(e);
+        showError(`Ошибка сохранения в базу данных: ${e.message}`);
+    }
+};
     const handleCategoryClick = (categoryId) => { state.currentCategory = categoryId; localStorage.setItem('currentCategory', categoryId); renderCategories(); renderGallery(); };
     const applyTheme = (id) => { document.body.className = id ? `theme-${id}` : ''; document.body.classList.toggle('has-custom-bg', !!document.body.style.getPropertyValue('--bg-image-url')); localStorage.setItem("theme", id); };
-    const saveResultToGallery = async () => { const img = elements.imageContainer.querySelector('img'); if (!img || !img.src) return; setUIGeneratorState(true, 'Сохранение...'); try { const r = await fetch(img.src, {credentials: 'omit'}); if (!r.ok) throw new Error("Сетевая ошибка при скачивании изображения"); const blob = await r.blob(); const dataUrl = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); }); await addEntryToGallery(dataUrl, img.alt); } catch (e) { console.error(e); showError("Ошибка сохранения: " + e.message); } finally { setUIGeneratorState(false); } };
+    // client.js
+const saveResultToGallery = async () => {
+    const img = elements.imageContainer.querySelector('img');
+    if (!img || !img.src) return;
+    setUIGeneratorState(true, 'Сохранение...');
+    try {
+        const r = await fetch(img.src, {credentials: 'omit'});
+        if (!r.ok) throw new Error("Сетевая ошибка при скачивании изображения");
+        const blob = await r.blob();
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+        // 👇 ВОТ ИЗМЕНЕНИЕ 👇
+        await addEntryToGallery(dataUrl, img.alt, { isAiGenerated: true });
+    } catch (e) {
+        console.error(e);
+        showError("Ошибка сохранения: " + e.message);
+    } finally {
+        setUIGeneratorState(false);
+    }
+};
     const toggleFavorite = async (id, isFavorite) => { try { const entry = await dbRequest(STORE_GALLERY, 'get', id); if(entry) { entry.favorite = isFavorite; await dbRequest(STORE_GALLERY, 'put', entry); await renderGallery(); } } catch (e) { console.error(e); }};
     const deleteSelected = async () => { const selectedItems = document.querySelectorAll('.gallery-item .select-checkbox:checked'); if (selectedItems.length === 0) { alert("Ничего не выбрано."); return; } if (!confirm(`Вы уверены, что хотите удалить ${selectedItems.length} элемент(ов)?`)) return; for (const cb of selectedItems) { await dbRequest(STORE_GALLERY, 'delete', parseInt(cb.closest('.gallery-item').dataset.id)); } await renderGallery(); };
     const exportSelected = async () => { const selectedItems = document.querySelectorAll('.gallery-item .select-checkbox:checked'); if (selectedItems.length === 0) { alert("Ничего не выбрано"); return; } const zip = new JSZip(); for (const cb of selectedItems) { const item = await dbRequest(STORE_GALLERY, 'get', parseInt(cb.closest('.gallery-item').dataset.id)); if (item && item.data) { const fileName = (item.prompt ? item.prompt.replace(/[\\/:*?"<>|]/g, '').substring(0, 50) : `image_${item.id}`) || `image_${item.id}`; zip.file(`${fileName}.png`, item.data.split(',')[1], { base64: true }); } } zip.generateAsync({ type: "blob" }).then(content => { const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = `anime_gallery_${Date.now()}.zip`; a.click(); URL.revokeObjectURL(a.href); }); };
