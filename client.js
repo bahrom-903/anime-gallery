@@ -1,4 +1,4 @@
-// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v2) ---
+// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v3 - РАБОЧИЙ) ---
 document.addEventListener('DOMContentLoaded', async () => {
     // --- СПИСОК AI-МОДЕЛЕЙ (исправленные имена) ---
     const AI_MODELS = [
@@ -16,20 +16,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         { name: 'auto-night', url: 'https://i.ibb.co/K2fM79m/auto-night.jpg'}, { name: 'anime-city', url: 'https://i.ibb.co/4Kj39qP/anime-city.jpg'},
         { name: 'nier-2b', url: 'https://i.ibb.co/Gxhg6p2/nier-2b.jpg'}, { name: 'genos', url: 'https://i.ibb.co/T1H8Q5z/genos.jpg'}
     ];
-    // --- ВСЕ ОСТАЛЬНЫЕ КОНСТАНТЫ И ПЕРЕМЕННЫЕ ---
+    
     const elementIds = ['generateBtn', 'findSimilarBtn', 'randomImageBtn', 'promptInput', 'loader', 'loaderText', 'imageContainer', 'errorMessage', 'saveBtn', 'previewBtn', 'galleryContainer', 'uploadBtn', 'uploadInput', 'exportBtn', 'deleteBtn', 'menuBtn', 'dropdownMenu', 'settingsPanel', 'settingsOpenBtn', 'themePanel', 'themePanelOpenBtn', 'themeResetBtn', 'sortPanel', 'sortPanelOpenBtn', 'sortGrid', 'imageViewer', 'viewerImg', 'themeGrid', 'clearGalleryBtn', 'setBgFromGalleryBtn', 'backgroundPanel', 'backgroundPanelOpenBtn', 'backgroundResetBtn', 'backgroundGrid', 'backgroundUploadBtn', 'backgroundUploadInput', 'randomPromptBtn', 'negativePromptInput', 'modelSelector', 'imageCount', 'imageWidth', 'imageHeight', 'bugReportPanel', 'suggestionPanel', 'bugReportText', 'suggestionText', 'submitBugReportBtn', 'submitSuggestionBtn', 'bugReportStatus', 'suggestionStatus', 'contextMenu', 'categoryControls', 'langSwitcherBtn', 'changelogOpenBtn', 'changelogPanel', 'bugReportOpenBtn', 'suggestionOpenBtn', 'selectAllBtn', 'deselectAllBtn'];
     const elements = {};
     elementIds.forEach(id => elements[id] = document.getElementById(id));
+
     const DB_NAME = 'AnimeGalleryDB_V20_FinalFix', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
     let state = { currentCategory: 'waifu' };
     const categories = { 'waifu': { sources: { random: 'https://api.waifu.pics/sfw/waifu' } }, 'anime_gif': { sources: { random: 'https://api.waifu.pics/sfw/dance' } }, 'cyberpunk': { sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk,neon,rain' } }, 'nature': { sources: { random: 'https://source.unsplash.com/1600x900/?nature,landscape' } }, 'games': { sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character,art' } }, 'dark_anime': { sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,anime,art' } }, 'supercars': { sources: { random: 'https://source.unsplash.com/1600x900/?supercar,JDM' } }, };
-
-    const openDb = () => new Promise((res, rej) => { const r = indexedDB.open(DB_NAME, DB_VERSION); r.onerror = () => rej("DB Error"); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_SETTINGS)) db.createObjectStore(STORE_SETTINGS); if (!db.objectStoreNames.contains(STORE_GALLERY)) db.createObjectStore(STORE_GALLERY, { keyPath: 'id' }); if (!db.objectStoreNames.contains(STORE_BACKGROUNDS)) db.createObjectStore(STORE_BACKGROUNDS, { keyPath: 'id' }); }; r.onsuccess = e => res(e.target.result); });
+    
+    const openDb = () => new Promise((res, rej) => { const r = indexedDB.open(DB_NAME, DB_VERSION); r.onerror = () => rej("DB Error"); r.onupgradeneeded = e => { const db = e.target.result; ['settings', 'gallery', 'defaultBackgrounds'].forEach(s => { if (!db.objectStoreNames.contains(s)) db.createObjectStore(s, s === 'gallery' ? { keyPath: 'id' } : undefined); }); }; r.onsuccess = e => res(e.target.result); });
     const dbRequest = (store, type, ...args) => new Promise(async (res, rej) => { try { const db = await openDb(); const req = db.transaction(store, type.startsWith('get') ? 'readonly' : 'readwrite').objectStore(store)[type](...args); req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); } catch (e) { rej(e); } });
 
     const setUIGeneratorState = (isLoading, message = '') => {
-        const btnsToDisable = [elements.generateBtn, elements.findSimilarBtn, elements.randomImageBtn, elements.randomPromptBtn];
-        btnsToDisable.forEach(btn => btn && (btn.disabled = isLoading));
+        [elements.generateBtn, elements.findSimilarBtn, elements.randomImageBtn, elements.randomPromptBtn].forEach(btn => btn && (btn.disabled = isLoading));
         elements.loader.classList.toggle('hidden', !isLoading);
         elements.imageContainer.style.display = isLoading ? 'none' : 'flex';
         if (isLoading) { elements.loaderText.textContent = message; elements.errorMessage.classList.add('hidden'); elements.saveBtn.classList.add('hidden'); elements.previewBtn.classList.add('hidden'); }
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const setupDefaultBackgrounds = async () => {
         try {
-            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_5');
+            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_6');
             if (installed) return;
             setUIGeneratorState(true, 'Первичная загрузка фонов...');
             await dbRequest(STORE_BACKGROUNDS, 'clear');
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(e => console.error(`Не удалось загрузить фон: ${source.name}`, e))
             );
             await Promise.all(promises);
-            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_5');
+            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_6');
             alert('Фоны успешно загружены! Страница будет перезагружена.');
             window.location.reload();
         } catch (e) { showError("Не удалось загрузить фоны. Попробуйте обновить страницу."); }
@@ -112,18 +112,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.findSimilarBtn.addEventListener('click', () => alert('Эта функция в разработке!'));
         elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug'));
         elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion'));
-        elements.selectAllBtn.addEventListener('click', () => document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = true));
-        elements.deselectAllBtn.addEventListener('click', () => document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = false));
-        elements.settingsOpenBtn.addEventListener('click', () => elements.settingsPanel.style.display = 'flex');
+        elements.selectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = true); });
+        elements.deselectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = false); });
+        
+        elements.settingsOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'flex'; });
+        elements.bugReportOpenBtn.addEventListener('click', () => { elements.bugReportPanel.style.display = 'flex'; });
+        elements.suggestionOpenBtn.addEventListener('click', () => { elements.suggestionPanel.style.display = 'flex'; });
+        elements.themePanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.themePanel.style.display = 'flex'; });
+        elements.backgroundPanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.backgroundPanel.style.display = 'flex'; });
+
         document.querySelectorAll('.panel-overlay').forEach(panel => {
             panel.addEventListener('click', e => {
-                if (e.target.classList.contains('panel-close-btn') || e.target.classList.contains('panel-back-btn')) {
+                const closeBtn = e.target.closest('.panel-close-btn');
+                const backBtn = e.target.closest('.panel-back-btn');
+                if (closeBtn) {
                     panel.style.display = 'none';
+                } else if (backBtn) {
+                    panel.style.display = 'none';
+                    elements.settingsPanel.style.display = 'flex';
                 }
             });
         });
-        elements.themePanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.themePanel.style.display = 'flex'; });
-        elements.backgroundPanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.backgroundPanel.style.display = 'flex'; });
     };
 
     // --- ФИНАЛЬНЫЙ ЗАПУСК ПРИЛОЖЕНИЯ ---
