@@ -1,4 +1,4 @@
-// --- НАЧАЛО ФАЙЛА client.js (ПРОФЕССИОНАЛЬНЫЙ РЕМОНТ) ---
+// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ) ---
 document.addEventListener('DOMContentLoaded', () => {
     // *** УЛУЧШЕННЫЙ СПИСОК AI-МОДЕЛЕЙ ***
     const AI_MODELS = [
@@ -9,19 +9,21 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: "SD 2.1 (Быстрый)", id: "stability-ai/stable-diffusion-2-1:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf" },
     ];
 
-    const elements = {};
     const elementIds = ['generateBtn', 'findSimilarBtn', 'randomImageBtn', 'promptInput', 'loader', 'loaderText', 'imageContainer', 'errorMessage', 'saveBtn', 'previewBtn', 'galleryContainer', 'uploadBtn', 'uploadInput', 'exportBtn', 'deleteBtn', 'menuBtn', 'dropdownMenu', 'settingsPanel', 'settingsOpenBtn', 'themePanel', 'themePanelOpenBtn', 'themeResetBtn', 'sortPanel', 'sortPanelOpenBtn', 'sortGrid', 'imageViewer', 'viewerImg', 'themeGrid', 'clearGalleryBtn', 'setBgFromGalleryBtn', 'backgroundPanel', 'backgroundPanelOpenBtn', 'backgroundResetBtn', 'backgroundGrid', 'backgroundUploadBtn', 'backgroundUploadInput', 'randomPromptBtn', 'negativePromptInput', 'modelSelector', 'imageCount', 'imageWidth', 'imageHeight', 'bugReportPanel', 'suggestionPanel', 'bugReportText', 'suggestionText', 'submitBugReportBtn', 'submitSuggestionBtn', 'bugReportStatus', 'suggestionStatus', 'contextMenu', 'categoryControls', 'langSwitcherBtn', 'changelogOpenBtn', 'changelogPanel', 'bugReportOpenBtn', 'suggestionOpenBtn', 'selectAllBtn', 'deselectAllBtn'];
+    const elements = {};
     elementIds.forEach(id => elements[id] = document.getElementById(id));
 
-    const DB_NAME = 'AnimeGalleryDB_V19_PRO', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
-    let state = { currentSort: 'date_desc', isFavFilterActive: false, currentCategory: 'waifu', currentLanguage: 'ru' };
+    const DB_NAME = 'AnimeGalleryDB_V20_FinalFix', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
+    let state = { currentSort: 'date_desc', isFavFilterActive: false, currentCategory: 'waifu' };
     const categories = { 'waifu': { sources: { random: 'https://api.waifu.pics/sfw/waifu' } }, 'anime_gif': { sources: { random: 'https://api.waifu.pics/sfw/dance' } }, 'cyberpunk': { sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk,neon,rain' } }, 'nature': { sources: { random: 'https://source.unsplash.com/1600x900/?nature,landscape' } }, 'games': { sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character,art' } }, 'dark_anime': { sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,anime,art' } }, 'supercars': { sources: { random: 'https://source.unsplash.com/1600x900/?supercar,JDM' } }, };
     const defaultBackgroundSources = [ { name: 'cyberpunk', url: './backgrounds/cyberpunk.jpg'}, { name: 'night-tokyo', url: './backgrounds/night-tokyo.jpg'}, { name: 'canyon', url: './backgrounds/canyon.jpg'}, { name: 'mountain-river', url: './backgrounds/mountain-river.jpg'}, { name: 'dark-fantasy', url: './backgrounds/dark-fantasy.jpg'}, { name: 'noir-landscape', url: './backgrounds/noir-landscape.jpg'}, { name: 'auto-night', url: './backgrounds/auto-night.jpg'}, { name: 'anime-city', url: './backgrounds/anime-city.jpg'}, { name: 'nier-2b', url: './backgrounds/nier-2b.jpg'}, { name: 'genos', url: './backgrounds/genos.png'} ];
     
-    const openDb = () => new Promise((resolve, reject) => { const r = indexedDB.open(DB_NAME, DB_VERSION); r.onerror = () => reject("DB Error"); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_SETTINGS)) db.createObjectStore(STORE_SETTINGS); if (!db.objectStoreNames.contains(STORE_GALLERY)) db.createObjectStore(STORE_GALLERY, { keyPath: 'id' }); if (!db.objectStoreNames.contains(STORE_BACKGROUNDS)) db.createObjectStore(STORE_BACKGROUNDS, { keyPath: 'id' }); }; r.onsuccess = e => resolve(e.target.result); });
-    const dbRequest = (store, type, ...args) => new Promise(async (res, rej) => { try { const db = await openDb(); const req = db.transaction(store, type.startsWith('get') ? 'readonly' : 'readwrite').objectStore(store)[type](...args); req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); } catch (e) { rej(e) } });
+    const openDb = () => new Promise((res, rej) => { const r = indexedDB.open(DB_NAME, DB_VERSION); r.onerror = () => rej("DB Error"); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_SETTINGS)) db.createObjectStore(STORE_SETTINGS); if (!db.objectStoreNames.contains(STORE_GALLERY)) db.createObjectStore(STORE_GALLERY, { keyPath: 'id' }); if (!db.objectStoreNames.contains(STORE_BACKGROUNDS)) db.createObjectStore(STORE_BACKGROUNDS, { keyPath: 'id' }); }; r.onsuccess = e => res(e.target.result); });
+    const dbRequest = (store, type, ...args) => new Promise(async (res, rej) => { try { const db = await openDb(); const req = db.transaction(store, type.startsWith('get') ? 'readonly' : 'readwrite').objectStore(store)[type](...args); req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); } catch (e) { rej(e); } });
 
     const setUIGeneratorState = (isLoading, message = '') => {
+        const btnsToDisable = [elements.generateBtn, elements.findSimilarBtn, elements.randomImageBtn, elements.randomPromptBtn];
+        btnsToDisable.forEach(btn => btn && (btn.disabled = isLoading));
         elements.loader.classList.toggle('hidden', !isLoading);
         elements.imageContainer.style.display = isLoading ? 'none' : 'flex';
         if (isLoading) {
@@ -36,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayGeneratedImages = (urls, prompt) => {
         elements.imageContainer.innerHTML = '';
         urls.forEach(url => { const img = document.createElement('img'); img.src = url; img.alt = prompt; img.crossOrigin = "Anonymous"; elements.imageContainer.appendChild(img); });
-        elements.saveBtn.classList.remove('hidden');
-        elements.previewBtn.classList.remove('hidden');
+        elements.saveBtn.classList.toggle('hidden', urls.length === 0);
+        elements.previewBtn.classList.toggle('hidden', urls.length === 0);
     };
 
     const handleServerRequest = async (endpoint, body, loadingMessage) => {
@@ -59,15 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const prompt = elements.promptInput.value.trim();
         if (!prompt) return showError('Введите описание.');
         try {
-            const result = await handleServerRequest('/generate-image', {
-                prompt: prompt,
-                negative_prompt: elements.negativePromptInput.value.trim(),
-                model: elements.modelSelector.value,
-                width: elements.imageWidth.value,
-                height: elements.imageHeight.value,
-                num_outputs: elements.imageCount.value
-            }, 'AI-генерация...');
-            if(result && result.imageUrls) displayGeneratedImages(result.imageUrls, prompt);
+            const result = await handleServerRequest('/generate-image', { prompt, negative_prompt: elements.negativePromptInput.value.trim(), model: elements.modelSelector.value, width: elements.imageWidth.value, height: elements.imageHeight.value, num_outputs: elements.imageCount.value }, 'AI-генерация...');
+            if (result && result.imageUrls) displayGeneratedImages(result.imageUrls, prompt);
         } catch (e) {}
     };
 
@@ -75,8 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const category = categories[state.currentCategory];
         try {
             const result = await handleServerRequest('/get-image-from-source', { url: category.sources.random }, 'Ищем случайное...');
-            // *** ИСПРАВЛЕНИЕ: Прячем текст "случайное из категории" ***
-            if (result && result.imageUrl) displayGeneratedImages([result.imageUrl], " "); 
+            if (result && result.imageUrl) displayGeneratedImages([result.imageUrl], " ");
         } catch (e) {}
     };
 
@@ -87,21 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!message) return;
         try {
             const result = await handleServerRequest('/feedback', { type, message }, 'Отправка...');
-            statusEl.textContent = result.message;
-            statusEl.className = 'success';
-            textArea.value = '';
+            statusEl.textContent = result.message; statusEl.className = 'success'; textArea.value = '';
         } catch (e) {
-            statusEl.textContent = `Ошибка: ${e.message}`;
-            statusEl.className = 'error';
+            statusEl.textContent = `Ошибка: ${e.message}`; statusEl.className = 'error';
         }
-        statusEl.classList.remove('hidden');
-        setTimeout(() => statusEl.classList.add('hidden'), 4000);
+        statusEl.classList.remove('hidden'); setTimeout(() => statusEl.classList.add('hidden'), 4000);
     };
 
-    // *** ИСПРАВЛЕНИЕ: Ключ для установки фонов снова изменен для 100% перезагрузки ***
     const setupDefaultBackgrounds = async () => {
         try {
-            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_pro_final_fix');
+            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_2');
             if (installed) return;
             setUIGeneratorState(true, 'Первичная загрузка фонов...');
             await dbRequest(STORE_BACKGROUNDS, 'clear');
@@ -110,32 +99,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     const response = await fetch(source.url);
                     if (!response.ok) continue;
                     await dbRequest(STORE_BACKGROUNDS, 'put', { id: source.name, blob: await response.blob() });
-                } catch (e) { console.error(`Не удалось загрузить фон "${source.name}"`); }
+                } catch (e) { console.error(`Не удалось загрузить фон: ${source.name}`); }
             }
-            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_pro_final_fix');
+            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_2');
             setUIGeneratorState(false);
-            window.location.reload(); // Перезагружаем страницу после установки, чтобы все точно применилось
+            alert('Фоны успешно загружены! Страница будет перезагружена.');
+            window.location.reload();
         } catch (e) {
             showError("Не удалось загрузить стандартные фоны. Попробуйте обновить страницу.");
             setUIGeneratorState(false);
         }
     };
     
-    // --- ПОЛНОСТЬЮ РАБОЧИЙ init ---
     const init = async () => {
         AI_MODELS.forEach(model => {
-            const option = document.createElement('option');
-            option.value = model.id;
-            option.textContent = model.name;
+            const option = document.createElement('option'); option.value = model.id; option.textContent = model.name;
             elements.modelSelector.appendChild(option);
         });
 
-        elements.generateBtn.addEventListener('click', handleAiGeneration);
-        elements.randomImageBtn.addEventListener('click', getRandomImage);
-        elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug'));
-        elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion'));
-        
-        // Кнопки категорий (они вернулись!)
         Object.keys(categories).forEach(id => {
             const btn = document.createElement('button');
             btn.textContent = id.replace(/_/g, ' ');
@@ -148,10 +129,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         document.querySelector('#category-controls button').classList.add('active-category');
 
+        elements.generateBtn.addEventListener('click', handleAiGeneration);
+        elements.randomImageBtn.addEventListener('click', getRandomImage);
+        elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug'));
+        elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion'));
+
+        elements.selectAllBtn.addEventListener('click', () => {
+            document.querySelectorAll('.gallery-item .select-checkbox').forEach(cb => cb.checked = true);
+            elements.selectAllBtn.classList.add('selected');
+            elements.deselectAllBtn.classList.remove('selected');
+        });
+
+        elements.deselectAllBtn.addEventListener('click', () => {
+            document.querySelectorAll('.gallery-item .select-checkbox').forEach(cb => cb.checked = false);
+            elements.deselectAllBtn.classList.add('selected');
+            elements.selectAllBtn.classList.remove('selected');
+        });
+
         try {
             await openDb();
             await setupDefaultBackgrounds();
-        } catch(e) {
+        } catch (e) {
             showError(e.message);
         }
     };
