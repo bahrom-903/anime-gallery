@@ -1,5 +1,4 @@
 /* --- НАЧАЛО ФАЙЛА style.css (ФИНАЛЬНЫЙ РЕМОНТ) --- */
-
 :root { --bg-color: #1f2937; --bg-color-rgb: 31,41,55; --text-color: #f9fafb; --panel-bg: #111827; --panel-bg-rgb: 17,24,39; --button-bg: #10b981; --button-text: #ffffff; --input-bg: #374151; --input-border: #4b5563; --error-color: #ef4444; }
 body.theme-light { --bg-color: #f9fafb; --bg-color-rgb: 249,250,251; --text-color: #111827; --panel-bg: #ffffff; --panel-bg-rgb: 255,255,255; --button-bg: #3b82f6; --button-text: #ffffff; --input-bg: #e5e7eb; --input-border: #d1d5db; }
 body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Exo 2', sans-serif; margin:0; padding:0; transition: background-color 0.3s, color 0.3s; min-height: 100vh; }
@@ -42,6 +41,5 @@ textarea, select, input[type="number"] { width: 100%; padding: 10px; border: 1px
 .gallery-item img { display: block; width: 100%; height: auto; }
 .item-controls { position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 8px; background-color: rgba(var(--panel-bg-rgb), 0.5); padding: 4px; border-radius: 5px; opacity: 0; transition: opacity 0.2s; }
 .gallery-item:hover .item-controls { opacity: 1; }
-/* ... и так далее, остальной CSS можно оставить без изменений ... */
-
+/* ... (прочие стили панелей можно оставить без изменений) ... */
 <!-- КОНЕЦ ФАЙЛА style.css -->
