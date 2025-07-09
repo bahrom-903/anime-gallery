@@ -1,4 +1,4 @@
-// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v8 - ПОЛНЫЙ И РАБОЧИЙ) ---
+// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v7 - ВСЕ НА МЕСТЕ) ---
 document.addEventListener('DOMContentLoaded', async () => {
     // --- СПИСОК AI-МОДЕЛЕЙ ---
     const AI_MODELS = [
@@ -17,12 +17,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         { name: 'nier-2b', url: 'https://i.ibb.co/Gxhg6p2/nier-2b.jpg'}, { name: 'genos', url: 'https://i.ibb.co/T1H8Q5z/genos.jpg'}
     ];
     
-    // --- ПОЛНЫЙ СПИСОК ЭЛЕМЕНТОВ ---
-    const elementIds = ['generateBtn', 'findSimilarBtn', 'randomImageBtn', 'promptInput', 'loader', 'loaderText', 'imageContainer', 'errorMessage', 'saveBtn', 'previewBtn', 'galleryContainer', 'uploadBtn', 'uploadInput', 'exportBtn', 'deleteBtn', 'menuBtn', 'dropdownMenu', 'settingsPanel', 'settingsOpenBtn', 'themePanel', 'themePanelOpenBtn', 'themeResetBtn', 'backgroundPanel', 'backgroundPanelOpenBtn', 'backgroundResetBtn', 'backgroundGrid', 'backgroundUploadBtn', 'backgroundUploadInput', 'randomPromptBtn', 'negativePromptInput', 'modelSelector', 'imageCount', 'imageWidth', 'imageHeight', 'bugReportPanel', 'suggestionPanel', 'bugReportText', 'suggestionText', 'submitBugReportBtn', 'submitSuggestionBtn', 'bugReportStatus', 'suggestionStatus', 'categoryControls', 'selectAllBtn', 'deselectAllBtn', 'gallery-clear-btn'];
+    // *** ГЛАВНЫЙ ФИКС: Возвращаем ВСЕ элементы в список! ***
+    const elementIds = ['generateBtn', 'findSimilarBtn', 'randomImageBtn', 'promptInput', 'loader', 'loaderText', 'imageContainer', 'errorMessage', 'saveBtn', 'previewBtn', 'galleryContainer', 'uploadBtn', 'uploadInput', 'exportBtn', 'deleteBtn', 'menuBtn', 'dropdownMenu', 'settingsPanel', 'settingsOpenBtn', 'themePanel', 'themePanelOpenBtn', 'themeResetBtn', 'backgroundPanel', 'backgroundPanelOpenBtn', 'backgroundResetBtn', 'backgroundGrid', 'backgroundUploadBtn', 'backgroundUploadInput', 'randomPromptBtn', 'negativePromptInput', 'modelSelector', 'imageCount', 'imageWidth', 'imageHeight', 'bugReportPanel', 'suggestionPanel', 'bugReportText', 'suggestionText', 'submitBugReportBtn', 'submitSuggestionBtn', 'bugReportStatus', 'suggestionStatus', 'categoryControls', 'selectAllBtn', 'deselectAllBtn'];
     const elements = {};
     elementIds.forEach(id => elements[id] = document.getElementById(id));
 
-    const DB_NAME = 'AnimeGalleryDB_V23_FINAL', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
+    const DB_NAME = 'AnimeGalleryDB_V21_FINAL', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
     let state = { currentCategory: 'waifu' };
     const categories = { 'waifu': { sources: { random: 'https://api.waifu.pics/sfw/waifu' } }, 'anime_gif': { sources: { random: 'https://api.waifu.pics/sfw/dance' } }, 'cyberpunk': { sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk,neon,rain' } }, 'nature': { sources: { random: 'https://source.unsplash.com/1600x900/?nature,landscape' } }, 'games': { sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character,art' } }, 'dark_anime': { sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,anime,art' } }, 'supercars': { sources: { random: 'https://source.unsplash.com/1600x900/?supercar,JDM' } }, };
     
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const setupDefaultBackgrounds = async () => {
         try {
-            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_13');
+            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_12');
             if (installed) return;
             setUIGeneratorState(true, 'Первичная загрузка фонов...');
             await dbRequest(STORE_BACKGROUNDS, 'clear');
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(e => console.error(`Не удалось загрузить фон: ${source.name}`, e))
             );
             await Promise.all(promises);
-            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_13');
+            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_12');
             alert('Фоны успешно загружены! Страница будет перезагружена.');
             window.location.reload();
         } catch (e) { showError("Не удалось загрузить фоны. Попробуйте обновить страницу."); }
