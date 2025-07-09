@@ -41,12 +41,13 @@ app.post('/generate-image', async (req, res) => {
   }
 });
 
+// server.js
+// 👇 КОПИРУЙ ВСЁ ОТСЮДА И ЗАМЕНЯЙ СВОЙ БЛОК 👇
 app.post('/get-image-from-source', async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL источника не указан.' });
     console.log(`-> GET-IMAGE: Проксирование запроса на: ${url}`);
     try {
-        // *** ИСПРАВЛЕНИЕ #2: Используем наши "секретные" заголовки ***
         const response = await fetch(url, { headers: BROWSER_HEADERS });
         if (!response.ok) {
             console.error(`!!! ОШИБКА GET-IMAGE: Статус ответа от ${url}: ${response.status}`);
@@ -55,19 +56,28 @@ app.post('/get-image-from-source', async (req, res) => {
         
         if (url.includes('waifu.im') || url.includes('waifu.pics')) {
             const data = await response.json();
-            const imageUrl = data.url || (data.images && data.images[0] ? data.images[0].url : null);
-            if (!imageUrl) throw new Error('API не вернул правильный ответ.');
+            let imageUrl = data.images && data.images[0] ? data.images[0].url : null;
+            if (!imageUrl) { imageUrl = data.url; }
+
+            if (!imageUrl) {
+                console.error('!!! ОШИБКА API: Не найден URL изображения в ответе от', url, 'Ответ:', JSON.stringify(data));
+                throw new Error('API не вернул правильный формат ответа.');
+            }
+            
+            console.log(`-> API-OK: Найден URL: ${imageUrl}`);
             res.json({ imageUrl: imageUrl });
+
         } else {
-            // Для unsplash и других прямых ссылок на картинки
+            console.log(`-> DIRECT-LINK-OK: Прямая ссылка: ${response.url}`);
             res.json({ imageUrl: response.url });
         }
     } catch (error) {
         console.error(`!!! КРИТИЧЕСКАЯ ОШИБКА GET-IMAGE-FROM-SOURCE для ${url}:`, error.message);
-        res.status(500).json({ error: 'Не удалось получить изображение из внешнего источника.' });
+        // 👇 ВОТ ТВОЕ ИСПРАВЛЕНИЕ В ДЕЙСТВИИ! 👇
+        res.status(500).json({ error: 'Не удалось получить изображение.' }); 
     }
 });
-
+// 👆 И ДОСЮДА 👆
 app.post('/feedback', async (req, res) => {
     try {
         const { type, message } = req.body;
