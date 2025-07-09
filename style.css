@@ -73,7 +73,14 @@ textarea { resize: vertical; } #prompt-input { height: 80px; } #negative-prompt-
 #context-menu { display: none; position: absolute; z-index: 1010; background: var(--panel-bg); border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); padding: 5px; border: 1px solid var(--input-border); }
 #context-menu button { width: 100%; background: none; border: none; color: var(--text-color); text-align: left; padding: 8px 12px; margin: 0; font-size: 14px; cursor: pointer;}
 #context-menu button:hover { background-color: rgba(255, 255, 255, 0.1); }
-#menuToggle { position:fixed; top:10px; right:15px; z-index:1000; }
+/* style.css */
+#menuToggle {
+    position: fixed;
+    top: 10px;
+    right: 15px;
+    z-index: 1000;
+    transform: translateZ(0); /* Добавляем этот трюк для стабильности */
+}
 #dropdownMenu { display:none; position:absolute; right:0; top:45px; background:var(--panel-bg); color:var(--text-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.3); padding:10px; min-width:200px; }
 #dropdownMenu button { width: 100%; text-align: left; }
 .panel-overlay { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000000bb; z-index:1001; justify-content:center; align-items:center; }
