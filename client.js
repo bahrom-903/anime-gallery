@@ -1,4 +1,4 @@
-// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ) ---
+// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v2) ---
 document.addEventListener('DOMContentLoaded', async () => {
     // --- СПИСОК AI-МОДЕЛЕЙ (исправленные имена) ---
     const AI_MODELS = [
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const elements = {};
     elementIds.forEach(id => elements[id] = document.getElementById(id));
     const DB_NAME = 'AnimeGalleryDB_V20_FinalFix', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
-    let state = { currentSort: 'date_desc', isFavFilterActive: false, currentCategory: 'waifu' };
+    let state = { currentCategory: 'waifu' };
     const categories = { 'waifu': { sources: { random: 'https://api.waifu.pics/sfw/waifu' } }, 'anime_gif': { sources: { random: 'https://api.waifu.pics/sfw/dance' } }, 'cyberpunk': { sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk,neon,rain' } }, 'nature': { sources: { random: 'https://source.unsplash.com/1600x900/?nature,landscape' } }, 'games': { sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character,art' } }, 'dark_anime': { sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,anime,art' } }, 'supercars': { sources: { random: 'https://source.unsplash.com/1600x900/?supercar,JDM' } }, };
 
     const openDb = () => new Promise((res, rej) => { const r = indexedDB.open(DB_NAME, DB_VERSION); r.onerror = () => rej("DB Error"); r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_SETTINGS)) db.createObjectStore(STORE_SETTINGS); if (!db.objectStoreNames.contains(STORE_GALLERY)) db.createObjectStore(STORE_GALLERY, { keyPath: 'id' }); if (!db.objectStoreNames.contains(STORE_BACKGROUNDS)) db.createObjectStore(STORE_BACKGROUNDS, { keyPath: 'id' }); }; r.onsuccess = e => res(e.target.result); });
@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (isLoading) { elements.loaderText.textContent = message; elements.errorMessage.classList.add('hidden'); elements.saveBtn.classList.add('hidden'); elements.previewBtn.classList.add('hidden'); }
     };
     const showError = (message) => { elements.errorMessage.textContent = `Ошибка: ${message}`; elements.errorMessage.classList.remove('hidden'); };
-
     const displayGeneratedImages = (urls, prompt) => {
         elements.imageContainer.innerHTML = '';
         urls.forEach(url => { const img = document.createElement('img'); img.src = url; img.alt = prompt; img.crossOrigin = "Anonymous"; elements.imageContainer.appendChild(img); });
@@ -66,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const getRandomImage = async () => {
         try {
             const result = await handleServerRequest('/get-image-from-source', { url: categories[state.currentCategory].sources.random }, 'Ищем случайное...');
-            if (result && result.imageUrl) displayGeneratedImages([result.imageUrl], " "); // Исправлено: пустой alt
+            if (result && result.imageUrl) displayGeneratedImages([result.imageUrl], " ");
         } catch (e) {}
     };
 
@@ -84,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const setupDefaultBackgrounds = async () => {
         try {
-            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_4');
+            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_5');
             if (installed) return;
             setUIGeneratorState(true, 'Первичная загрузка фонов...');
             await dbRequest(STORE_BACKGROUNDS, 'clear');
@@ -95,33 +94,46 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(e => console.error(`Не удалось загрузить фон: ${source.name}`, e))
             );
             await Promise.all(promises);
-            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_4');
+            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_5');
             alert('Фоны успешно загружены! Страница будет перезагружена.');
             window.location.reload();
         } catch (e) { showError("Не удалось загрузить фоны. Попробуйте обновить страницу."); }
         finally { setUIGeneratorState(false); }
     };
     
-    // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
-    AI_MODELS.forEach(model => { const option = document.createElement('option'); option.value = model.id; option.textContent = model.name; elements.modelSelector.appendChild(option); });
-    Object.keys(categories).forEach(id => { const btn = document.createElement('button'); btn.textContent = id.replace(/_/g, ' '); btn.addEventListener('click', () => { state.currentCategory = id; document.querySelector('#category-controls .active-category')?.classList.remove('active-category'); btn.classList.add('active-category'); }); elements.categoryControls.appendChild(btn); });
-    document.querySelector('#category-controls button')?.classList.add('active-category');
-    elements.generateBtn.addEventListener('click', handleAiGeneration);
-    elements.randomImageBtn.addEventListener('click', getRandomImage);
-    elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug'));
-    elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion'));
-    elements.selectAllBtn.addEventListener('click', () => document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = true));
-    elements.deselectAllBtn.addEventListener('click', () => document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = false));
-    // ... и остальные event listeners, если они есть
-    elements.settingsOpenBtn.addEventListener('click', () => elements.settingsPanel.style.display = 'flex');
-    document.querySelectorAll('.panel-close-btn, .panel-back-btn').forEach(btn => btn.addEventListener('click', () => btn.closest('.panel-overlay').style.display = 'none'));
-    
-    // Запускаем первоначальную настройку
+    // --- ПОЛНОСТЬЮ РАБОЧИЙ БЛОК ПОДКЛЮЧЕНИЯ КНОПОК ---
+    const attachEventListeners = () => {
+        AI_MODELS.forEach(model => { const option = document.createElement('option'); option.value = model.id; option.textContent = model.name; elements.modelSelector.appendChild(option); });
+        Object.keys(categories).forEach(id => { const btn = document.createElement('button'); btn.textContent = id.replace(/_/g, ' '); btn.addEventListener('click', () => { state.currentCategory = id; document.querySelector('#category-controls .active-category')?.classList.remove('active-category'); btn.classList.add('active-category'); }); elements.categoryControls.appendChild(btn); });
+        document.querySelector('#category-controls button')?.classList.add('active-category');
+
+        elements.generateBtn.addEventListener('click', handleAiGeneration);
+        elements.randomImageBtn.addEventListener('click', getRandomImage);
+        elements.findSimilarBtn.addEventListener('click', () => alert('Эта функция в разработке!'));
+        elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug'));
+        elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion'));
+        elements.selectAllBtn.addEventListener('click', () => document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = true));
+        elements.deselectAllBtn.addEventListener('click', () => document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = false));
+        elements.settingsOpenBtn.addEventListener('click', () => elements.settingsPanel.style.display = 'flex');
+        document.querySelectorAll('.panel-overlay').forEach(panel => {
+            panel.addEventListener('click', e => {
+                if (e.target.classList.contains('panel-close-btn') || e.target.classList.contains('panel-back-btn')) {
+                    panel.style.display = 'none';
+                }
+            });
+        });
+        elements.themePanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.themePanel.style.display = 'flex'; });
+        elements.backgroundPanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.backgroundPanel.style.display = 'flex'; });
+    };
+
+    // --- ФИНАЛЬНЫЙ ЗАПУСК ПРИЛОЖЕНИЯ ---
     try {
         await openDb();
-        await setupDefaultBackgrounds();
+        attachEventListeners(); // СНАЧАЛА подключаем кнопки
+        await setupDefaultBackgrounds(); // ПОТОМ пытаемся загрузить фоны
     } catch(e) {
         showError(e.message);
+        attachEventListeners(); // Даже если DB упала, кнопки должны работать!
     }
 });
 // --- КОНЕЦ ФАЙЛА client.js ---
