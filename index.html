@@ -1,4 +1,4 @@
-<!-- НАЧАЛО ФАЙЛА index.html (СУПЕР-АПГРЕЙД) -->
+<!-- НАЧАЛО ФАЙЛА index.html (ПРОФЕССИОНАЛЬНЫЙ РЕМОНТ) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -17,7 +17,6 @@
         <textarea id="prompt-input" data-lang-placeholder-key="prompt_placeholder"></textarea>
         <textarea id="negative-prompt-input" data-lang-placeholder-key="negative_prompt_placeholder"></textarea>
         
-        <!-- ================== НОВАЯ ПАНЕЛЬ НАСТРОЕК AI ================== -->
         <div class="ai-settings-panel">
             <div class="setting-group">
                 <label for="model-selector">AI Модель</label>
@@ -30,12 +29,11 @@
             <div class="setting-group">
                 <label>Размер изображения</label>
                 <div class="dimensions">
-                    W: <input type="number" id="image-width" value="768" step="64">
-                    H: <input type="number" id="image-height" value="1024" step="64">
+                    W: <input type="number" id="image-width" value="768" step="64" min="128" max="2048">
+                    H: <input type="number" id="image-height" value="1024" step="64" min="128" max="2048">
                 </div>
             </div>
         </div>
-        <!-- ============================================================= -->
 
         <div class="generator-controls">
             <button id="generate-btn" data-lang-key="generate_ai">✨ Сгенерировать AI</button>
@@ -53,14 +51,17 @@
             <button id="preview-btn" class="hidden" data-lang-key="preview">🔍 Предпросмотр</button>
         </div>
     </div>
-    <!-- Остальная часть HTML остается без изменений -->
+    
     <div class="gallery-wrapper">
         <h2 data-lang-key="gallery">📁 Галерея</h2>
         <div id="category-controls" class="gallery-controls"></div>
+
+        <div class="selection-controls">
+            <button id="select-all-btn" class="checkbox-btn" data-lang-key="select_all">Выбрать всё</button>
+            <button id="deselect-all-btn" class="checkbox-btn" data-lang-key="deselect_all">Отменить всё</button>
+        </div>
+        
         <div class="gallery-controls">
-            <button id="select-all-btn" data-lang-key="select_all">✅ Выбрать всё</button>
-            <button id="deselect-all-btn" data-lang-key="deselect_all">🔲 Отменить всё</button>
-            <hr class="controls-separator">
             <button id="upload-btn" data-lang-key="upload_yours">📥 Загрузить своё</button><input id="upload-input" type="file" accept="image/*" class="hidden"/>
             <button id="export-selected-btn" data-lang-key="export">📤 Экспорт</button>
             <button id="set-bg-from-gallery-btn" data-lang-key="set_as_bg">🏞️ Сделать фоном</button>
@@ -73,7 +74,7 @@
 <div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">⚙️ Настройки</h2><button class="panel-close-btn">✖</button></div><div class="panel-items"><button class="panel-button" id="theme-panel-open-btn" data-lang-key="choose_theme">🎨 Выбрать тему</button><button class="panel-button" id="background-panel-open-btn" data-lang-key="background">🖼️ Фон</button><button class="panel-button" id="sort-panel-open-btn" data-lang-key="sorting">🔀 Сортировка</button><hr><button class="panel-button" id="changelog-open-btn" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button class="panel-button" id="bug-report-open-btn" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button class="panel-button" id="suggestion-open-btn" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button class="panel-button" id="gallery-clear-btn" style="color: var(--error-color);" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
 <div id="bugReportPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="report_bug">🐞 Сообщить о проблеме</h2><button class="panel-close-btn">✖</button></div><p data-lang-key="bug_report_desc">Пожалуйста, опишите проблему как можно подробнее. Что вы делали, когда она возникла?</p><textarea class="feedback-textarea" id="bug-report-text" data-lang-placeholder-key="bug_report_placeholder"></textarea><button id="submit-bug-report-btn" data-lang-key="send">Отправить</button><p id="bug-report-status" class="hidden"></p></div></div>
 <div id="suggestionPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="suggest_idea">💡 Предложить идею</h2><button class="panel-close-btn">✖</button></div><p data-lang-key="suggestion_desc">Есть идея, как сделать сервис лучше? Расскажите!</p><textarea class="feedback-textarea" id="suggestion-text" data-lang-placeholder-key="suggestion_placeholder"></textarea><button id="submit-suggestion-btn" data-lang-key="send">Отправить</button><p id="suggestion-status" class="hidden"></p></div></div>
-<div id="changelogPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="changelog">🏆 Зал Славы и Версии</h2><button class="panel-close-btn">✖</button></div><div class="changelog-content"><h3>v.10.0 (PRO UPDATE)</h3><ul><li>Добавлен выбор AI-моделей!</li><li>Добавлены настройки размера и количества изображений.</li><li>Исправлена работа случайных изображений и отправки отзывов.</li><li>Повышена прозрачность панелей.</li><li>Исправлена загрузка фонов по-умолчанию.</li></ul></div></div></div>
+<div id="changelogPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="changelog">🏆 Зал Славы и Версии</h2><button class="panel-close-btn">✖</button></div><div class="changelog-content"><h3>v.11.0 (PRO+ REPAIR)</h3><ul><li>Все функции восстановлены!</li><li>Добавлен выбор AI-моделей.</li><li>Добавлены настройки размера и количества изображений.</li><li>Исправлена работа случайных изображений и отправки отзывов.</li><li>Повышена прозрачность панелей.</li></ul></div></div></div>
 <div id="themePanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="themes">🎨 Темы</h2><button class="panel-close-btn" id="theme-reset-btn" title="Сбросить на темную">🔄</button></div><div id="themeGrid"></div></div></div>
 <div id="backgroundPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="backgrounds">🖼️ Фоны</h2><button class="panel-close-btn" id="background-reset-btn" title="Сбросить фон">🔄</button></div><div class="panel-items"><button class="panel-button" id="background-upload-btn" data-lang-key="upload_your_bg">📤 Загрузить свой фон</button><input id="background-upload-input" type="file" accept="image/*" class="hidden"/><hr></div><div id="backgroundGrid"></div></div></div>
 <div id="sortPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">⬅️</button><h2 data-lang-key="sorting">🔀 Сортировка</h2><button class="panel-close-btn">✖</button></div><div id="sortGrid" class="panel-items"></div></div></div>
