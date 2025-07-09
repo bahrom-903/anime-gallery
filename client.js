@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const setupDefaultBackgrounds = async () => {
         try {
-            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_6');
+            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_7');
             if (installed) return;
             setUIGeneratorState(true, 'Первичная загрузка фонов...');
             await dbRequest(STORE_BACKGROUNDS, 'clear');
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(e => console.error(`Не удалось загрузить фон: ${source.name}`, e))
             );
             await Promise.all(promises);
-            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_6');
+            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_7');
             alert('Фоны успешно загружены! Страница будет перезагружена.');
             window.location.reload();
         } catch (e) { showError("Не удалось загрузить фоны. Попробуйте обновить страницу."); }
@@ -116,8 +116,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.deselectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = false); });
         
         elements.settingsOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'flex'; });
-        elements.bugReportOpenBtn.addEventListener('click', () => { elements.bugReportPanel.style.display = 'flex'; });
-        elements.suggestionOpenBtn.addEventListener('click', () => { elements.suggestionPanel.style.display = 'flex'; });
+        elements.bugReportOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.bugReportPanel.style.display = 'flex'; });
+        elements.suggestionOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.suggestionPanel.style.display = 'flex'; });
         elements.themePanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.themePanel.style.display = 'flex'; });
         elements.backgroundPanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.backgroundPanel.style.display = 'flex'; });
 
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             panel.addEventListener('click', e => {
                 const closeBtn = e.target.closest('.panel-close-btn');
                 const backBtn = e.target.closest('.panel-back-btn');
-                if (closeBtn) {
+                if (closeBtn || e.target === panel) {
                     panel.style.display = 'none';
                 } else if (backBtn) {
                     panel.style.display = 'none';
