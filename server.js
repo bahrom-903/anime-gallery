@@ -1,4 +1,4 @@
-// --- НАЧАЛО ФАЙЛА server.js (СУПЕР-ИСПРАВЛЕНИЕ) ---
+// --- НАЧАЛО ФАЙЛА server.js (ФИНАЛЬНАЯ ВЕРСИЯ) ---
 
 import express from 'express';
 import Replicate from 'replicate';
@@ -12,7 +12,6 @@ const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-// *** ИСПРАВЛЕНИЕ #1: Заголовки, которые притворяются браузером ***
 const BROWSER_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -24,30 +23,23 @@ const BROWSER_HEADERS = {
     'Upgrade-Insecure-Requests': '1',
 };
 
-// server.js
-// 👇 ЗАМЕНИ ВСЮ ФУНКЦИЮ ЦЕЛИКОМ НА ЭТОТ КОД 👇
 app.post('/generate-image', async (req, res) => {
     try {
-        // Получаем категорию из запроса
         const { prompt, negative_prompt, category } = req.body;
         if (!prompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
 
         let finalPrompt = prompt;
 
-        // Наша новая логика проверки обязательных слов
         const mandatoryKeywords = {
             waifu: ['girl', 'woman', 'waifu', 'female'],
             supercars: ['car', 'supercar', 'sportscar', 'automobile']
-            // Можно добавить другие категории, например: 'nature': ['landscape', 'nature', 'tree']
         };
 
         if (category && mandatoryKeywords[category]) {
             const keywords = mandatoryKeywords[category];
-            // Проверяем, есть ли в промпте хоть одно из обязательных слов
             const hasKeyword = keywords.some(keyword => prompt.toLowerCase().includes(keyword));
             
             if (!hasKeyword) {
-                // Если ни одного ключевого слова нет, добавляем первое из списка в начало промпта
                 finalPrompt = `${keywords[0]}, ${prompt}`;
                 console.log(`-> PROMPT-FIX: Добавлено слово "${keywords[0]}" для категории "${category}"`);
             }
@@ -55,7 +47,6 @@ app.post('/generate-image', async (req, res) => {
         
         console.log(`-> GENERATE: Промпт: "${finalPrompt}"`);
         const model = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4";
-        // Используем доработанный промпт
         const input = { prompt: finalPrompt, negative_prompt };
         const output = await replicate.run(model, { input });
         
@@ -68,8 +59,6 @@ app.post('/generate-image', async (req, res) => {
     }
 });
 
-// server.js
-// 👇 КОПИРУЙ ВСЁ ОТСЮДА И ЗАМЕНЯЙ СВОЙ БЛОК 👇
 app.post('/get-image-from-source', async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL источника не указан.' });
@@ -100,11 +89,10 @@ app.post('/get-image-from-source', async (req, res) => {
         }
     } catch (error) {
         console.error(`!!! КРИТИЧЕСКАЯ ОШИБКА GET-IMAGE-FROM-SOURCE для ${url}:`, error.message);
-        // 👇 ВОТ ТВОЕ ИСПРАВЛЕНИЕ В ДЕЙСТВИИ! 👇
         res.status(500).json({ error: 'Не удалось получить изображение.' }); 
     }
 });
-// 👆 И ДОСЮДА 👆
+
 app.post('/feedback', async (req, res) => {
     try {
         const { type, message } = req.body;
@@ -126,7 +114,6 @@ app.post('/feedback', async (req, res) => {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                // *** ИСПРАВЛЕНИЕ #3: Используем User-Agent и для телеграма ***
                 'User-Agent': BROWSER_HEADERS['User-Agent']
             },
             body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'HTML' }),
