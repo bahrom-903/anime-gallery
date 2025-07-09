@@ -1,6 +1,6 @@
-// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v3 - РАБОЧИЙ) ---
+// --- НАЧАЛО ФАЙЛА client.js (ФИНАЛЬНЫЙ РЕМОНТ v4 - ПОЛНЫЙ И РАБОЧИЙ) ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- СПИСОК AI-МОДЕЛЕЙ (исправленные имена) ---
+    // --- СПИСОК AI-МОДЕЛЕЙ ---
     const AI_MODELS = [
         { name: "Аниме (Яркий стиль)", id: "p1xts/anime-pastel-dream:66b263166158739343ba8295b281f654b4243b7431215b4971a8143a579d479c" },
         { name: "Аниме (Реалистичный)", id: "cagliostrolab/animagine-xl-3.1:549a1a72c3a514de13e512495dcf74a3878d4948b3b7437876a44300305e7143" },
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         { name: "Фэнтези (Детальный)", id: "p1xts/dreamshaper-v8:3c5291f9b8577262051684c9f7375279b324003013eb194dd446f28b293cc54f" },
         { name: "SD 2.1 (Быстрый)", id: "stability-ai/stable-diffusion-2-1:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf" },
     ];
-    // --- ССЫЛКИ НА ФОНЫ (с внешнего хостинга, чтобы не было ошибок) ---
+    // --- ССЫЛКИ НА ФОНЫ (с внешнего хостинга) ---
     const defaultBackgroundSources = [
         { name: 'cyberpunk', url: 'https://i.ibb.co/VtBwQGf/cyberpunk.jpg'}, { name: 'night-tokyo', url: 'https://i.ibb.co/Tmg7VqS/night-tokyo.jpg'},
         { name: 'canyon', url: 'https://i.ibb.co/3fd2z8c/canyon.jpg'}, { name: 'mountain-river', url: 'https://i.ibb.co/9vY7NTS/mountain-river.jpg'},
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const setupDefaultBackgrounds = async () => {
         try {
-            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_7');
+            const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_fix_8');
             if (installed) return;
             setUIGeneratorState(true, 'Первичная загрузка фонов...');
             await dbRequest(STORE_BACKGROUNDS, 'clear');
@@ -94,17 +94,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(e => console.error(`Не удалось загрузить фон: ${source.name}`, e))
             );
             await Promise.all(promises);
-            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_7');
+            await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_fix_8');
             alert('Фоны успешно загружены! Страница будет перезагружена.');
             window.location.reload();
         } catch (e) { showError("Не удалось загрузить фоны. Попробуйте обновить страницу."); }
         finally { setUIGeneratorState(false); }
     };
     
+    // --- ВСЕ ФУНКЦИИ, КОТОРЫХ НЕ ХВАТАЛО ---
+    const openPanel = (panel) => panel && (panel.style.display = 'flex');
+    const closePanel = (panel) => panel && (panel.style.display = 'none');
+    
     // --- ПОЛНОСТЬЮ РАБОЧИЙ БЛОК ПОДКЛЮЧЕНИЯ КНОПОК ---
     const attachEventListeners = () => {
         AI_MODELS.forEach(model => { const option = document.createElement('option'); option.value = model.id; option.textContent = model.name; elements.modelSelector.appendChild(option); });
-        Object.keys(categories).forEach(id => { const btn = document.createElement('button'); btn.textContent = id.replace(/_/g, ' '); btn.addEventListener('click', () => { state.currentCategory = id; document.querySelector('#category-controls .active-category')?.classList.remove('active-category'); btn.classList.add('active-category'); }); elements.categoryControls.appendChild(btn); });
+        
+        Object.keys(categories).forEach(id => { 
+            const btn = document.createElement('button'); 
+            btn.textContent = id.replace(/_/g, ' '); 
+            btn.addEventListener('click', () => { 
+                state.currentCategory = id; 
+                document.querySelector('#category-controls .active-category')?.classList.remove('active-category'); 
+                btn.classList.add('active-category'); 
+            }); 
+            elements.categoryControls.appendChild(btn); 
+        });
         document.querySelector('#category-controls button')?.classList.add('active-category');
 
         elements.generateBtn.addEventListener('click', handleAiGeneration);
@@ -115,21 +129,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.selectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = true); });
         elements.deselectAllBtn.addEventListener('click', () => { document.querySelectorAll('.gallery-item input[type="checkbox"]').forEach(cb => cb.checked = false); });
         
-        elements.settingsOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'flex'; });
-        elements.bugReportOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.bugReportPanel.style.display = 'flex'; });
-        elements.suggestionOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.suggestionPanel.style.display = 'flex'; });
-        elements.themePanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.themePanel.style.display = 'flex'; });
-        elements.backgroundPanelOpenBtn.addEventListener('click', () => { elements.settingsPanel.style.display = 'none'; elements.backgroundPanel.style.display = 'flex'; });
-
+        elements.settingsOpenBtn.addEventListener('click', () => openPanel(elements.settingsPanel));
+        elements.bugReportOpenBtn.addEventListener('click', () => { closePanel(elements.settingsPanel); openPanel(elements.bugReportPanel); });
+        elements.suggestionOpenBtn.addEventListener('click', () => { closePanel(elements.settingsPanel); openPanel(elements.suggestionPanel); });
+        elements.themePanelOpenBtn.addEventListener('click', () => { closePanel(elements.settingsPanel); openPanel(elements.themePanel); });
+        elements.backgroundPanelOpenBtn.addEventListener('click', () => { closePanel(elements.settingsPanel); openPanel(elements.backgroundPanel); });
+        
         document.querySelectorAll('.panel-overlay').forEach(panel => {
             panel.addEventListener('click', e => {
                 const closeBtn = e.target.closest('.panel-close-btn');
                 const backBtn = e.target.closest('.panel-back-btn');
                 if (closeBtn || e.target === panel) {
-                    panel.style.display = 'none';
+                    closePanel(panel);
                 } else if (backBtn) {
-                    panel.style.display = 'none';
-                    elements.settingsPanel.style.display = 'flex';
+                    closePanel(panel);
+                    openPanel(elements.settingsPanel);
                 }
             });
         });
