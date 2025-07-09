@@ -219,7 +219,27 @@ const renderGallery = async () => {
     const closePanel = (p) => { if(p) p.style.display = 'none'; };
     const viewImage = (src) => { if (elements.viewerImg && elements.imageViewer) { elements.viewerImg.src = src; openPanel(elements.imageViewer); }};
     const handleServerRequest = async (endpoint, body, loadingMessage, successMessage, promptText) => { setUIGeneratorState(true, loadingMessage); try { const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); if (!response.ok) { let errorText = 'Ошибка ответа от сервера'; try { const errorData = await response.json(); errorText = errorData.error || errorText; } catch(e){} throw new Error(errorText); } const result = await response.json(); setUIGeneratorState(true, successMessage); await displayGeneratedImage(result.imageUrl, promptText); } catch (e) { showError(`Ошибка: ${e.message}`); console.error(`Ошибка в ${endpoint}:`, e); } finally { setUIGeneratorState(false); } };
-    const handleAiGeneration = async () => { const userPrompt = elements.promptInput.value.trim(); const stylePrompt = elements.styleSelector.value; const category = categories[state.currentCategory]; if (!userPrompt) { return showError('Введите описание.'); } const promptParts = [userPrompt, category.keywords, stylePrompt]; const finalPrompt = promptParts.filter(p => p && p.trim() !== '').join(', '); const negativePrompt = elements.negativePromptInput.value.trim(); await handleServerRequest('/generate-image', { prompt: finalPrompt, negative_prompt: negativePrompt }, 'Отправка на сервер...', 'AI-генерация...', userPrompt); };
+    // client.js
+// 👇 ЗАМЕНИ ВСЮ ФУНКЦИЮ ЦЕЛИКОМ НА ЭТОТ КОД 👇
+const handleAiGeneration = async () => {
+    const userPrompt = elements.promptInput.value.trim();
+    const stylePrompt = elements.styleSelector.value;
+    const category = categories[state.currentCategory];
+    if (!userPrompt) { return showError('Введите описание.'); }
+    const promptParts = [userPrompt, category.keywords, stylePrompt];
+    const finalPrompt = promptParts.filter(p => p && p.trim() !== '').join(', ');
+    const negativePrompt = elements.negativePromptInput.value.trim();
+    
+    // Добавляем категорию в запрос
+    const categoryId = state.currentCategory;
+    await handleServerRequest(
+        '/generate-image',
+        { prompt: finalPrompt, negative_prompt: negativePrompt, category: categoryId },
+        'Отправка на сервер...',
+        'AI-генерация...',
+        userPrompt
+    );
+};
     const findSimilarOnline = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.search }, 'Поиск в сети...', 'Загрузка...', `Поиск: ${category.keywords}`); };
     const getRandomImage = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.random }, 'Ищем случайное...', 'Загрузка...', `Случайное: ${category.keywords}`); };
     const addEntryToGallery = async (dataUrl, prompt) => { const newEntry = { id: Date.now(), prompt: prompt || `image_${Date.now()}`, data: dataUrl, favorite: false, date: new Date().toISOString(), category: state.currentCategory }; try { await dbRequest(STORE_GALLERY, 'put', newEntry); await renderGallery(); alert("Сохранено!"); } catch(e) { console.error(e); showError(`Ошибка сохранения в базу данных: ${e.message}`); } };
