@@ -1,8 +1,8 @@
 // =================================================================
-//          CLIENT.JS. ФИНАЛЬНАЯ ВЕРСИЯ. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+//          CLIENT.JS. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
 // =================================================================
 
-// client.js - v13 (THE FINAL STAND)
+// client.js - v14 (THE ABSOLUTE FINAL)
 document.addEventListener('DOMContentLoaded', () => {
     const elements = {
         // Генератор
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteBtn: document.getElementById('delete-selected-btn'),
         setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
         
-        // Управление выбором
+        // ⭐ ВОССТАНОВЛЕННЫЕ И НОВЫЕ ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ⭐
         selectionControls: document.getElementById('selection-controls'),
         selectAllCheckbox: document.getElementById('select-all-checkbox'),
         selectAiBtn: document.getElementById('select-ai-btn'),
@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bugReportOpenBtn: document.getElementById('bug-report-open-btn'),
         suggestionOpenBtn: document.getElementById('suggestion-open-btn'),
         changelogPanel: document.getElementById('changelogPanel'),
+        changelogContentArea: document.getElementById('changelog-content-area'),
         bugReportPanel: document.getElementById('bugReportPanel'),
         suggestionPanel: document.getElementById('suggestionPanel'),
         bugReportText: document.getElementById('bug-report-text'),
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contextMenu: document.getElementById('context-menu'),
         langSwitcherBtn: document.getElementById('lang-switcher-btn'),
     };
-    const DB_NAME = 'AnimeGalleryDB_V19_Final', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
+    const DB_NAME = 'AnimeGalleryDB_V20_FinalStand', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
     let state = { currentSort: 'date_desc', isFavFilterActive: false, currentCategory: 'waifu', currentLanguage: 'ru', contextedItemId: null, lastAiResult: null, };
     const categories = { 'waifu': { keywords: 'anime, waifu, girl', sources: { random: 'https://api.waifu.im/search/?included_tags=waifu&is_nsfw=false', search: 'https://api.waifu.im/search/?included_tags=waifu&is_nsfw=false' } }, 'anime_gif': { keywords: 'anime, gif, animation', sources: { random: 'https://api.waifu.im/search/?included_tags=maid&gif=true&is_nsfw=false', search: 'https://api.waifu.im/search/?included_tags=uniform&gif=true&is_nsfw=false' } }, 'cyberpunk': { keywords: 'cyberpunk, neon, futuristic, city', sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk', search: 'https://source.unsplash.com/1600x900/?cyberpunk,neon' } }, 'nature': { keywords: 'nature, landscape, mountains, forest', sources: { random: 'https://source.unsplash.com/1600x900/?nature', search: 'https://source.unsplash.com/1600x900/?landscape,nature' } }, 'games': { keywords: 'video game, fan art, gaming', sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character', search: 'https://source.unsplash.com/1600x900/?video,game,art' } }, 'dark_anime': { keywords: 'dark fantasy, gothic, monster, horror art', sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,art', search: 'https://source.unsplash.com/1600x900/?gothic,art' } }, 'supercars': { keywords: 'supercar, sportscar, luxury car', sources: { random: 'https://source.unsplash.com/1600x900/?supercar', search: 'https://source.unsplash.com/1600x900/?sportscar' } }, };
     const themes = [ { id: "dark" }, { id: "light" }, { id: "gray" }, { id: "retro" }, { id: "dracula" }, { id: "nord" }, { id: "solarized" }, { id: "gruvbox" }, { id: "monokai" }, { id: "tomorrow_night" }, { id: "one_dark" }, { id: "cyberpunk" }, { id: "matrix" }, { id: "crimson" }, { id: "synthwave" } ];
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const defaultBackgroundSources = [ { name: 'cyberpunk', url: './backgrounds/cyberpunk.jpg'}, { name: 'night-tokyo', url: './backgrounds/night-tokyo.jpg'}, { name: 'canyon', url: './backgrounds/canyon.jpg'}, { name: 'mountain-river', url: './backgrounds/mountain-river.jpg'}, { name: 'dark-fantasy', url: './backgrounds/dark-fantasy.jpg'}, { name: 'noir-landscape', url: './backgrounds/noir-landscape.jpg'}, { name: 'auto-night', url: './backgrounds/auto-night.jpg'}, { name: 'anime-city', url: './backgrounds/anime-city.jpg'}, { name: 'nier-2b', url: './backgrounds/nier-2b.jpg'}, { name: 'genos', url: './backgrounds/genos.png'} ];
     const openDb = () => new Promise((resolve, reject) => { const request = indexedDB.open(DB_NAME, DB_VERSION); request.onerror = () => reject("Не удалось открыть IndexedDB."); request.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_SETTINGS)) db.createObjectStore(STORE_SETTINGS); if (!db.objectStoreNames.contains(STORE_GALLERY)) { const galleryStore = db.createObjectStore(STORE_GALLERY, { keyPath: 'id' }); galleryStore.createIndex('category', 'category', { unique: false }); } if (!db.objectStoreNames.contains(STORE_BACKGROUNDS)) db.createObjectStore(STORE_BACKGROUNDS, { keyPath: 'id' }); }; request.onsuccess = e => resolve(e.target.result); });
     const dbRequest = (storeName, type, ...args) => new Promise(async (resolve, reject) => { try { const db = await openDb(); const tx = db.transaction(storeName, type.startsWith('get') ? 'readonly' : 'readwrite'); const store = tx.objectStore(storeName); const req = store[type](...args); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(`Ошибка транзакции (${storeName}): ${req.error}`); } catch (e) { reject(e) } });
-    const translations = { en: { select_all_label: 'Select all', select_ai_only_label: 'Select AI only', /* ... другие переводы */ }, ru: { select_all_label: 'Выбрать всё', select_ai_only_label: 'Выбрать только AI', /* ... другие переводы */ } }; // (Добавьте сюда остальные переводы из вашего старого файла)
+    const translations = { en: { select_all_label: 'Select all', select_ai_only_label: 'Select AI only', /* Добавь остальные переводы сюда */ }, ru: { select_all_label: 'Выбрать всё', select_ai_only_label: 'Выбрать только AI', /* Добавь остальные переводы сюда */ } };
     const setLanguage = (lang) => { state.currentLanguage = lang; localStorage.setItem('language', lang); const langPack = translations[lang] || translations.ru; document.querySelectorAll('[data-lang-key]').forEach(el => { const key = el.dataset.langKey; if (langPack[key]) el.textContent = langPack[key]; }); document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => { const key = el.dataset.langPlaceholderKey; if (langPack[key]) el.placeholder = langPack[key]; }); renderCategories(); renderThemes(); renderStyles(); renderSortOptions(); };
     const renderGallery = async () => { try { let allGalleryData = await dbRequest(STORE_GALLERY, 'getAll'); elements.galleryContainer.innerHTML = ""; let categoryData = allGalleryData.filter(item => item.category === state.currentCategory); let dataToRender = state.isFavFilterActive ? categoryData.filter(e => e.favorite) : [...categoryData]; if (state.currentSort === 'date_asc') dataToRender.sort((a, b) => a.id - b.id); else if (state.currentSort === 'date_desc') dataToRender.sort((a, b) => b.id - a.id); else if (state.currentSort === 'random') { for (let i = dataToRender.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [dataToRender[i], dataToRender[j]] = [dataToRender[j], dataToRender[i]]; } } if (dataToRender.length > 0) { elements.selectionControls.classList.remove('hidden'); } else { elements.selectionControls.classList.add('hidden'); } elements.selectAllCheckbox.checked = false; dataToRender.forEach(entry => { const item = document.createElement('div'); item.className = "gallery-item"; item.dataset.id = entry.id; const img = document.createElement('img'); img.src = entry.data; img.loading = "lazy"; img.alt = entry.prompt; img.addEventListener('dblclick', () => viewImage(entry.data)); const controls = document.createElement('div'); controls.className = 'item-controls'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.className = 'select-checkbox'; const fav = document.createElement('div'); fav.innerText = entry.favorite ? '⭐' : '☆'; fav.className = 'favorite-star'; fav.addEventListener('click', (e) => {e.stopPropagation(); toggleFavorite(entry.id, !entry.favorite)}); const menuBtn = document.createElement('button'); menuBtn.className = 'item-menu-btn'; menuBtn.innerHTML = '⋮'; menuBtn.addEventListener('click', (e) => { e.stopPropagation(); showContextMenu(e.target, entry.id); }); controls.append(cb, fav, menuBtn); item.append(img, controls); elements.galleryContainer.appendChild(item); }); } catch (e) { showError(`Не удалось загрузить галерею: ${e.message}`); }};
     const renderCategories = () => { elements.categoryControls.innerHTML = ''; const langPack = translations[state.currentLanguage] || translations.ru; for (const id of Object.keys(categories)) { const btn = document.createElement('button'); btn.dataset.categoryId = id; btn.textContent = (langPack[`cat_${id}`] || id.replace(/_/g, ' ')); if (id === state.currentCategory) btn.classList.add('active-category'); btn.addEventListener('click', () => handleCategoryClick(id)); elements.categoryControls.appendChild(btn); } };
@@ -115,10 +116,138 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleBackgroundUpload = (e) => { const f = e.target.files[0]; if (!f || !f.type.startsWith('image/')) return; applyBackground(f); e.target.value = ''; };
     const setBackgroundFromGallery = async () => { const c = document.querySelectorAll('.gallery-item .select-checkbox:checked'); if (c.length !== 1) { alert("Выберите ровно одно изображение."); return; } try { const item = await dbRequest(STORE_GALLERY, 'get', parseInt(c[0].closest('.gallery-item').dataset.id)); if (!item || !item.data) return; const response = await fetch(item.data); if (!response.ok) throw new Error('Не удалось преобразовать в Blob'); const blob = await response.blob(); await applyBackground(blob); alert('Фон успешно установлен!');} catch(e) { console.error(e); showError(`Не удалось установить фон: ${e.message}`); }};
     const handleFeedbackSubmit = async (type) => { const textElement = (type === 'bug') ? elements.bugReportText : elements.suggestionText; const buttonElement = (type === 'bug') ? elements.submitBugReportBtn : elements.submitSuggestionBtn; const statusElement = (type === 'bug') ? elements.bugReportStatus : elements.suggestionStatus; if (!textElement || !buttonElement || !statusElement) { console.error(`Элементы для формы '${type}' не найдены!`); return; } const message = textElement.value.trim(); if (!message) { statusElement.textContent = 'Поле не может быть пустым.'; statusElement.className = 'error'; statusElement.classList.remove('hidden'); return; } buttonElement.disabled = true; statusElement.textContent = 'Отправка...'; statusElement.className = 'success'; statusElement.classList.remove('hidden'); try { const response = await fetch('/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type, message }) }); const result = await response.json(); if (!response.ok) { throw new Error(result.error || 'Ошибка на сервере'); } statusElement.textContent = 'Спасибо! Сообщение успешно отправлено.'; statusElement.className = 'success'; textElement.value = ''; } catch (error) { statusElement.textContent = `Ошибка: ${error.message}`; statusElement.className = 'error'; } finally { buttonElement.disabled = false; setTimeout(() => statusElement.classList.add('hidden'), 5000); } };
-    const setupDefaultBackgrounds = async () => { try { const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_reset_5'); if (installed) return; elements.loader.classList.remove('hidden'); elements.loaderText.textContent = 'Первичная загрузка фонов...'; await dbRequest(STORE_BACKGROUNDS, 'clear'); for (const source of defaultBackgroundSources) { try { const response = await fetch(source.url); if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for ${source.name}`); const blob = await response.blob(); await dbRequest(STORE_BACKGROUNDS, 'put', { id: source.name, blob: blob }); console.log(`Фон "${source.name}" успешно загружен.`); } catch (e) { console.error(`Не удалось загрузить фон "${source.name}":`, e); } } await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_reset_5'); } catch(e) { console.error("Критическая ошибка при установке фонов:", e); showError("Не удалось загрузить стандартные фоны. Проверьте консоль."); } finally { elements.loader.classList.add('hidden'); } };
+    const setupDefaultBackgrounds = async () => { try { const installed = await dbRequest(STORE_SETTINGS, 'get', 'backgrounds_installed_v_final_reset_6'); if (installed) return; elements.loader.classList.remove('hidden'); elements.loaderText.textContent = 'Первичная загрузка фонов...'; await dbRequest(STORE_BACKGROUNDS, 'clear'); for (const source of defaultBackgroundSources) { try { const response = await fetch(source.url); if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for ${source.name}`); const blob = await response.blob(); await dbRequest(STORE_BACKGROUNDS, 'put', { id: source.name, blob: blob }); console.log(`Фон "${source.name}" успешно загружен.`); } catch (e) { console.error(`Не удалось загрузить фон "${source.name}":`, e); } } await dbRequest(STORE_SETTINGS, 'put', true, 'backgrounds_installed_v_final_reset_6'); } catch(e) { console.error("Критическая ошибка при установке фонов:", e); showError("Не удалось загрузить стандартные фоны. Проверьте консоль."); } finally { elements.loader.classList.add('hidden'); } };
     const selectAllItems = (select = true) => { document.querySelectorAll('.gallery-item .select-checkbox').forEach(cb => cb.checked = select); };
-    const selectAiItems = async () => { const allItems = document.querySelectorAll('.gallery-item'); for (const itemEl of allItems) { const id = parseInt(itemEl.dataset.id); const itemData = await dbRequest(STORE_GALLERY, 'get', id); if (itemData && itemData.isAiGenerated) { itemEl.querySelector('.select-checkbox').checked = true; } else { itemEl.querySelector('.select-checkbox').checked = false; } } };
-    const init = async () => { try { await openDb(); await setupDefaultBackgrounds(); await renderBackgrounds(); state.currentSort = localStorage.getItem('gallerySort') || 'date_desc'; state.isFavFilterActive = localStorage.getItem('isFavFilterActive') === 'true'; state.currentCategory = localStorage.getItem('currentCategory') || 'waifu'; state.currentLanguage = localStorage.getItem('language') || 'ru'; applyTheme(localStorage.getItem('theme') || 'dark'); setLanguage(state.currentLanguage); renderGallery(); const savedBgBlob = await dbRequest(STORE_SETTINGS, 'get', 'customBackground'); if (savedBgBlob) { const objectURL = URL.createObjectURL(savedBgBlob); document.body.style.setProperty('--bg-image-url', `url(${objectURL})`); document.body.classList.add('has-custom-bg'); } } catch(e) { console.error("КРИТИЧЕСКАЯ ОШИБКА ИНИЦИАЛИЗАЦИИ:", e); document.body.innerHTML = `<h1 style="color:red; text-align:center; margin-top: 50px;">Критическая ошибка. Пожалуйста, очистите кэш сайта и перезагрузите страницу.</h1>`; }};
-    const setupEventListeners = () => { document.body.addEventListener('click', (e) => { if (elements.menuBtn && !elements.menuBtn.contains(e.target) && elements.dropdownMenu && !elements.dropdownMenu.contains(e.target)) { elements.dropdownMenu.style.display = 'none'; } if (elements.contextMenu && !elements.contextMenu.contains(e.target) && !e.target.classList.contains('item-menu-btn')) { hideContextMenu(); } }); elements.menuBtn.addEventListener('click', (e) => { e.stopPropagation(); elements.dropdownMenu.style.display = (elements.dropdownMenu.style.display === 'block') ? 'none' : 'block'; }); document.querySelectorAll('.panel-overlay').forEach(panel => { panel.addEventListener('click', (e) => { const target = e.target; if (target.classList.contains('panel-close-btn') || target === panel) { closePanel(panel); } else if (target.classList.contains('panel-back-btn')) { closePanel(panel); openPanel(elements.settingsPanel); } }); }); const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => { if(btn) btn.addEventListener('click', () => { document.querySelectorAll('.panel-overlay').forEach(p => closePanel(p)); openPanel(panel); if(shouldCloseDropdown && elements.dropdownMenu) elements.dropdownMenu.style.display = 'none'; }); }; setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true); setupPanelButton(elements.themePanelOpenBtn, elements.themePanel); setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel); setupPanelButton(elements.sortPanelOpenBtn, elements.sortPanel); setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel); setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel); setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel); elements.generateBtn.addEventListener('click', handleAiGeneration); elements.randomPromptBtn.addEventListener('click', generateRandomPrompt); elements.findSimilarBtn.addEventListener('click', findSimilarOnline); elements.randomImageBtn.addEventListener('click', getRandomImage); elements.saveBtn.addEventListener('click', saveResultToGallery); elements.previewBtn.addEventListener('click', () => { if (state.lastAiResult) viewImage(state.lastAiResult.imageUrl); }); elements.uploadBtn.addEventListener('click', () => elements.uploadInput.click()); elements.uploadInput.addEventListener('change', handleUpload); elements.exportBtn.addEventListener('click', exportSelected); elements.deleteBtn.addEventListener('click', deleteSelected); elements.themeResetBtn.addEventListener('click', () => applyTheme('dark')); elements.backgroundResetBtn.addEventListener('click', resetBackground); elements.backgroundUploadBtn.addEventListener('click', () => elements.backgroundUploadInput.click()); elements.backgroundUploadInput.addEventListener('change', handleBackgroundUpload); elements.clearGalleryBtn.addEventListener('click', clearGallery); elements.setBgFromGalleryBtn.addEventListener('click', setBackgroundFromGallery); elements.langSwitcherBtn.addEventListener('click', () => { const nextLang = state.currentLanguage === 'ru' ? 'en' : 'ru'; setLanguage(nextLang); }); elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug')); elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion')); elements.selectAllCheckbox.addEventListener('change', (e) => selectAllItems(e.target.checked)); elements.selectAiBtn.addEventListener('click', selectAiItems); elements.sortGrid.addEventListener('click', async (e) => { const sortEl = e.target.closest('[data-sort]'); if (!sortEl) return; const sortType = sortEl.dataset.sort; if (sortType === 'filter_favorite') { state.isFavFilterActive = !state.isFavFilterActive; localStorage.setItem('isFavFilterActive', state.isFavFilterActive); renderGallery(); renderSortOptions(); } else { state.currentSort = sortType; localStorage.setItem('gallerySort', state.currentSort); renderGallery(); } }); elements.themeGrid.addEventListener('click', (e) => { const themeEl = e.target.closest('[data-theme]'); if (themeEl) { applyTheme(themeEl.dataset.theme); }}); elements.backgroundGrid.addEventListener('click', (e) => { const bgCard = e.target.closest('[data-bg-id]'); if (bgCard) { setBackgroundFromDefault(bgCard.dataset.bgId); } }); elements.contextMenu.addEventListener('click', async (e) => { e.stopPropagation(); const action = e.target.dataset.action; if (!action || !state.contextedItemId) return; const item = await dbRequest(STORE_GALLERY, 'get', state.contextedItemId); if (!item) return; if (action === 'rename') { const newPrompt = prompt("Введите новый промпт:", item.prompt); if (newPrompt !== null && newPrompt.trim() !== "") { item.prompt = newPrompt; await dbRequest(STORE_GALLERY, 'put', item); await renderGallery(); } } if (action === 'copy-prompt') { if (item.prompt) { navigator.clipboard.writeText(item.prompt).then(() => alert('Промпт скопирован!')).catch(err => console.error('Ошибка копирования:', err)); } } hideContextMenu(); });};
+    const selectAiItems = async () => { const allItems = document.querySelectorAll('.gallery-item'); for (const itemEl of allItems) { const id = parseInt(itemEl.dataset.id); try { const itemData = await dbRequest(STORE_GALLERY, 'get', id); if (itemData && itemData.isAiGenerated) { itemEl.querySelector('.select-checkbox').checked = true; } else { itemEl.querySelector('.select-checkbox').checked = false; } } catch(e) { console.error("Ошибка при проверке AI-метки для", id, e); } } };
+    
+    const init = async () => {
+        try {
+            await openDb();
+            await setupDefaultBackgrounds();
+            await renderBackgrounds();
+            state.currentSort = localStorage.getItem('gallerySort') || 'date_desc';
+            state.isFavFilterActive = localStorage.getItem('isFavFilterActive') === 'true';
+            state.currentCategory = localStorage.getItem('currentCategory') || 'waifu';
+            state.currentLanguage = localStorage.getItem('language') || 'ru';
+            applyTheme(localStorage.getItem('theme') || 'dark');
+            setLanguage(state.currentLanguage);
+            renderGallery();
+            const savedBgBlob = await dbRequest(STORE_SETTINGS, 'get', 'customBackground');
+            if (savedBgBlob) {
+                const objectURL = URL.createObjectURL(savedBgBlob);
+                document.body.style.setProperty('--bg-image-url', `url(${objectURL})`);
+                document.body.classList.add('has-custom-bg');
+            }
+        } catch (e) {
+            console.error("КРИТИЧЕСКАЯ ОШИБКА ИНИЦИАЛИЗАЦИИ:", e);
+            document.body.innerHTML = `<h1 style="color:red; text-align:center; margin-top: 50px;">Критическая ошибка. Пожалуйста, очистите кэш сайта (Ctrl+F5) и перезагрузите страницу.</h1>`;
+        }
+    };
+    
+    const setupEventListeners = () => {
+        document.body.addEventListener('click', (e) => {
+            if (elements.menuBtn && !elements.menuBtn.contains(e.target) && elements.dropdownMenu && !elements.dropdownMenu.contains(e.target)) {
+                elements.dropdownMenu.style.display = 'none';
+            }
+            if (elements.contextMenu && !elements.contextMenu.contains(e.target) && !e.target.classList.contains('item-menu-btn')) {
+                hideContextMenu();
+            }
+        });
+        
+        elements.menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            elements.dropdownMenu.style.display = (elements.dropdownMenu.style.display === 'block') ? 'none' : 'block';
+        });
+
+        document.querySelectorAll('.panel-overlay').forEach(panel => {
+            panel.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.classList.contains('panel-close-btn') || target === panel) { closePanel(panel); }
+                else if (target.classList.contains('panel-back-btn')) { closePanel(panel); openPanel(elements.settingsPanel); }
+            });
+        });
+
+        const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
+            if(btn) btn.addEventListener('click', () => {
+                document.querySelectorAll('.panel-overlay').forEach(p => closePanel(p));
+                openPanel(panel);
+                if(shouldCloseDropdown && elements.dropdownMenu) elements.dropdownMenu.style.display = 'none';
+            });
+        };
+
+        setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
+        setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
+        setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
+        setupPanelButton(elements.sortPanelOpenBtn, elements.sortPanel);
+        setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel);
+        setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel);
+        setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
+
+        elements.generateBtn.addEventListener('click', handleAiGeneration);
+        elements.randomPromptBtn.addEventListener('click', generateRandomPrompt);
+        elements.findSimilarBtn.addEventListener('click', findSimilarOnline);
+        elements.randomImageBtn.addEventListener('click', getRandomImage);
+        elements.saveBtn.addEventListener('click', saveResultToGallery);
+        elements.previewBtn.addEventListener('click', () => { if (state.lastAiResult) viewImage(state.lastAiResult.imageUrl); });
+        elements.uploadBtn.addEventListener('click', () => elements.uploadInput.click());
+        elements.uploadInput.addEventListener('change', handleUpload);
+        elements.exportBtn.addEventListener('click', exportSelected);
+        elements.deleteBtn.addEventListener('click', deleteSelected);
+        elements.themeResetBtn.addEventListener('click', () => applyTheme('dark'));
+        elements.backgroundResetBtn.addEventListener('click', resetBackground);
+        elements.backgroundUploadBtn.addEventListener('click', () => elements.backgroundUploadInput.click());
+        elements.backgroundUploadInput.addEventListener('change', handleBackgroundUpload);
+        elements.clearGalleryBtn.addEventListener('click', clearGallery);
+        elements.setBgFromGalleryBtn.addEventListener('click', setBackgroundFromGallery);
+        elements.langSwitcherBtn.addEventListener('click', () => { const nextLang = state.currentLanguage === 'ru' ? 'en' : 'ru'; setLanguage(nextLang); });
+        elements.submitBugReportBtn.addEventListener('click', () => handleFeedbackSubmit('bug'));
+        elements.submitSuggestionBtn.addEventListener('click', () => handleFeedbackSubmit('suggestion'));
+        
+        elements.selectAllCheckbox.addEventListener('change', (e) => selectAllItems(e.target.checked));
+        elements.selectAiBtn.addEventListener('click', selectAiItems);
+        
+        elements.sortGrid.addEventListener('click', async (e) => {
+            const sortEl = e.target.closest('[data-sort]');
+            if (!sortEl) return;
+            const sortType = sortEl.dataset.sort;
+            if (sortType === 'filter_favorite') {
+                state.isFavFilterActive = !state.isFavFilterActive;
+                localStorage.setItem('isFavFilterActive', state.isFavFilterActive);
+                renderGallery();
+                renderSortOptions();
+            } else {
+                state.currentSort = sortType;
+                localStorage.setItem('gallerySort', state.currentSort);
+                renderGallery();
+            }
+        });
+
+        elements.themeGrid.addEventListener('click', (e) => {
+            const themeEl = e.target.closest('[data-theme]');
+            if (themeEl) { applyTheme(themeEl.dataset.theme); }
+        });
+
+        elements.backgroundGrid.addEventListener('click', (e) => {
+            const bgCard = e.target.closest('[data-bg-id]');
+            if (bgCard) { setBackgroundFromDefault(bgCard.dataset.bgId); }
+        });
+        
+        elements.contextMenu.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const action = e.target.dataset.action;
+            if (!action || !state.contextedItemId) return;
+            const item = await dbRequest(STORE_GALLERY, 'get', state.contextedItemId);
+            if (!item) return;
+            if (action === 'rename') {
+                const newPrompt = prompt("Введите новый промпт:", item.prompt);
+                if (newPrompt !== null && newPrompt.trim() !== "") { item.prompt = newPrompt; await dbRequest(STORE_GALLERY, 'put', item); await renderGallery(); }
+            }
+            if (action === 'copy-prompt') {
+                if (item.prompt) { navigator.clipboard.writeText(item.prompt).then(() => alert('Промпт скопирован!')).catch(err => console.error('Ошибка копирования:', err)); }
+            }
+            hideContextMenu();
+        });
+    };
+
     init().then(setupEventListeners);
 });
