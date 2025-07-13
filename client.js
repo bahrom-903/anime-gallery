@@ -2,7 +2,7 @@
 //          CLIENT.JS. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
 // =================================================================
 
-// client.js - v15 (THE ABSOLUTE FINAL)
+// client.js - v16 (THE ABSOLUTE FINAL)
 document.addEventListener('DOMContentLoaded', () => {
     const elements = {
         // Генератор
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteBtn: document.getElementById('delete-selected-btn'),
         setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
         
-        // ⭐ ВОССТАНОВЛЕННЫЕ И НОВЫЕ ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ⭐
+        // Управление выбором
         selectionControls: document.getElementById('selection-controls'),
         selectAllCheckbox: document.getElementById('select-all-checkbox'),
         selectAiBtn: document.getElementById('select-ai-btn'),
@@ -174,14 +174,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(shouldCloseDropdown && elements.dropdownMenu) elements.dropdownMenu.style.display = 'none';
             });
         };
-
-        setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
+        
+        // ⭐ ПРАВИЛЬНЫЕ ОБРАБОТЧИКИ ⭐
+        setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, false); // Новая кнопка настроек
         setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
         setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
         setupPanelButton(elements.sortPanelOpenBtn, elements.sortPanel);
-        setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel);
-        setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel);
-        setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
+        setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel, true); // Кнопки из меню закрывают меню
+        setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel, true);
+        setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel, true);
 
         elements.generateBtn.addEventListener('click', handleAiGeneration);
         elements.randomPromptBtn.addEventListener('click', generateRandomPrompt);
