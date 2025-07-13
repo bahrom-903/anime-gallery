@@ -1,8 +1,8 @@
 // =================================================================
-//          CLIENT.JS. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+//          CLIENT.JS. ФИНАЛЬНЫЙ АККОРД v2. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
 // =================================================================
 
-// client.js - v18 (THE ABSOLUTE FINAL - Rebuild 2.0)
+// client.js - v19 (THE ABSOLUTE FINAL - Rebuild 3.0)
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Сбор всех элементов и констант ---
     const elements = {
@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const styles = { 'no_style': '', 'anime': ', anime style, waifu', 'photorealistic': ', photorealistic, 4k, ultra detailed', 'fantasy': ', fantasy art, intricate details, epic scene', 'cyberpunk_style': ', cyberpunk style, neon lights', 'digital_painting': ', digital painting, concept art', 'low_poly': ', low poly, isometric' };
     const defaultBackgroundSources = [ { name: 'cyberpunk', url: './backgrounds/cyberpunk.jpg'}, { name: 'night-tokyo', url: './backgrounds/night-tokyo.jpg'}, { name: 'canyon', url: './backgrounds/canyon.jpg'}, { name: 'mountain-river', url: './backgrounds/mountain-river.jpg'}, { name: 'dark-fantasy', url: './backgrounds/dark-fantasy.jpg'}, { name: 'noir-landscape', url: './backgrounds/noir-landscape.jpg'}, { name: 'auto-night', url: './backgrounds/auto-night.jpg'}, { name: 'anime-city', url: './backgrounds/anime-city.jpg'}, { name: 'nier-2b', url: './backgrounds/nier-2b.jpg'}, { name: 'genos', url: './backgrounds/genos.png'} ];
     const translations = { 
-        en: { select_all_label: 'Select all', select_ai_only_label: 'Select AI only', /* Добавь остальные переводы сюда */ }, 
-        ru: { select_all_label: 'Выбрать всё', select_ai_only_label: 'Выбрать только AI', /* Добавь остальные переводы сюда */ } 
+        en: { select_all_label: 'Select all', select_ai_only_label: 'Select AI only', /* ВСТАВЬ СЮДА СВОИ АНГЛИЙСКИЕ ПЕРЕВОДЫ */ }, 
+        ru: { select_all_label: 'Выбрать всё', select_ai_only_label: 'Выбрать только AI', /* ВСТАВЬ СЮДА СВОИ РУССКИЕ ПЕРЕВОДЫ */ } 
     };
     
     // --- 2. Основные функции ---
@@ -97,8 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewImage = (src) => { if (elements.viewerImg && elements.imageViewer) { elements.viewerImg.src = src; openPanel(elements.imageViewer); }};
     const handleServerRequest = async (endpoint, body, loadingMessage, successMessage, promptText) => { setUIGeneratorState(true, loadingMessage); try { const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); if (!response.ok) { let errorText = 'Ошибка ответа от сервера'; try { const errorData = await response.json(); errorText = errorData.error || errorText; } catch(e){} throw new Error(errorText); } const result = await response.json(); setUIGeneratorState(true, successMessage); await displayGeneratedImage(result.imageUrl, promptText, result.isAiGenerated); } catch (e) { showError(`Ошибка: ${e.message}`); console.error(`Ошибка в ${endpoint}:`, e); } finally { setUIGeneratorState(false); } };
     const handleAiGeneration = async () => { const userPrompt = elements.promptInput.value.trim(); const stylePrompt = elements.styleSelector.value; if (!userPrompt) { return showError('Введите описание.'); } const finalPrompt = `${userPrompt}${stylePrompt}`; const negativePrompt = elements.negativePromptInput.value.trim(); await handleServerRequest('/generate-image', { prompt: finalPrompt, negative_prompt: negativePrompt, category: state.currentCategory }, 'Отправка на сервер...', 'AI-генерация...', userPrompt); };
-    const findSimilarOnline = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.search }, 'Поиск в сети...', 'Загрузка...', `Поиск: ${category.keywords}`); };
-    const getRandomImage = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.random }, 'Ищем случайное...', 'Загрузка...', `Случайное: ${category.keywords}`); };
+    const findSimilarOnline = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.search + '&gif=false' }, 'Поиск в сети...', 'Загрузка...', `Поиск: ${category.keywords}`); };
+    const getRandomImage = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.random + '&gif=false' }, 'Ищем случайное...', 'Загрузка...', `Случайное: ${category.keywords}`); };
     const addEntryToGallery = async (dataUrl, prompt, isAi) => { const newEntry = { id: Date.now(), prompt: prompt || `image_${Date.now()}`, data: dataUrl, favorite: false, date: new Date().toISOString(), category: state.currentCategory, isAiGenerated: !!isAi }; try { await dbRequest(STORE_GALLERY, 'put', newEntry); await renderGallery(); } catch(e) { console.error(e); showError(`Ошибка сохранения в базу данных: ${e.message}`); } };
     const handleCategoryClick = (categoryId) => { state.currentCategory = categoryId; localStorage.setItem('currentCategory', categoryId); renderCategories(); renderGallery(); };
     const applyTheme = (id) => { document.body.className = id ? `theme-${id}` : ''; document.body.classList.toggle('has-custom-bg', !!document.body.style.getPropertyValue('--bg-image-url')); localStorage.setItem("theme", id); };
