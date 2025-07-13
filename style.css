@@ -1,8 +1,7 @@
 /* =================================================================
-          CSS-ФАЙЛ. ФИНАЛЬНАЯ ВЕРСИЯ. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+          CSS-ФАЙЛ. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
    ================================================================= */
 
-/* ⭐ ГЛАВНЫЙ ФИКС ДЛЯ "БЕГАЮЩЕЙ" КНОПКИ ⭐ */
 html {
     overflow-y: scroll;
 }
@@ -72,7 +71,10 @@ textarea { resize: vertical; }
 #negative-prompt-input { height: 50px; }
 .feedback-textarea { height: 150px; }
 .prompt-controls { display: flex; gap: 10px; margin-bottom: 15px; }
-#style-selector { flex-grow: 1; }
+#style-selector {
+    flex-grow: 1;
+    width: 0; /* ⭐ ФИКС ВЕРСТКИ ⭐ */
+}
 #random-prompt-btn { flex-shrink: 0; }
 .generator-controls, .gallery-controls {
     display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
@@ -208,7 +210,7 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     border-radius: 8px;
 }
 
-/* ⭐ Стили для нового блока с чекбоксом ⭐ */
+/* Стили для нового блока с чекбоксом */
 .selection-controls {
     margin-bottom: 15px;
     padding: 10px;
