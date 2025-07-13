@@ -1,5 +1,5 @@
 /* =================================================================
-          CSS-ФАЙЛ. АБСОЛЮТНЫЙ ФИНАЛ v2. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+          CSS-ФАЙЛ. АБСОЛЮТНЫЙ ФИНАЛ v3. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
    ================================================================= */
 
 :root {
@@ -162,7 +162,7 @@ textarea { resize: vertical; }
     transition: color 0.2s, transform 0.2s; display: inline-block;
 }
 .panel-header .panel-back-btn:hover, .panel-header .panel-reset-btn:hover { color: var(--button-bg); }
-.panel-header .panel-reset-btn:hover { transform: rotate(90deg); }
+.panel-header .panel-reset-btn .icon:hover { transform: rotate(90deg); }
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
     all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
@@ -191,7 +191,6 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: var(--button-bg);
 }
 .animated-icon-btn .icon {
     display: inline-block;
