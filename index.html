@@ -17,8 +17,8 @@
     <div class="container">
         <!-- Генератор -->
         <div class="generator-area">
-            <!-- ⭐ НОВАЯ КНОПКА НАСТРОЕК ВНУТРИ ПАНЕЛИ ⭐ -->
-            <button id="settings-open-btn" class="panel-corner-btn">⚙️</button>
+            <!-- ⭐ ГЛАВНОЕ МЕНЮ ТЕПЕРЬ НА ПАНЕЛИ ⭐ -->
+            <button id="menu-btn" class="panel-corner-btn">☰</button>
             
             <h1 data-lang-key="new_generation">Новая генерация</h1>
             <textarea id="prompt-input" data-lang-placeholder-key="prompt_placeholder" placeholder="Опиши свою идею здесь..."></textarea>
@@ -31,9 +31,9 @@
             <!-- ⭐ ПРАВИЛЬНОЕ РАСПОЛОЖЕНИЕ КНОПОК ⭐ -->
             <div class="generator-controls">
                 <button id="generate-btn" data-lang-key="generate_ai">✨ Сгенерировать AI</button>
-                <button id="random-prompt-btn" title="Сгенерировать случайный промпт">🎲</button>
+                <button id="random-prompt-btn" class="animated-icon-btn" title="Сгенерировать случайный промпт">🎲</button>
                 <button id="find-similar-btn" data-lang-key="find_online">🌎 Найти в сети</button>
-                <button id="random-image-btn" data-lang-key="random_image">🎲 Случайное</button>
+                <button id="random-image-btn" class="animated-icon-btn" data-lang-key="random_image">🎲 Случайное</button>
             </div>
             
             <div id="loader" class="loader hidden">
@@ -65,17 +65,21 @@
                     <input type="checkbox" id="select-all-checkbox">
                     <span data-lang-key="select_all_label">Выбрать всё</span>
                 </label>
-                <!-- ⭐ ИЗМЕНЕНА КНОПКА НА SPAN ДЛЯ СТИЛИЗАЦИИ ⭐ -->
-                <span id="select-ai-btn" class="text-button" data-lang-key="select_ai_only_label">Выбрать только AI</span>
+                <!-- ⭐ "Выбрать только AI" теперь тоже чекбокс ⭐ -->
+                <label>
+                    <input type="checkbox" id="select-ai-checkbox">
+                    <span data-lang-key="select_ai_only_label">Выбрать только AI</span>
+                </label>
             </div>
 
             <div class="gallery" id="gallery"></div>
         </div>
     </div>
 
-    <!-- Меню -->
-    <button id="menu-btn">☰</button>
+    <!-- Выпадающее меню (теперь открывается с панели) -->
     <div id="dropdownMenu" class="hidden">
+        <!-- ⭐ КНОПКА НАСТРОЕК ТЕПЕРЬ ВНУТРИ МЕНЮ ⭐ -->
+        <button id="settings-open-btn" data-lang-key="settings">⚙️ Настройки</button>
         <button id="changelog-open-btn" data-lang-key="changelog">🏆 Зал Славы и Версии</button>
         <hr>
         <button id="bug-report-open-btn" data-lang-key="report_bug">🐞 Сообщить о проблеме</button>
@@ -95,15 +99,15 @@
                 <button id="sort-panel-open-btn" class="panel-button" data-lang-key="sorting">🔀 Сортировка</button>
                 <hr>
                 <button id="gallery-clear-btn" class="panel-button" data-lang-key="clear_gallery">🗑️ Очистить галерею</button>
-                <button id="lang-switcher-btn" class="panel-button" data-lang-key="language">🌐 Язык</button>
+                <button id="lang-switcher-btn" class="panel-button"><span class="lang-icon">🌐</span> <span data-lang-key="language">Язык</span></button>
             </div>
         </div>
     </div>
 
     <!-- Другие панели (темы, фон, сортировка) -->
-    <div id="themePanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">←</button><h2 data-lang-key="themes">Темы</h2><button class="panel-close-btn">✖</button></div><div id="themeGrid"></div><button id="theme-reset-btn" data-lang-key="reset_theme">Сбросить</button></div></div>
-    <div id="backgroundPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">←</button><h2 data-lang-key="backgrounds">Фоны</h2><button class="panel-close-btn">✖</button></div><div class="panel-items"><button id="background-upload-btn" class="panel-button" data-lang-key="upload_your_bg">📤 Загрузить свой фон</button><input type="file" id="background-upload-input" class="hidden" accept="image/*"><button id="background-reset-btn" class="panel-button" data-lang-key="reset_background">Сбросить фон</button></div><div id="backgroundGrid"></div></div></div>
-    <div id="sortPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">←</button><h2 data-lang-key="sorting">Сортировка</h2><button class="panel-close-btn">✖</button></div><div id="sortGrid"></div></div></div>
+    <div id="themePanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">←</button><h2 data-lang-key="themes">Темы</h2><button id="theme-reset-btn" class="panel-reset-btn animated-icon-btn">🔄</button></div><div id="themeGrid"></div></div></div>
+    <div id="backgroundPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">←</button><h2 data-lang-key="backgrounds">Фоны</h2><button id="background-reset-btn" class="panel-reset-btn animated-icon-btn">🔄</button></div><div class="panel-items"><button id="background-upload-btn" class="panel-button" data-lang-key="upload_your_bg">📤 Загрузить свой фон</button><input type="file" id="background-upload-input" class="hidden" accept="image/*"></div><div id="backgroundGrid"></div></div></div>
+    <div id="sortPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn">←</button><h2 data-lang-key="sorting">Сортировка</h2></div><div id="sortGrid"></div></div></div>
     
     <!-- Панели обратной связи и версий -->
     <div id="changelogPanel" class="panel-overlay"><div class="panel-content changelog-content"><div class="panel-header"><h2 data-lang-key="changelog">Зал Славы и Версии</h2><button class="panel-close-btn">✖</button></div><div id="changelog-content-area"></div></div></div>
