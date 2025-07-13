@@ -1,5 +1,5 @@
 <!-- =================================================================
-          HTML-ФАЙЛ. ФИНАЛЬНАЯ ВЕРСИЯ. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+          HTML-ФАЙЛ. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
    ================================================================= -->
 <!DOCTYPE html>
 <html lang="ru">
@@ -17,21 +17,25 @@
     <div class="container">
         <!-- Генератор -->
         <div class="generator-area">
+            <!-- ⭐ НОВАЯ КНОПКА НАСТРОЕК ВНУТРИ ПАНЕЛИ ⭐ -->
+            <button id="settings-open-btn" class="panel-corner-btn">⚙️</button>
+            
             <h1 data-lang-key="new_generation">Новая генерация</h1>
             <textarea id="prompt-input" data-lang-placeholder-key="prompt_placeholder" placeholder="Опиши свою идею здесь..."></textarea>
             <textarea id="negative-prompt-input" data-lang-placeholder-key="negative_prompt_placeholder" placeholder="❌ Негативный промпт (что НЕ нужно рисовать)"></textarea>
             
-            <!-- ⭐ ВОССТАНОВЛЕН СЕЛЕКТОР СТИЛЕЙ ⭐ -->
             <div class="prompt-controls">
                 <select id="style-selector"></select>
-                <button id="random-prompt-btn" title="Сгенерировать случайный промпт">🎲</button>
             </div>
 
+            <!-- ⭐ ПРАВИЛЬНОЕ РАСПОЛОЖЕНИЕ КНОПОК ⭐ -->
             <div class="generator-controls">
                 <button id="generate-btn" data-lang-key="generate_ai">✨ Сгенерировать AI</button>
+                <button id="random-prompt-btn" title="Сгенерировать случайный промпт">🎲</button>
                 <button id="find-similar-btn" data-lang-key="find_online">🌎 Найти в сети</button>
                 <button id="random-image-btn" data-lang-key="random_image">🎲 Случайное</button>
             </div>
+            
             <div id="loader" class="loader hidden">
                 <div class="spinner"></div>
                 <p id="loader-text"></p>
@@ -56,13 +60,13 @@
                 <button id="delete-selected-btn" data-lang-key="delete">🗑 Удалить</button>
             </div>
 
-            <!-- ⭐ ПРАВИЛЬНЫЙ БЛОК ДЛЯ УПРАВЛЕНИЯ ВЫБОРОМ ⭐ -->
             <div id="selection-controls" class="selection-controls hidden">
                 <label>
                     <input type="checkbox" id="select-all-checkbox">
                     <span data-lang-key="select_all_label">Выбрать всё</span>
                 </label>
-                <button id="select-ai-btn" data-lang-key="select_ai_only_label">Выбрать только AI</button>
+                <!-- ⭐ ИЗМЕНЕНА КНОПКА НА SPAN ДЛЯ СТИЛИЗАЦИИ ⭐ -->
+                <span id="select-ai-btn" class="text-button" data-lang-key="select_ai_only_label">Выбрать только AI</span>
             </div>
 
             <div class="gallery" id="gallery"></div>
@@ -72,7 +76,6 @@
     <!-- Меню -->
     <button id="menu-btn">☰</button>
     <div id="dropdownMenu" class="hidden">
-        <button id="settings-open-btn" data-lang-key="settings">⚙️ Настройки</button>
         <button id="changelog-open-btn" data-lang-key="changelog">🏆 Зал Славы и Версии</button>
         <hr>
         <button id="bug-report-open-btn" data-lang-key="report_bug">🐞 Сообщить о проблеме</button>
