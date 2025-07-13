@@ -1,5 +1,5 @@
 /* =================================================================
-          CSS-ФАЙЛ. ФИНАЛЬНЫЙ АККОРД v2. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+          CSS-ФАЙЛ. АБСОЛЮТНЫЙ ФИНАЛ v2. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
    ================================================================= */
 
 :root {
@@ -187,8 +187,11 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 }
 .preview-card .preview-name { padding: 4px; }
 .animated-icon-btn {
-    background: none; border: 1px solid var(--input-border); color: #aaa;
-    transition: all 0.3s; padding: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--button-bg);
 }
 .animated-icon-btn .icon {
     display: inline-block;
@@ -204,7 +207,6 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 .lang-icon.rotating {
     transform: rotate(360deg);
 }
-
 .selection-controls {
     margin-bottom: 15px; padding: 10px; background: rgba(var(--panel-bg-rgb), 0.5);
     border-radius: 8px; display: flex; align-items: center; gap: 20px;
