@@ -1,74 +1,41 @@
 // =================================================================
-//          CLIENT.JS. ФИНАЛЬНЫЙ АККОРД v2. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+//          CLIENT.JS. АБСОЛЮТНЫЙ ФИНАЛ v2. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
 // =================================================================
 
-// client.js - v19 (THE ABSOLUTE FINAL - Rebuild 3.0)
+// client.js - v22 (THE TRUE FINAL)
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Сбор всех элементов и констант ---
     const elements = {
-        generateBtn: document.getElementById('generate-btn'),
-        findSimilarBtn: document.getElementById('find-similar-btn'),
-        randomImageBtn: document.getElementById('random-image-btn'),
-        promptInput: document.getElementById('prompt-input'),
-        negativePromptInput: document.getElementById('negative-prompt-input'),
-        styleSelector: document.getElementById('style-selector'),
-        randomPromptBtn: document.getElementById('random-prompt-btn'),
-        loader: document.getElementById('loader'),
-        loaderText: document.getElementById('loader-text'),
-        imageContainer: document.getElementById('result-image-container'),
-        resultControls: document.querySelector('.result-controls'),
-        errorMessage: document.getElementById('error-message'),
-        saveBtn: document.getElementById('save-btn'),
-        previewBtn: document.getElementById('preview-btn'),
-        galleryContainer: document.getElementById('gallery'),
-        categoryControls: document.getElementById('category-controls'),
-        uploadBtn: document.getElementById('upload-btn'),
-        uploadInput: document.getElementById('upload-input'),
-        exportBtn: document.getElementById('export-selected-btn'),
-        deleteBtn: document.getElementById('delete-selected-btn'),
+        generateBtn: document.getElementById('generate-btn'), findSimilarBtn: document.getElementById('find-similar-btn'), randomImageBtn: document.getElementById('random-image-btn'),
+        promptInput: document.getElementById('prompt-input'), negativePromptInput: document.getElementById('negative-prompt-input'),
+        styleSelector: document.getElementById('style-selector'), randomPromptBtn: document.getElementById('random-prompt-btn'),
+        loader: document.getElementById('loader'), loaderText: document.getElementById('loader-text'),
+        imageContainer: document.getElementById('result-image-container'), resultControls: document.querySelector('.result-controls'),
+        errorMessage: document.getElementById('error-message'), saveBtn: document.getElementById('save-btn'), previewBtn: document.getElementById('preview-btn'),
+        galleryContainer: document.getElementById('gallery'), categoryControls: document.getElementById('category-controls'),
+        uploadBtn: document.getElementById('upload-btn'), uploadInput: document.getElementById('upload-input'),
+        exportBtn: document.getElementById('export-selected-btn'), deleteBtn: document.getElementById('delete-selected-btn'),
         setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
-        selectionControls: document.getElementById('selection-controls'),
-        selectAllCheckbox: document.getElementById('select-all-checkbox'),
-        selectAiCheckbox: document.getElementById('select-ai-checkbox'),
-        menuBtn: document.getElementById('menu-btn'),
-        dropdownMenu: document.getElementById('dropdownMenu'),
-        settingsPanel: document.getElementById('settingsPanel'),
-        settingsOpenBtn: document.getElementById('settings-open-btn'),
-        themePanel: document.getElementById('themePanel'),
-        themePanelOpenBtn: document.getElementById('theme-panel-open-btn'),
-        themeResetBtn: document.getElementById('theme-reset-btn'),
-        sortPanel: document.getElementById('sortPanel'),
-        sortPanelOpenBtn: document.getElementById('sort-panel-open-btn'),
-        sortGrid: document.getElementById('sortGrid'),
-        imageViewer: document.getElementById('image-viewer'),
-        viewerImg: document.getElementById('viewer-img'),
-        themeGrid: document.getElementById('themeGrid'),
-        clearGalleryBtn: document.getElementById('gallery-clear-btn'),
-        backgroundPanel: document.getElementById('backgroundPanel'),
-        backgroundPanelOpenBtn: document.getElementById('background-panel-open-btn'),
-        backgroundResetBtn: document.getElementById('background-reset-btn'),
-        backgroundGrid: document.getElementById('backgroundGrid'),
-        backgroundUploadBtn: document.getElementById('background-upload-btn'),
-        backgroundUploadInput: document.getElementById('background-upload-input'),
-        changelogOpenBtn: document.getElementById('changelog-open-btn'),
-        bugReportOpenBtn: document.getElementById('bug-report-open-btn'),
-        suggestionOpenBtn: document.getElementById('suggestion-open-btn'),
-        changelogPanel: document.getElementById('changelogPanel'),
-        changelogContentArea: document.getElementById('changelog-content-area'),
-        bugReportPanel: document.getElementById('bugReportPanel'),
-        suggestionPanel: document.getElementById('suggestionPanel'),
-        bugReportText: document.getElementById('bug-report-text'),
-        suggestionText: document.getElementById('suggestion-text'),
-        submitBugReportBtn: document.getElementById('submit-bug-report-btn'),
-        submitSuggestionBtn: document.getElementById('submit-suggestion-btn'),
-        bugReportStatus: document.getElementById('bug-report-status'),
-        suggestionStatus: document.getElementById('suggestion-status'),
-        contextMenu: document.getElementById('context-menu'),
-        langSwitcherBtn: document.getElementById('lang-switcher-btn'),
+        selectionControls: document.getElementById('selection-controls'), selectAllCheckbox: document.getElementById('select-all-checkbox'), selectAiCheckbox: document.getElementById('select-ai-checkbox'),
+        menuBtn: document.getElementById('menu-btn'), dropdownMenu: document.getElementById('dropdownMenu'),
+        settingsPanel: document.getElementById('settingsPanel'), settingsOpenBtn: document.getElementById('settings-open-btn'),
+        themePanel: document.getElementById('themePanel'), themePanelOpenBtn: document.getElementById('theme-panel-open-btn'), themeResetBtn: document.getElementById('theme-reset-btn'),
+        sortPanel: document.getElementById('sortPanel'), sortPanelOpenBtn: document.getElementById('sort-panel-open-btn'), sortGrid: document.getElementById('sortGrid'),
+        imageViewer: document.getElementById('image-viewer'), viewerImg: document.getElementById('viewer-img'),
+        themeGrid: document.getElementById('themeGrid'), clearGalleryBtn: document.getElementById('gallery-clear-btn'),
+        backgroundPanel: document.getElementById('backgroundPanel'), backgroundPanelOpenBtn: document.getElementById('background-panel-open-btn'), backgroundResetBtn: document.getElementById('background-reset-btn'),
+        backgroundGrid: document.getElementById('backgroundGrid'), backgroundUploadBtn: document.getElementById('background-upload-btn'), backgroundUploadInput: document.getElementById('background-upload-input'),
+        changelogOpenBtn: document.getElementById('changelog-open-btn'), bugReportOpenBtn: document.getElementById('bug-report-open-btn'), suggestionOpenBtn: document.getElementById('suggestion-open-btn'),
+        changelogPanel: document.getElementById('changelogPanel'), changelogContentArea: document.getElementById('changelog-content-area'),
+        bugReportPanel: document.getElementById('bugReportPanel'), suggestionPanel: document.getElementById('suggestionPanel'),
+        bugReportText: document.getElementById('bug-report-text'), suggestionText: document.getElementById('suggestion-text'),
+        submitBugReportBtn: document.getElementById('submit-bug-report-btn'), submitSuggestionBtn: document.getElementById('submit-suggestion-btn'),
+        bugReportStatus: document.getElementById('bug-report-status'), suggestionStatus: document.getElementById('suggestion-status'),
+        contextMenu: document.getElementById('context-menu'), langSwitcherBtn: document.getElementById('lang-switcher-btn'),
     };
-    const DB_NAME = 'AnimeGalleryDB_V21_Rebuild', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
+    const DB_NAME = 'AnimeGalleryDB_V22_TrueFinal', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
     let state = { currentSort: 'date_desc', isFavFilterActive: false, currentCategory: 'waifu', currentLanguage: 'ru', contextedItemId: null, lastAiResult: null, };
-    const categories = { 'waifu': { keywords: 'anime, waifu, girl', sources: { random: 'https://api.waifu.im/search/?included_tags=waifu&is_nsfw=false', search: 'https://api.waifu.im/search/?included_tags=waifu&is_nsfw=false' } }, 'anime_gif': { keywords: 'anime, gif, animation', sources: { random: 'https://api.waifu.im/search/?included_tags=maid&gif=true&is_nsfw=false', search: 'https://api.waifu.im/search/?included_tags=uniform&gif=true&is_nsfw=false' } }, 'cyberpunk': { keywords: 'cyberpunk, neon, futuristic, city', sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk', search: 'https://source.unsplash.com/1600x900/?cyberpunk,neon' } }, 'nature': { keywords: 'nature, landscape, mountains, forest', sources: { random: 'https://source.unsplash.com/1600x900/?nature', search: 'https://source.unsplash.com/1600x900/?landscape,nature' } }, 'games': { keywords: 'video game, fan art, gaming', sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character', search: 'https://source.unsplash.com/1600x900/?video,game,art' } }, 'dark_anime': { keywords: 'dark fantasy, gothic, monster, horror art', sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,art', search: 'https://source.unsplash.com/1600x900/?gothic,art' } }, 'supercars': { keywords: 'supercar, sportscar, luxury car', sources: { random: 'https://source.unsplash.com/1600x900/?supercar', search: 'https://source.unsplash.com/1600x900/?sportscar' } }, };
+    const categories = { 'waifu': { sources: { random: 'https://api.waifu.im/search/?included_tags=waifu&is_nsfw=false', search: 'https://api.waifu.im/search/?included_tags=waifu&is_nsfw=false' } }, 'anime_gif': { sources: { random: 'https://api.waifu.im/search/?included_tags=maid&gif=true', search: 'https://api.waifu.im/search/?included_tags=uniform&gif=true' } }, 'cyberpunk': { sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk', search: 'https://source.unsplash.com/1600x900/?cyberpunk,neon' } }, 'nature': { sources: { random: 'https://source.unsplash.com/1600x900/?nature', search: 'https://source.unsplash.com/1600x900/?landscape,nature' } }, 'games': { sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character', search: 'https://source.unsplash.com/1600x900/?video,game,art' } }, 'dark_anime': { sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,art', search: 'https://source.unsplash.com/1600x900/?gothic,art' } }, 'supercars': { sources: { random: 'https://source.unsplash.com/1600x900/?supercar', search: 'https://source.unsplash.com/1600x900/?sportscar' } }, };
     const themes = [ { id: "dark" }, { id: "light" }, { id: "gray" }, { id: "retro" }, { id: "dracula" }, { id: "nord" }, { id: "solarized" }, { id: "gruvbox" }, { id: "monokai" }, { id: "tomorrow_night" }, { id: "one_dark" }, { id: "cyberpunk" }, { id: "matrix" }, { id: "crimson" }, { id: "synthwave" } ];
     const styles = { 'no_style': '', 'anime': ', anime style, waifu', 'photorealistic': ', photorealistic, 4k, ultra detailed', 'fantasy': ', fantasy art, intricate details, epic scene', 'cyberpunk_style': ', cyberpunk style, neon lights', 'digital_painting': ', digital painting, concept art', 'low_poly': ', low poly, isometric' };
     const defaultBackgroundSources = [ { name: 'cyberpunk', url: './backgrounds/cyberpunk.jpg'}, { name: 'night-tokyo', url: './backgrounds/night-tokyo.jpg'}, { name: 'canyon', url: './backgrounds/canyon.jpg'}, { name: 'mountain-river', url: './backgrounds/mountain-river.jpg'}, { name: 'dark-fantasy', url: './backgrounds/dark-fantasy.jpg'}, { name: 'noir-landscape', url: './backgrounds/noir-landscape.jpg'}, { name: 'auto-night', url: './backgrounds/auto-night.jpg'}, { name: 'anime-city', url: './backgrounds/anime-city.jpg'}, { name: 'nier-2b', url: './backgrounds/nier-2b.jpg'}, { name: 'genos', url: './backgrounds/genos.png'} ];
@@ -76,16 +43,22 @@ document.addEventListener('DOMContentLoaded', () => {
         en: { select_all_label: 'Select all', select_ai_only_label: 'Select AI only', /* ВСТАВЬ СЮДА СВОИ АНГЛИЙСКИЕ ПЕРЕВОДЫ */ }, 
         ru: { select_all_label: 'Выбрать всё', select_ai_only_label: 'Выбрать только AI', /* ВСТАВЬ СЮДА СВОИ РУССКИЕ ПЕРЕВОДЫ */ } 
     };
+    const RANDOM_PROMPT_BRAIN = {
+        waifu: { subject: ["1girl, school uniform", "elf girl with long hair", "cat girl with blue eyes", "fox girl in a kimono", "angel girl with white wings"], details: ["cherry blossom background", "looking at viewer", "holding a book", "sitting on a bench", "beautiful smile"], style: ["by makoto shinkai", "in the style of ghibli", "90s anime style", "vibrant colors", "soft lighting"] },
+        cyberpunk: { subject: ["a cyborg in a neon city", "a hacker at a terminal", "a futuristic flying car", "a robot in a dark alley", "a person with glowing implants"], details: ["rainy night", "holographic advertisements", "dystopian atmosphere", "wearing a trench coat", "intricate wires"], style: ["cinematic", "blade runner style", "by syd mead", "highly detailed", "synthwave aesthetic"] },
+        nature: { subject: ["a mountain lake at sunrise", "a waterfall in a dense forest", "a field of wildflowers", "a starry night sky over a canyon", "an ancient oak tree"], details: ["misty morning", "sun rays through the clouds", "reflection in the water", "calm and serene", "vivid colors"], style: ["photorealistic", "national geographic photo", "by ansel adams", "landscape painting", "epic scale"] },
+        default: { subject: ["a fantasy castle", "a portrait of a knight", "a space battle", "a cute dragon"], details: ["epic lighting", "intricate details", "dynamic pose", "dramatic atmosphere"], style: ["digital painting", "concept art", "by greg rutkowski", "fantasy art"] }
+    };
     
     // --- 2. Основные функции ---
     const openDb = () => new Promise((resolve, reject) => { const request = indexedDB.open(DB_NAME, DB_VERSION); request.onerror = () => reject("Не удалось открыть IndexedDB."); request.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_SETTINGS)) db.createObjectStore(STORE_SETTINGS); if (!db.objectStoreNames.contains(STORE_GALLERY)) { const galleryStore = db.createObjectStore(STORE_GALLERY, { keyPath: 'id' }); galleryStore.createIndex('category', 'category', { unique: false }); } if (!db.objectStoreNames.contains(STORE_BACKGROUNDS)) db.createObjectStore(STORE_BACKGROUNDS, { keyPath: 'id' }); }; request.onsuccess = e => resolve(e.target.result); });
     const dbRequest = (storeName, type, ...args) => new Promise(async (resolve, reject) => { try { const db = await openDb(); const tx = db.transaction(storeName, type.startsWith('get') ? 'readonly' : 'readwrite'); const store = tx.objectStore(storeName); const req = store[type](...args); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(`Ошибка транзакции (${storeName}): ${req.error}`); } catch (e) { reject(e) } });
-    const setLanguage = (lang) => { state.currentLanguage = lang; localStorage.setItem('language', lang); const langPack = translations[lang] || translations.ru; document.querySelectorAll('[data-lang-key]').forEach(el => { const key = el.dataset.langKey; if (langPack[key]) el.textContent = langPack[key]; }); document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => { const key = el.dataset.langPlaceholderKey; if (langPack[key]) el.placeholder = langPack[key]; }); renderCategories(); renderThemes(); renderStyles(); renderSortOptions(); };
+    const setLanguage = (lang) => { state.currentLanguage = lang; localStorage.setItem('language', lang); const langPack = translations[lang] || translations.ru; document.querySelectorAll('[data-lang-key]').forEach(el => { const key = el.dataset.langKey; if (langPack[key]) { if (el.tagName === 'SPAN' && el.parentElement.matches('label, button')) { el.textContent = langPack[key]; } else if (el.tagName !== 'SPAN') { el.textContent = langPack[key]; } }}); document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => { const key = el.dataset.langPlaceholderKey; if (langPack[key]) el.placeholder = langPack[key]; }); renderCategories(); renderThemes(); renderStyles(); renderSortOptions(); };
     const renderGallery = async () => { try { let allGalleryData = await dbRequest(STORE_GALLERY, 'getAll'); elements.galleryContainer.innerHTML = ""; let categoryData = allGalleryData.filter(item => item.category === state.currentCategory); let dataToRender = state.isFavFilterActive ? categoryData.filter(e => e.favorite) : [...categoryData]; if (state.currentSort === 'date_asc') dataToRender.sort((a, b) => a.id - b.id); else if (state.currentSort === 'date_desc') dataToRender.sort((a, b) => b.id - a.id); else if (state.currentSort === 'random') { for (let i = dataToRender.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [dataToRender[i], dataToRender[j]] = [dataToRender[j], dataToRender[i]]; } } if (dataToRender.length > 0) { elements.selectionControls.classList.remove('hidden'); } else { elements.selectionControls.classList.add('hidden'); } elements.selectAllCheckbox.checked = false; elements.selectAiCheckbox.checked = false; dataToRender.forEach(entry => { const item = document.createElement('div'); item.className = "gallery-item"; item.dataset.id = entry.id; const img = document.createElement('img'); img.src = entry.data; img.loading = "lazy"; img.alt = entry.prompt; img.addEventListener('dblclick', () => viewImage(entry.data)); const controls = document.createElement('div'); controls.className = 'item-controls'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.className = 'select-checkbox'; const fav = document.createElement('div'); fav.innerText = entry.favorite ? '⭐' : '☆'; fav.className = 'favorite-star'; fav.addEventListener('click', (e) => {e.stopPropagation(); toggleFavorite(entry.id, !entry.favorite)}); const menuBtn = document.createElement('button'); menuBtn.className = 'item-menu-btn'; menuBtn.innerHTML = '⋮'; menuBtn.addEventListener('click', (e) => { e.stopPropagation(); showContextMenu(e.target, entry.id); }); controls.append(cb, fav, menuBtn); item.append(img, controls); elements.galleryContainer.appendChild(item); }); } catch (e) { showError(`Не удалось загрузить галерею: ${e.message}`); }};
     const renderCategories = () => { elements.categoryControls.innerHTML = ''; const langPack = translations[state.currentLanguage] || translations.ru; for (const id of Object.keys(categories)) { const btn = document.createElement('button'); btn.dataset.categoryId = id; btn.textContent = (langPack[`cat_${id}`] || id.replace(/_/g, ' ')); if (id === state.currentCategory) btn.classList.add('active-category'); btn.addEventListener('click', () => handleCategoryClick(id)); elements.categoryControls.appendChild(btn); } };
     const renderThemes = () => { elements.themeGrid.innerHTML = ''; themes.forEach(t => { const c = document.createElement("div"); c.className = "preview-card"; c.dataset.theme = t.id; const themeName = t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/_/g, ' '); c.innerHTML = `<div class="preview-box theme-${t.id}"></div><div class="preview-name">${themeName}</div>`; elements.themeGrid.appendChild(c); }); };
     const renderStyles = () => { elements.styleSelector.innerHTML = ''; const langPack = translations[state.currentLanguage] || translations.ru; for (const [id, value] of Object.entries(styles)) { const option = document.createElement('option'); option.value = value; option.textContent = (langPack[`style_${id}`] || id); elements.styleSelector.appendChild(option); } };
-    const renderSortOptions = () => { const langPack = translations[state.currentLanguage] || translations.ru; const o = { 'date_desc': langPack.sort_newest, 'date_asc': langPack.sort_oldest, 'random': langPack.sort_random, 'separator': '---', 'filter_favorite': langPack.sort_favorites }; elements.sortGrid.innerHTML = ''; for (const [k, v] of Object.entries(o)) { if (k === 'separator') { elements.sortGrid.appendChild(document.createElement('hr')); continue; } const b = document.createElement('button'); b.className = 'panel-button'; b.dataset.sort = k; b.textContent = v; if (k === 'filter_favorite' && state.isFavFilterActive) b.classList.add('active-filter'); elements.sortGrid.appendChild(b); } };
+    const renderSortOptions = () => { elements.sortGrid.innerHTML = ''; const langPack = translations[state.currentLanguage] || translations.ru; const o = { 'date_desc': langPack.sort_newest, 'date_asc': langPack.sort_oldest, 'random': langPack.sort_random, 'separator': '---', 'filter_favorite': langPack.sort_favorites }; elements.sortGrid.innerHTML = ''; for (const [k, v] of Object.entries(o)) { if (k === 'separator') { elements.sortGrid.appendChild(document.createElement('hr')); continue; } const b = document.createElement('button'); b.className = 'panel-button'; b.dataset.sort = k; b.textContent = v; if (k === 'filter_favorite' && state.isFavFilterActive) b.classList.add('active-filter'); elements.sortGrid.appendChild(b); } };
     const renderBackgrounds = async () => { try { const storedBgs = await dbRequest(STORE_BACKGROUNDS, 'getAll'); elements.backgroundGrid.innerHTML = ''; document.querySelectorAll('#backgroundGrid [data-object-url]').forEach(el => URL.revokeObjectURL(el.dataset.objectUrl)); storedBgs.forEach(bg => { const objectURL = URL.createObjectURL(bg.blob); const c = document.createElement("div"); c.className = "preview-card"; c.dataset.bgId = bg.id; c.innerHTML = `<div class="preview-box" style="background-image: url(${objectURL});" data-object-url="${objectURL}"></div><div class="preview-name">${bg.id}</div>`; elements.backgroundGrid.appendChild(c); }); } catch(e) { console.error("Ошибка рендера фонов:", e); } };
     const showContextMenu = (buttonElement, itemId) => { hideContextMenu(); state.contextedItemId = itemId; const langPack = translations[state.currentLanguage] || translations.ru; const rect = buttonElement.getBoundingClientRect(); const menu = elements.contextMenu; menu.style.display = 'block'; menu.style.left = `${rect.left + window.scrollX}px`; menu.style.top = `${rect.bottom + window.scrollY + 5}px`; menu.innerHTML = `<button data-action="rename">${langPack.ctx_rename}</button><button data-action="copy-prompt">${langPack.ctx_copy_prompt}</button>`; };
     const hideContextMenu = () => { if(elements.contextMenu) elements.contextMenu.style.display = 'none'; };
@@ -97,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewImage = (src) => { if (elements.viewerImg && elements.imageViewer) { elements.viewerImg.src = src; openPanel(elements.imageViewer); }};
     const handleServerRequest = async (endpoint, body, loadingMessage, successMessage, promptText) => { setUIGeneratorState(true, loadingMessage); try { const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); if (!response.ok) { let errorText = 'Ошибка ответа от сервера'; try { const errorData = await response.json(); errorText = errorData.error || errorText; } catch(e){} throw new Error(errorText); } const result = await response.json(); setUIGeneratorState(true, successMessage); await displayGeneratedImage(result.imageUrl, promptText, result.isAiGenerated); } catch (e) { showError(`Ошибка: ${e.message}`); console.error(`Ошибка в ${endpoint}:`, e); } finally { setUIGeneratorState(false); } };
     const handleAiGeneration = async () => { const userPrompt = elements.promptInput.value.trim(); const stylePrompt = elements.styleSelector.value; if (!userPrompt) { return showError('Введите описание.'); } const finalPrompt = `${userPrompt}${stylePrompt}`; const negativePrompt = elements.negativePromptInput.value.trim(); await handleServerRequest('/generate-image', { prompt: finalPrompt, negative_prompt: negativePrompt, category: state.currentCategory }, 'Отправка на сервер...', 'AI-генерация...', userPrompt); };
-    const findSimilarOnline = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.search + '&gif=false' }, 'Поиск в сети...', 'Загрузка...', `Поиск: ${category.keywords}`); };
-    const getRandomImage = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.random + '&gif=false' }, 'Ищем случайное...', 'Загрузка...', `Случайное: ${category.keywords}`); };
+    const findSimilarOnline = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.search + '&gif=false' }, 'Поиск в сети...', 'Загрузка...', categories[state.currentCategory].keywords); };
+    const getRandomImage = async () => { const category = categories[state.currentCategory]; await handleServerRequest('/get-image-from-source', { url: category.sources.random + '&gif=false' }, 'Ищем случайное...', 'Загрузка...', categories[state.currentCategory].keywords); };
     const addEntryToGallery = async (dataUrl, prompt, isAi) => { const newEntry = { id: Date.now(), prompt: prompt || `image_${Date.now()}`, data: dataUrl, favorite: false, date: new Date().toISOString(), category: state.currentCategory, isAiGenerated: !!isAi }; try { await dbRequest(STORE_GALLERY, 'put', newEntry); await renderGallery(); } catch(e) { console.error(e); showError(`Ошибка сохранения в базу данных: ${e.message}`); } };
     const handleCategoryClick = (categoryId) => { state.currentCategory = categoryId; localStorage.setItem('currentCategory', categoryId); renderCategories(); renderGallery(); };
     const applyTheme = (id) => { document.body.className = id ? `theme-${id}` : ''; document.body.classList.toggle('has-custom-bg', !!document.body.style.getPropertyValue('--bg-image-url')); localStorage.setItem("theme", id); };
@@ -108,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportSelected = async () => { const selectedItems = document.querySelectorAll('.gallery-item .select-checkbox:checked'); if (selectedItems.length === 0) { alert("Ничего не выбрано"); return; } const zip = new JSZip(); for (const cb of selectedItems) { const item = await dbRequest(STORE_GALLERY, 'get', parseInt(cb.closest('.gallery-item').dataset.id)); if (item && item.data) { const fileName = (item.prompt ? item.prompt.replace(/[\\/:*?"<>|]/g, '').substring(0, 50) : `image_${item.id}`) || `image_${item.id}`; zip.file(`${fileName}.png`, item.data.split(',')[1], { base64: true }); } } zip.generateAsync({ type: "blob" }).then(content => { const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = `anime_gallery_${Date.now()}.zip`; a.click(); URL.revokeObjectURL(a.href); }); };
     const clearGallery = async () => { if (confirm("Вы уверены, что хотите НАВСЕГДА удалить ВСЕ изображения из галереи?")) { await dbRequest(STORE_GALLERY, 'clear'); await renderGallery(); } };
     const handleUpload = (e) => { const f = e.target.files[0]; if (!f) return; if(confirm(`Вы уверены, что хотите добавить этот файл в категорию "${(translations[state.currentLanguage] || translations.ru)[`cat_${state.currentCategory}`]}"?`)) { const r = new FileReader(); r.onload = async (ev) => { setUIGeneratorState(true, 'Загрузка...'); try { await addEntryToGallery(ev.target.result, f.name, false); } catch(err) { showError(err.message); } finally { setUIGeneratorState(false); } }; r.readAsDataURL(f); } e.target.value = ''; };
-    const generateRandomPrompt = () => { const promptParts = { subject: ["портрет девушки", "рыцарь в доспехах", "одинокое дерево", "фэнтези город", "космический корабль", "дракон", "старый маг", "кибер-самурай"], details: ["светящиеся глаза", "в руках посох", "нежный взгляд", "капли дождя", "боевая поза", "в окружении бабочек", "с имплантами"], style: ["в стиле аниме 90-х", "в стиле киберпанк", "эпичное фэнтези", "мрачная атмосфера", "яркие цвета", "пастельные тона"], artist: ["от Artgerm", "от Greg Rutkowski", "от Makoto Shinkai", "в стиле Ghibli", "в стиле Riot Games"] }; const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)]; elements.promptInput.value = `${getRandomElement(promptParts.subject)}, ${getRandomElement(promptParts.details)}, ${getRandomElement(promptParts.style)}, ${getRandomElement(promptParts.artist)}`; };
+    const generateRandomPrompt = () => { const brain = RANDOM_PROMPT_BRAIN[state.currentCategory] || RANDOM_PROMPT_BRAIN.default; const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)]; elements.promptInput.value = `${getRandomElement(brain.subject)}, ${getRandomElement(brain.details)}, ${getRandomElement(brain.style)}`; };
     const applyBackground = async (imageBlob) => { try { await dbRequest(STORE_SETTINGS, 'put', imageBlob, 'customBackground'); const objectURL = URL.createObjectURL(imageBlob); document.body.style.setProperty('--bg-image-url', `url(${objectURL})`); document.body.classList.add('has-custom-bg'); } catch(e) { console.error(e); showError("Не удалось сохранить фон: " + e.message); }};
     const resetBackground = async () => { try { await dbRequest(STORE_SETTINGS, 'delete', 'customBackground'); document.body.style.removeProperty('--bg-image-url'); document.body.classList.remove('has-custom-bg'); } catch(e) { console.error(e); showError("Не удалось удалить фон: " + e.message); }};
     const setBackgroundFromDefault = async (bgId) => { try { const bg = await dbRequest(STORE_BACKGROUNDS, 'get', bgId); if (bg) await applyBackground(bg.blob); } catch(e) { console.error(e); } };
@@ -123,13 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await openDb();
             await setupDefaultBackgrounds();
-            await renderBackgrounds();
             state.currentSort = localStorage.getItem('gallerySort') || 'date_desc';
             state.isFavFilterActive = localStorage.getItem('isFavFilterActive') === 'true';
             state.currentCategory = localStorage.getItem('currentCategory') || 'waifu';
             state.currentLanguage = localStorage.getItem('language') || 'ru';
             applyTheme(localStorage.getItem('theme') || 'dark');
             setLanguage(state.currentLanguage);
+            await renderBackgrounds();
             renderGallery();
             const savedBgBlob = await dbRequest(STORE_SETTINGS, 'get', 'customBackground');
             if (savedBgBlob) {
@@ -152,17 +125,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 hideContextMenu();
             }
         });
-        
-        elements.menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            elements.dropdownMenu.style.display = (elements.dropdownMenu.style.display === 'block') ? 'none' : 'block';
-        });
-
+        elements.menuBtn.addEventListener('click', (e) => { e.stopPropagation(); elements.dropdownMenu.style.display = (elements.dropdownMenu.style.display === 'block') ? 'none' : 'block'; });
         document.querySelectorAll('.panel-overlay').forEach(panel => {
             panel.addEventListener('click', (e) => {
                 const target = e.target;
                 if (target.classList.contains('panel-close-btn') || target === panel) { closePanel(panel); }
-                else if (target.classList.contains('panel-back-btn')) { closePanel(panel); openPanel(elements.settingsPanel); }
+                else if (target.classList.contains('panel-back-btn')) {
+                    closePanel(panel);
+                    if(panel.id === 'themePanel' || panel.id === 'backgroundPanel' || panel.id === 'sortPanel') {
+                        openPanel(elements.settingsPanel);
+                    }
+                }
             });
         });
 
