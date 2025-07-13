@@ -2,10 +2,10 @@
 //          CLIENT.JS. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
 // =================================================================
 
-// client.js - v16 (THE ABSOLUTE FINAL)
+// client.js - v17 (THE ABSOLUTE FINAL - Rebuild)
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. Сбор всех элементов и констант ---
     const elements = {
-        // Генератор
         generateBtn: document.getElementById('generate-btn'),
         findSimilarBtn: document.getElementById('find-similar-btn'),
         randomImageBtn: document.getElementById('random-image-btn'),
@@ -20,8 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage: document.getElementById('error-message'),
         saveBtn: document.getElementById('save-btn'),
         previewBtn: document.getElementById('preview-btn'),
-
-        // Галерея
         galleryContainer: document.getElementById('gallery'),
         categoryControls: document.getElementById('category-controls'),
         uploadBtn: document.getElementById('upload-btn'),
@@ -29,13 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
         exportBtn: document.getElementById('export-selected-btn'),
         deleteBtn: document.getElementById('delete-selected-btn'),
         setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
-        
-        // Управление выбором
         selectionControls: document.getElementById('selection-controls'),
         selectAllCheckbox: document.getElementById('select-all-checkbox'),
         selectAiBtn: document.getElementById('select-ai-btn'),
-
-        // Меню и панели
         menuBtn: document.getElementById('menu-btn'),
         dropdownMenu: document.getElementById('dropdownMenu'),
         settingsPanel: document.getElementById('settingsPanel'),
@@ -72,15 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
         contextMenu: document.getElementById('context-menu'),
         langSwitcherBtn: document.getElementById('lang-switcher-btn'),
     };
-    const DB_NAME = 'AnimeGalleryDB_V20_FinalStand', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
+    const DB_NAME = 'AnimeGalleryDB_V21_Rebuild', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
     let state = { currentSort: 'date_desc', isFavFilterActive: false, currentCategory: 'waifu', currentLanguage: 'ru', contextedItemId: null, lastAiResult: null, };
     const categories = { 'waifu': { keywords: 'anime, waifu, girl', sources: { random: 'https://api.waifu.im/search/?included_tags=waifu&is_nsfw=false', search: 'https://api.waifu.im/search/?included_tags=waifu&is_nsfw=false' } }, 'anime_gif': { keywords: 'anime, gif, animation', sources: { random: 'https://api.waifu.im/search/?included_tags=maid&gif=true&is_nsfw=false', search: 'https://api.waifu.im/search/?included_tags=uniform&gif=true&is_nsfw=false' } }, 'cyberpunk': { keywords: 'cyberpunk, neon, futuristic, city', sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk', search: 'https://source.unsplash.com/1600x900/?cyberpunk,neon' } }, 'nature': { keywords: 'nature, landscape, mountains, forest', sources: { random: 'https://source.unsplash.com/1600x900/?nature', search: 'https://source.unsplash.com/1600x900/?landscape,nature' } }, 'games': { keywords: 'video game, fan art, gaming', sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character', search: 'https://source.unsplash.com/1600x900/?video,game,art' } }, 'dark_anime': { keywords: 'dark fantasy, gothic, monster, horror art', sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,art', search: 'https://source.unsplash.com/1600x900/?gothic,art' } }, 'supercars': { keywords: 'supercar, sportscar, luxury car', sources: { random: 'https://source.unsplash.com/1600x900/?supercar', search: 'https://source.unsplash.com/1600x900/?sportscar' } }, };
     const themes = [ { id: "dark" }, { id: "light" }, { id: "gray" }, { id: "retro" }, { id: "dracula" }, { id: "nord" }, { id: "solarized" }, { id: "gruvbox" }, { id: "monokai" }, { id: "tomorrow_night" }, { id: "one_dark" }, { id: "cyberpunk" }, { id: "matrix" }, { id: "crimson" }, { id: "synthwave" } ];
     const styles = { 'no_style': '', 'anime': ', anime style, waifu', 'photorealistic': ', photorealistic, 4k, ultra detailed', 'fantasy': ', fantasy art, intricate details, epic scene', 'cyberpunk_style': ', cyberpunk style, neon lights', 'digital_painting': ', digital painting, concept art', 'low_poly': ', low poly, isometric' };
     const defaultBackgroundSources = [ { name: 'cyberpunk', url: './backgrounds/cyberpunk.jpg'}, { name: 'night-tokyo', url: './backgrounds/night-tokyo.jpg'}, { name: 'canyon', url: './backgrounds/canyon.jpg'}, { name: 'mountain-river', url: './backgrounds/mountain-river.jpg'}, { name: 'dark-fantasy', url: './backgrounds/dark-fantasy.jpg'}, { name: 'noir-landscape', url: './backgrounds/noir-landscape.jpg'}, { name: 'auto-night', url: './backgrounds/auto-night.jpg'}, { name: 'anime-city', url: './backgrounds/anime-city.jpg'}, { name: 'nier-2b', url: './backgrounds/nier-2b.jpg'}, { name: 'genos', url: './backgrounds/genos.png'} ];
+    const translations = { en: { select_all_label: 'Select all', select_ai_only_label: 'Select AI only', /* Добавь остальные переводы сюда */ }, ru: { select_all_label: 'Выбрать всё', select_ai_only_label: 'Выбрать только AI', /* Добавь остальные переводы сюда */ } };
+    
+    // --- 2. Основные функции ---
     const openDb = () => new Promise((resolve, reject) => { const request = indexedDB.open(DB_NAME, DB_VERSION); request.onerror = () => reject("Не удалось открыть IndexedDB."); request.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_SETTINGS)) db.createObjectStore(STORE_SETTINGS); if (!db.objectStoreNames.contains(STORE_GALLERY)) { const galleryStore = db.createObjectStore(STORE_GALLERY, { keyPath: 'id' }); galleryStore.createIndex('category', 'category', { unique: false }); } if (!db.objectStoreNames.contains(STORE_BACKGROUNDS)) db.createObjectStore(STORE_BACKGROUNDS, { keyPath: 'id' }); }; request.onsuccess = e => resolve(e.target.result); });
     const dbRequest = (storeName, type, ...args) => new Promise(async (resolve, reject) => { try { const db = await openDb(); const tx = db.transaction(storeName, type.startsWith('get') ? 'readonly' : 'readwrite'); const store = tx.objectStore(storeName); const req = store[type](...args); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(`Ошибка транзакции (${storeName}): ${req.error}`); } catch (e) { reject(e) } });
-    const translations = { en: { select_all_label: 'Select all', select_ai_only_label: 'Select AI only', /* Добавь остальные переводы сюда */ }, ru: { select_all_label: 'Выбрать всё', select_ai_only_label: 'Выбрать только AI', /* Добавь остальные переводы сюда */ } };
     const setLanguage = (lang) => { state.currentLanguage = lang; localStorage.setItem('language', lang); const langPack = translations[lang] || translations.ru; document.querySelectorAll('[data-lang-key]').forEach(el => { const key = el.dataset.langKey; if (langPack[key]) el.textContent = langPack[key]; }); document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => { const key = el.dataset.langPlaceholderKey; if (langPack[key]) el.placeholder = langPack[key]; }); renderCategories(); renderThemes(); renderStyles(); renderSortOptions(); };
     const renderGallery = async () => { try { let allGalleryData = await dbRequest(STORE_GALLERY, 'getAll'); elements.galleryContainer.innerHTML = ""; let categoryData = allGalleryData.filter(item => item.category === state.currentCategory); let dataToRender = state.isFavFilterActive ? categoryData.filter(e => e.favorite) : [...categoryData]; if (state.currentSort === 'date_asc') dataToRender.sort((a, b) => a.id - b.id); else if (state.currentSort === 'date_desc') dataToRender.sort((a, b) => b.id - a.id); else if (state.currentSort === 'random') { for (let i = dataToRender.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [dataToRender[i], dataToRender[j]] = [dataToRender[j], dataToRender[i]]; } } if (dataToRender.length > 0) { elements.selectionControls.classList.remove('hidden'); } else { elements.selectionControls.classList.add('hidden'); } elements.selectAllCheckbox.checked = false; dataToRender.forEach(entry => { const item = document.createElement('div'); item.className = "gallery-item"; item.dataset.id = entry.id; const img = document.createElement('img'); img.src = entry.data; img.loading = "lazy"; img.alt = entry.prompt; img.addEventListener('dblclick', () => viewImage(entry.data)); const controls = document.createElement('div'); controls.className = 'item-controls'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.className = 'select-checkbox'; const fav = document.createElement('div'); fav.innerText = entry.favorite ? '⭐' : '☆'; fav.className = 'favorite-star'; fav.addEventListener('click', (e) => {e.stopPropagation(); toggleFavorite(entry.id, !entry.favorite)}); const menuBtn = document.createElement('button'); menuBtn.className = 'item-menu-btn'; menuBtn.innerHTML = '⋮'; menuBtn.addEventListener('click', (e) => { e.stopPropagation(); showContextMenu(e.target, entry.id); }); controls.append(cb, fav, menuBtn); item.append(img, controls); elements.galleryContainer.appendChild(item); }); } catch (e) { showError(`Не удалось загрузить галерею: ${e.message}`); }};
     const renderCategories = () => { elements.categoryControls.innerHTML = ''; const langPack = translations[state.currentLanguage] || translations.ru; for (const id of Object.keys(categories)) { const btn = document.createElement('button'); btn.dataset.categoryId = id; btn.textContent = (langPack[`cat_${id}`] || id.replace(/_/g, ' ')); if (id === state.currentCategory) btn.classList.add('active-category'); btn.addEventListener('click', () => handleCategoryClick(id)); elements.categoryControls.appendChild(btn); } };
@@ -175,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
         
-        // ⭐ ПРАВИЛЬНЫЕ ОБРАБОТЧИКИ ⭐
         setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, false); // Новая кнопка настроек
         setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
         setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
