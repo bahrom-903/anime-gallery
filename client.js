@@ -2,7 +2,7 @@
 //          CLIENT.JS. АБСОЛЮТНЫЙ ФИНАЛ v3. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
 // =================================================================
 
-// client.js - v23 (THE ABSOLUTE FINAL - Rebuild 3.0)
+// client.js - v23 (THE TRUE FINAL - Rebuild 3.0)
 document.addEventListener('DOMContentLoaded', () => {
     const elements = {
         generateBtn: document.getElementById('generate-btn'), findSimilarBtn: document.getElementById('find-similar-btn'), randomImageBtn: document.getElementById('random-image-btn'),
@@ -34,7 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const DB_NAME = 'AnimeGalleryDB_V22_TrueFinal', DB_VERSION = 1, STORE_SETTINGS = 'settings', STORE_GALLERY = 'gallery', STORE_BACKGROUNDS = 'defaultBackgrounds';
     let state = { currentSort: 'date_desc', isFavFilterActive: false, currentCategory: 'waifu', currentLanguage: 'ru', contextedItemId: null, lastAiResult: null, };
-    const categories = { 'waifu': {}, 'anime_gif': {}, 'cyberpunk': {}, 'nature': {}, 'games': {}, 'dark_anime': {}, 'supercars': {} };
+    const categories = { 
+        waifu: { sources: { random: 'https://api.waifu.im/search/?included_tags=waifu', search: 'https://api.waifu.im/search/?included_tags=waifu' } }, 
+        anime_gif: { sources: { random: 'https://api.waifu.im/search/?included_tags=maid&gif=true', search: 'https://api.waifu.im/search/?included_tags=uniform&gif=true' } }, 
+        cyberpunk: { sources: { random: 'https://source.unsplash.com/1600x900/?cyberpunk', search: 'https://source.unsplash.com/1600x900/?cyberpunk,neon' } }, 
+        nature: { sources: { random: 'https://source.unsplash.com/1600x900/?nature', search: 'https://source.unsplash.com/1600x900/?landscape,nature' } }, 
+        games: { sources: { random: 'https://source.unsplash.com/1600x900/?gaming,character', search: 'https://source.unsplash.com/1600x900/?video,game,art' } }, 
+        dark_anime: { sources: { random: 'https://source.unsplash.com/1600x900/?dark,fantasy,art', search: 'https://source.unsplash.com/1600x900/?gothic,art' } }, 
+        supercars: { sources: { random: 'https://source.unsplash.com/1600x900/?supercar', search: 'https://source.unsplash.com/1600x900/?sportscar' } }, 
+    };
     const themes = [ { id: "dark" }, { id: "light" }, { id: "gray" }, { id: "retro" }, { id: "dracula" }, { id: "nord" }, { id: "solarized" }, { id: "gruvbox" }, { id: "monokai" }, { id: "tomorrow_night" }, { id: "one_dark" }, { id: "cyberpunk" }, { id: "matrix" }, { id: "crimson" }, { id: "synthwave" } ];
     const styles = { 'no_style': '', 'anime': ', anime style, waifu', 'photorealistic': ', photorealistic, 4k, ultra detailed', 'fantasy': ', fantasy art, intricate details, epic scene', 'cyberpunk_style': ', cyberpunk style, neon lights', 'digital_painting': ', digital painting, concept art', 'low_poly': ', low poly, isometric' };
     const defaultBackgroundSources = [ { name: 'cyberpunk', url: './backgrounds/cyberpunk.jpg'}, { name: 'night-tokyo', url: './backgrounds/night-tokyo.jpg'}, { name: 'canyon', url: './backgrounds/canyon.jpg'}, { name: 'mountain-river', url: './backgrounds/mountain-river.jpg'}, { name: 'dark-fantasy', url: './backgrounds/dark-fantasy.jpg'}, { name: 'noir-landscape', url: './backgrounds/noir-landscape.jpg'}, { name: 'auto-night', url: './backgrounds/auto-night.jpg'}, { name: 'anime-city', url: './backgrounds/anime-city.jpg'}, { name: 'nier-2b', url: './backgrounds/nier-2b.jpg'}, { name: 'genos', url: './backgrounds/genos.png'} ];
@@ -97,10 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
             state.currentSort = localStorage.getItem('gallerySort') || 'date_desc';
             state.isFavFilterActive = localStorage.getItem('isFavFilterActive') === 'true';
             state.currentCategory = localStorage.getItem('currentCategory') || 'waifu';
-            state.currentLanguage = localStorage.getItem('language') || 'ru';
+            const savedLang = localStorage.getItem('language') || 'ru';
             applyTheme(localStorage.getItem('theme') || 'dark');
-            setLanguage(state.currentLanguage);
-            await renderBackgrounds();
+            setLanguage(savedLang); // Сначала устанавливаем язык
+            await renderBackgrounds(); // Потом рендерим все остальное
             renderGallery();
             const savedBgBlob = await dbRequest(STORE_SETTINGS, 'get', 'customBackground');
             if (savedBgBlob) {
@@ -192,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         elements.selectAiCheckbox.addEventListener('change', (e) => {
             if (e.target.checked) selectAiItems();
-            else selectAllItems(false);
         });
         
         elements.sortGrid.addEventListener('click', async (e) => {
