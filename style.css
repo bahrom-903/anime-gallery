@@ -1,5 +1,5 @@
 /* =================================================================
-          CSS-ФАЙЛ. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+          CSS-ФАЙЛ. ФИНАЛЬНЫЙ АККОРД v2. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
    ================================================================= */
 
 :root {
@@ -132,34 +132,19 @@ textarea { resize: vertical; }
     text-align: left; padding: 8px 12px; margin: 0; font-size: 14px; cursor: pointer;
 }
 #context-menu button:hover { background-color: rgba(255, 255, 255, 0.1); }
-
-/* ⭐ НОВЫЕ СТИЛИ ДЛЯ МЕНЮ И НАСТРОЕК ⭐ */
 #menu-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: 1px solid var(--input-border);
-    font-size: 20px;
-    color: #888;
-    cursor: pointer;
-    padding: 5px 10px;
-    margin: 0;
-    line-height: 1;
+    position: absolute; top: 20px; right: 20px;
+    background: none; border: 1px solid var(--input-border); font-size: 20px;
+    color: #888; cursor: pointer; padding: 5px 10px; margin: 0; line-height: 1;
     transition: all 0.2s;
 }
-#menu-btn:hover {
-    color: var(--text-color);
-    border-color: var(--text-color);
-    transform: scale(1.1);
-}
+#menu-btn:hover { color: var(--text-color); border-color: var(--text-color); transform: scale(1.1); }
 #dropdownMenu {
-    display:none; position:absolute; right: 15px; top: 60px; background:var(--panel-bg);
+    display:none; position:absolute; right: 20px; top: 65px; background:var(--panel-bg);
     color:var(--text-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.3);
     padding:10px; min-width:200px; z-index: 1000;
 }
 #dropdownMenu button { width: 100%; text-align: left; }
-
 .panel-overlay {
     display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
     background:#000000bb; z-index:1001; justify-content:center; align-items:center;
@@ -174,10 +159,10 @@ textarea { resize: vertical; }
 .panel-header .panel-back-btn, .panel-header .panel-reset-btn {
     all: unset; box-sizing: border-box; cursor: pointer; font-size: 24px; color: #aaa;
     line-height: 1; padding: 5px; width: 30px; height: 30px; text-align: center;
-    transition: color 0.2s, transform 0.2s;
+    transition: color 0.2s, transform 0.2s; display: inline-block;
 }
-.panel-header .panel-back-btn:hover, .panel-header .panel-reset-btn:hover { color: var(--button-bg); transform: scale(1.1); }
-
+.panel-header .panel-back-btn:hover, .panel-header .panel-reset-btn:hover { color: var(--button-bg); }
+.panel-header .panel-reset-btn:hover { transform: rotate(90deg); }
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
     all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
@@ -201,16 +186,16 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     background-position: center; margin-bottom: 6px;
 }
 .preview-card .preview-name { padding: 4px; }
-
-/* ⭐ СТИЛИ И АНИМАЦИИ ДЛЯ ИКОНОК ⭐ */
 .animated-icon-btn {
     background: none; border: 1px solid var(--input-border); color: #aaa;
-    transition: all 0.3s;
+    transition: all 0.3s; padding: 10px;
 }
-.animated-icon-btn:hover {
+.animated-icon-btn .icon {
+    display: inline-block;
+    transition: transform 0.3s;
+}
+.animated-icon-btn:hover .icon {
     transform: rotate(360deg);
-    color: var(--text-color);
-    border-color: var(--text-color);
 }
 .lang-icon {
     display: inline-block;
@@ -220,7 +205,6 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     transform: rotate(360deg);
 }
 
-/* Стили для нового блока с чекбоксом */
 .selection-controls {
     margin-bottom: 15px; padding: 10px; background: rgba(var(--panel-bg-rgb), 0.5);
     border-radius: 8px; display: flex; align-items: center; gap: 20px;
@@ -233,3 +217,4 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 .selection-controls input[type="checkbox"] {
     width: 20px; height: 20px; cursor: pointer;
 }
+#image-viewer .panel-header { justify-content: flex-end; }
