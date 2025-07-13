@@ -21,7 +21,6 @@ body.theme-retro {
     --panel-bg-rgb: 255,248,225; --button-bg: #8d6e63; --button-text: #ffffff; --input-bg: #efebe9;
     --input-border: #d7ccc8; --button-bg-rgb: 141, 110, 99;
 }
-/* ... (другие темы без изменений) */
 
 body {
     background-color: var(--bg-color); color: var(--text-color); font-family: 'Exo 2', sans-serif;
@@ -29,6 +28,7 @@ body {
 }
 .container { max-width:1200px; margin:auto; padding:20px; box-sizing: border-box; }
 .generator-area, .gallery-wrapper {
+    position: relative; /* Нужно для позиционирования кнопки настроек */
     background: var(--panel-bg); padding: 20px; border-radius: 12px;
     margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
@@ -71,11 +71,7 @@ textarea { resize: vertical; }
 #negative-prompt-input { height: 50px; }
 .feedback-textarea { height: 150px; }
 .prompt-controls { display: flex; gap: 10px; margin-bottom: 15px; }
-#style-selector {
-    flex-grow: 1;
-    width: 0; /* ⭐ ФИКС ВЕРСТКИ ⭐ */
-}
-#random-prompt-btn { flex-shrink: 0; }
+#style-selector { flex-grow: 1; }
 .generator-controls, .gallery-controls {
     display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
     margin-bottom: 15px;
@@ -141,6 +137,27 @@ textarea { resize: vertical; }
     padding:10px; min-width:200px;
 }
 #dropdownMenu button { width: 100%; text-align: left; }
+
+/* ⭐ СТИЛИ ДЛЯ НОВОЙ КНОПКИ НАСТРОЕК ⭐ */
+.panel-corner-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #888;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0;
+    line-height: 1;
+    transition: color 0.2s, transform 0.2s;
+}
+.panel-corner-btn:hover {
+    color: var(--text-color);
+    transform: rotate(45deg);
+}
+
 .panel-overlay {
     display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
     background:#000000bb; z-index:1001; justify-content:center; align-items:center;
@@ -185,7 +202,6 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     margin-top: 25px; padding: 10px; background-color: rgba(var(--button-bg-rgb), 0.1);
     border-left: 3px solid var(--button-bg);
 }
-.preview-box.theme-dark { background-color: #1f2937; } .preview-box.theme-light { background-color: #f9fafb; } .preview-box.theme-gray { background-color: #d1d5db; } .preview-box.theme-retro { background-color: #f4e9d8; } .preview-box.theme-dracula { background-color: #282a36; } .preview-box.theme-nord { background-color: #2e3440; } .preview-box.theme-solarized { background-color: #002b36; } .preview-box.theme-gruvbox { background-color: #282828; } .preview-box.theme-monokai { background-color: #272822; } .preview-box.theme-tomorrow_night { background-color: #1d1f21; } .preview-box.theme-one_dark { background-color: #282c34; } .preview-box.theme-cyberpunk { background-color: #0d0221; } .preview-box.theme-matrix { background-color: #000000; } .preview-box.theme-crimson { background-color: #1a1a1a; } .preview-box.theme-synthwave { background-color: #261c4f; }
 
 /* Стили для просмотрщика картинок */
 #image-viewer {
@@ -234,8 +250,20 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     height: 20px;
     cursor: pointer;
 }
-#select-ai-btn {
-    padding: 5px 10px;
-    font-size: 14px;
+
+/* ⭐ СТИЛИ ДЛЯ ТЕКСТОВОЙ КНОПКИ ⭐ */
+.text-button {
+    background: none;
+    border: none;
+    color: var(--button-bg);
+    cursor: pointer;
+    padding: 5px;
     margin: 0;
+    font-size: 16px;
+    text-decoration: none;
+    transition: text-decoration 0.2s, filter 0.2s;
+}
+.text-button:hover {
+    text-decoration: underline;
+    filter: brightness(1.2);
 }
