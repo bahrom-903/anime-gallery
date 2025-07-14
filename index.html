@@ -11,7 +11,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
 </head>
 <body class="theme-dark">
-
     <div class="container">
         <div class="generator-area">
             <div class="main-header">
@@ -19,41 +18,49 @@
                     <h1>🎨 Anime Gallery & 🧠 AI Generator</h1>
                 </div>
                 <div class="header-controls">
-                    <div id="user-profile-area" class="user-profile hidden">
-                        <span id="user-credits" class="user-credits" title="Ваши кредиты">⚡ 10</span>
-                        <span id="user-avatar" class="user-avatar">B</span>
-                    </div>
                     <button id="menu-btn" class="icon-button">☰</button>
                 </div>
             </div>
-            <!-- Остальная часть генератора... -->
-            <textarea id="prompt-input" ...></textarea>
-            <textarea id="negative-prompt-input" ...></textarea>
-            <div class="prompt-controls">...</div>
-            <div class="generator-controls">...</div>
-            <div id="loader" ...>...</div>
+            <textarea id="prompt-input" placeholder="Опишите ваше изображение..."></textarea>
+            <textarea id="negative-prompt-input" placeholder="Что не нужно рисовать..."></textarea>
+            <div class="prompt-controls">
+                <select id="style-selector"></select>
+                <button id="random-prompt-btn" class="icon-button" title="Случайный промпт">🎲</button>
+            </div>
+            <div class="generator-controls">
+                <button id="generate-btn">Генерация AI</button>
+                <button id="find-similar-btn">Найти в сети</button>
+                <button id="random-image-btn" title="Случайное из сети">🎲 Случайное</button>
+            </div>
+            <div id="loader" class="loader hidden">
+                <div class="spinner"></div>
+                <p id="loader-text"></p>
+            </div>
             <div id="result-image-container"></div>
-            <p id="error-message" ...></p>
-            <div id="result-controls" ...>...</div>
+            <p id="error-message" class="error-message hidden"></p>
+            <div id="result-controls" class="result-controls hidden">
+                <button id="save-btn">Сохранить</button>
+                <button id="preview-btn">Предпросмотр</button>
+            </div>
         </div>
-
         <div class="gallery-wrapper">
-            <!-- Содержимое галереи... -->
+            <h2>Галерея</h2>
+            <div id="category-controls" class="category-controls"></div>
+            <div class="gallery-main-controls">
+                <button id="upload-btn">Загрузить свое</button>
+                <input type="file" id="upload-input" class="hidden">
+                <button id="export-selected-btn">Экспорт</button>
+                <button id="set-bg-from-gallery-btn">Фоном</button>
+                <button id="delete-selected-btn">Удалить</button>
+            </div>
+            <div id="selection-controls" class="selection-controls hidden">
+                <label><input type="checkbox" id="select-all-checkbox"> Выбрать всё</label>
+                <label><input type="checkbox" id="select-ai-checkbox"> Выбрать только AI</label>
+            </div>
+            <div class="gallery" id="gallery"></div>
         </div>
     </div>
-
-    <div id="dropdownMenu" class="dropdown-menu hidden">
-        <button id="auth-open-btn" class="panel-button" data-lang-key="login_signup">Войти / Регистрация</button>
-        <hr>
-        <button id="settings-open-btn" data-lang-key="settings">Настройки</button>
-        <button id="changelog-open-btn" data-lang-key="changelog">Что нового</button>
-        <hr>
-        <button id="bug-report-open-btn" data-lang-key="report_bug">Сообщить об ошибке</button>
-        <button id="suggestion-open-btn" data-lang-key="suggest_idea">Предложить идею</button>
-    </div>
-    
-    <!-- Остальные панели (authPanel, settingsPanel и т.д.) -->
-
-    <script type="module" src="js/main.js"></script>
+    <!-- Скрипт теперь подключается в корне и не является модулем -->
+    <script src="main.js"></script>
 </body>
 </html>
