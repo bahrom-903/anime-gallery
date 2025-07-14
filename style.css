@@ -136,7 +136,18 @@ textarea { resize: vertical; }
     overflow-y: auto; max-height: 90vh;
 }
 .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.panel-header h2 { margin:0; font-size: 1.5em; }
+.panel-header h2 { margin:0; flex-grow: 1; text-align: left; }
+.panel-header-icon {
+    all: unset; box-sizing: border-box; cursor: pointer; font-size: 22px;
+    color: #aaa; line-height: 1; padding: 5px; width: 28px; height: 28px;
+    text-align: center; transition: color 0.2s, transform 0.2s;
+}
+.panel-header-icon:hover { color: var(--button-bg); transform: scale(1.1); }
+.panel-close-btn { all: unset; box-sizing: border-box; cursor: pointer; font-size: 22px; color: #aaa; line-height: 1; padding: 5px; width: 28px; height: 28px; text-align: center; transition: color 0.2s, transform 0.2s; }
+.panel-close-btn:hover { color: var(--error-color); transform: scale(1.1); }
+.panel-back-btn { all: unset; box-sizing: border-box; cursor: pointer; font-size: 22px; color: #aaa; line-height: 1; padding: 5px; width: 28px; height: 28px; text-align: center; transition: color 0.2s, transform 0.2s; }
+.panel-back-btn:hover { color: var(--button-bg); transform: scale(1.1); }
+
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
     all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
