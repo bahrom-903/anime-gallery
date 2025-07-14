@@ -1,10 +1,7 @@
 /* =================================================================
-          CSS-ФАЙЛ. ФИНАЛЬНЫЙ НОКАУТ. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+          CSS-ФАЙЛ. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
    ================================================================= */
-h1 {
-    font-size: 2em; /* Или другой подходящий размер */
-    margin-bottom: 20px;
-}
+
 :root {
     --bg-color: #1f2937; --bg-color-rgb: 31,41,55; --text-color: #f9fafb; --panel-bg: #111827;
     --panel-bg-rgb: 17,24,39; --button-bg: #10b981; --button-text: #ffffff; --input-bg: #374151;
@@ -20,14 +17,19 @@ body.theme-retro {
     --panel-bg-rgb: 255,248,225; --button-bg: #8d6e63; --button-text: #ffffff; --input-bg: #efebe9;
     --input-border: #d7ccc8; --button-bg-rgb: 141, 110, 99;
 }
+/* ... (другие темы без изменений) */
 
 body {
     background-color: var(--bg-color); color: var(--text-color); font-family: 'Exo 2', sans-serif;
     margin:0; padding:0; transition: background-color 0.3s, color 0.3s; min-height: 100vh;
 }
 .container { max-width:1200px; margin:auto; padding:20px; box-sizing: border-box; }
-.generator-area, .gallery-wrapper {
-    position: relative;
+.generator-area {
+    position: relative; /* Нужно для позиционирования кнопки меню */
+    background: var(--panel-bg); padding: 20px; border-radius: 12px;
+    margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.gallery-wrapper {
     background: var(--panel-bg); padding: 20px; border-radius: 12px;
     margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
@@ -39,8 +41,7 @@ body.has-custom-bg .generator-area, body.has-custom-bg .gallery-wrapper {
     background-color: rgba(var(--panel-bg-rgb), 0.75); backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);
 }
-h2 { text-align: center; }
-
+h1, h2 { text-align: center; }
 button {
     background: var(--button-bg); color: var(--button-text); border: none; padding: 10px 20px;
     font-size: 1em; border-radius: 5px; cursor: pointer; margin: 5px;
@@ -80,12 +81,6 @@ textarea { resize: vertical; }
     justify-content: center;
     gap: 10px;
     margin-top: 15px;
-}
-#result-image-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
 }
 #result-image-container img {
     display: block; max-width: 100%; max-height: 400px; border-radius: 8px;
@@ -131,19 +126,6 @@ textarea { resize: vertical; }
     text-align: left; padding: 8px 12px; margin: 0; font-size: 14px; cursor: pointer;
 }
 #context-menu button:hover { background-color: rgba(255, 255, 255, 0.1); }
-#menu-btn {
-    position: absolute; top: 20px; right: 20px;
-    background: none; border: 1px solid var(--input-border); font-size: 20px;
-    color: #888; cursor: pointer; padding: 5px 10px; margin: 0; line-height: 1;
-    transition: all 0.2s;
-}
-#menu-btn:hover { color: var(--text-color); border-color: var(--text-color); transform: scale(1.1); }
-#dropdownMenu {
-    display:none; position:absolute; right: 20px; top: 65px; background:var(--panel-bg);
-    color:var(--text-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.3);
-    padding:10px; min-width:200px; z-index: 1000;
-}
-#dropdownMenu button { width: 100%; text-align: left; }
 .panel-overlay {
     display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
     background:#000000bb; z-index:1001; justify-content:center; align-items:center;
@@ -151,17 +133,10 @@ textarea { resize: vertical; }
 .panel-content {
     background: var(--panel-bg); width: 90%; max-width: 500px; padding:20px;
     border-radius:12px; color:var(--text-color); box-sizing:border-box;
-    overflow-y: auto; max-height: 90vh; position: relative;
+    overflow-y: auto; max-height: 90vh;
 }
 .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.panel-header h2 { margin:0; font-size: 1.5em; flex-grow: 1; text-align: center; padding: 0 30px;}
-.panel-header .panel-back-btn, .panel-header .panel-reset-btn {
-    all: unset; box-sizing: border-box; cursor: pointer; font-size: 24px; color: #aaa;
-    line-height: 1; padding: 5px; width: 30px; height: 30px; text-align: center;
-    transition: color 0.2s, transform 0.2s; display: inline-block;
-}
-.panel-header .panel-back-btn:hover, .panel-header .panel-reset-btn:hover { color: var(--button-bg); }
-.panel-header .panel-reset-btn .icon:hover { transform: rotate(90deg); }
+.panel-header h2 { margin:0; font-size: 1.5em; }
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
     all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
@@ -185,37 +160,76 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     background-position: center; margin-bottom: 6px;
 }
 .preview-card .preview-name { padding: 4px; }
+.changelog-content h3 {
+    margin-top: 20px; margin-bottom: 10px; color: var(--button-bg);
+    border-bottom: 1px solid var(--input-border); padding-bottom: 5px;
+}
+.changelog-content ul { list-style-type: '✅ '; padding-left: 20px; }
+.changelog-content li { margin-bottom: 8px; }
 
-.animated-icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+/* ⭐ СТИЛИ ДЛЯ НОВОГО МЕНЮ ⭐ */
+.menu-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1001; /* Выше чем заголовок, но ниже чем выпадающее меню */
+    font-size: 20px;
+    padding: 5px 10px;
+    margin: 0;
 }
-.animated-icon-btn .icon {
-    display: inline-block;
-    transition: transform 0.3s;
+#dropdownMenu {
+    position:absolute;
+    top: 55px; /* Под кнопкой */
+    right: 15px;
+    z-index: 1002;
+    background:var(--panel-bg);
+    color:var(--text-color);
+    border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3);
+    padding:10px;
+    min-width:200px;
+    border: 1px solid var(--input-border);
 }
-.animated-icon-btn:hover .icon {
-    transform: rotate(360deg);
+#dropdownMenu button {
+    width: 100%;
+    text-align: left;
+    margin: 2px 0;
+    padding: 8px 12px;
 }
-.lang-icon {
-    display: inline-block;
-    transition: transform 0.5s ease-in-out;
+
+/* Стили для текстовой кнопки */
+.text-button {
+    background: none;
+    border: none;
+    color: var(--button-bg);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    margin: 0;
 }
-.lang-icon.rotating {
-    transform: rotate(360deg);
+.text-button:hover {
+    filter: brightness(1.2);
 }
+
+/* Стили для просмотрщика картинок */
+#image-viewer {
+    background: rgba(0, 0, 0, 0.8); padding: 2.5vh 2.5vw; box-sizing: border-box;
+}
+#image-viewer .panel-content {
+    background: none; padding: 0; box-shadow: none; width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center;
+}
+#image-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
+
+/* Стили для блока с чекбоксом */
 .selection-controls {
     margin-bottom: 15px; padding: 10px; background: rgba(var(--panel-bg-rgb), 0.5);
     border-radius: 8px; display: flex; align-items: center; gap: 20px;
     border: 1px solid var(--input-border);
 }
 .selection-controls label {
-    font-size: 16px; cursor: pointer; display: flex;
-    align-items: center; gap: 8px; user-select: none;
+    font-size: 16px; cursor: pointer; display: flex; align-items: center;
+    gap: 8px; user-select: none;
 }
-.selection-controls input[type="checkbox"] {
-    width: 20px; height: 20px; cursor: pointer;
-}
-#image-viewer .panel-header { justify-content: flex-end; }
+.selection-controls input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
