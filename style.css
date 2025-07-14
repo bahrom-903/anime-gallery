@@ -219,3 +219,73 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     width: 20px; height: 20px; cursor: pointer;
 }
 #image-viewer .panel-header { justify-content: flex-end; }
+/* =================================================================
+          ДОБАВЛЕНИЯ ДЛЯ НОВОЙ СТРУКТУРЫ (РЕФАКТОРИНГ)
+   ================================================================= */
+
+/* 1. Исправляем заголовок */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 1.5em; /* Немного уменьшим, чтобы все влезло */
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 2. Унифицируем кнопки с иконками */
+.icon-button {
+    padding: 10px;
+    font-size: 1.2em;
+    min-width: 44px; /* Для удобного нажатия */
+    text-align: center;
+}
+
+/* 3. Центрируем управляющие кнопки */
+.generator-controls, .result-controls, .gallery-main-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 4. Исправляем поле для вывода ошибок */
+.error-message {
+    color: var(--error-color);
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* 5. Стили для будущей авторизации */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+.user-credits {
+    font-weight: bold;
+    font-size: 1.1em;
+}
