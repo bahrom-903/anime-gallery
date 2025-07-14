@@ -20,6 +20,8 @@ function renderCategories() {
     elements.categoryControls.innerHTML = '';
     for (const id of Object.keys(CATEGORIES)) {
         const btn = document.createElement('button');
+        // Используем классы из style.css для единообразия
+        btn.className = "panel-button";
         btn.dataset.categoryId = id;
         btn.textContent = t(`cat_${id}`);
         if (id === reactive.currentCategory) {
@@ -35,7 +37,7 @@ function renderCategories() {
  */
 export async function renderGallery() {
     try {
-        elements.galleryContainer.innerHTML = 'Загрузка галереи...'; // TODO: Перевести
+        elements.galleryContainer.innerHTML = `<p>${t('status_loading_gallery') || 'Загрузка галереи...'}</p>`;
         
         let galleryItems = await db.getByIndex(DB_CONFIG.STORES.GALLERY, 'category', reactive.currentCategory);
 
@@ -57,7 +59,7 @@ export async function renderGallery() {
         elements.galleryContainer.innerHTML = ''; // Очищаем перед рендером
         
         if (galleryItems.length === 0) {
-            elements.galleryContainer.textContent = 'В этой категории пока нет изображений.'; // TODO: Перевести
+            elements.galleryContainer.innerHTML = `<p class="empty-gallery-message">${t('status_gallery_empty') || 'В этой категории пока нет изображений.'}</p>`;
             elements.selectionControls.classList.add('hidden');
             return;
         }
@@ -67,7 +69,7 @@ export async function renderGallery() {
 
     } catch (error) {
         console.error('Ошибка при рендере галереи:', error);
-        elements.galleryContainer.textContent = 'Не удалось загрузить галерею.'; // TODO: Перевести
+        elements.galleryContainer.innerHTML = `<p class="error-message">${t('error_gallery_load') || 'Не удалось загрузить галерею.'}</p>`;
     }
 }
 
@@ -121,10 +123,9 @@ function createGalleryItem(entry) {
  */
 function handleCategoryClick(categoryId) {
     updateState({ currentCategory: categoryId });
-    // Сохраняем выбор в localStorage для следующего визита
     localStorage.setItem('currentCategory', categoryId);
-    renderCategories(); // Перерисовываем кнопки, чтобы подсветить активную
-    renderGallery(); // Перерисовываем галерею для новой категории
+    renderCategories();
+    renderGallery();
 }
 
 /**
@@ -138,7 +139,7 @@ async function toggleFavorite(id, isFavorite) {
         if (entry) {
             entry.favorite = isFavorite;
             await db.put(DB_CONFIG.STORES.GALLERY, entry);
-            await renderGallery(); // Перерисовываем, чтобы обновить звездочку
+            await renderGallery();
         }
     } catch (error) {
         console.error('Ошибка при изменении статуса избранного:', error);
@@ -147,7 +148,6 @@ async function toggleFavorite(id, isFavorite) {
 
 /**
  * Добавляет новое изображение в галерею.
- * Эта функция будет вызываться из других модулей (например, из generator.js).
  * @param {string} dataUrl - Изображение в формате Base64.
  * @param {string} prompt - Промпт.
  * @param {boolean} isAi - Флаг AI-генерации.
@@ -165,7 +165,6 @@ export async function addImageToGallery(dataUrl, prompt, isAi) {
 
     try {
         await db.put(DB_CONFIG.STORES.GALLERY, newEntry);
-        // Если новая картинка добавлена в текущую активную категорию, обновляем галерею
         if (newEntry.category === reactive.currentCategory) {
             await renderGallery();
         }
@@ -179,7 +178,6 @@ export async function addImageToGallery(dataUrl, prompt, isAi) {
  * Инициализация компонента "Галерея".
  */
 export function initializeGallery() {
-    // Загружаем последнюю активную категорию из localStorage
     const savedCategory = localStorage.getItem('currentCategory') || 'waifu';
     updateState({ currentCategory: savedCategory });
     
