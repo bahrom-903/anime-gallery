@@ -1,5 +1,5 @@
 /* =================================================================
-          CSS-ФАЙЛ. ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+          CSS-ФАЙЛ. САМЫЙ ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
    ================================================================= */
 
 :root {
@@ -42,6 +42,10 @@ body.has-custom-bg .generator-area, body.has-custom-bg .gallery-wrapper {
     -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);
 }
 h1, h2 { text-align: center; }
+/* ⭐ Стили для главного заголовка ⭐ */
+h1 { margin-top: 0; margin-bottom: 20px; }
+/* Убираем верхний отступ у заголовка внутри панели */
+.generator-area > h2 { margin-top: 0; }
 button {
     background: var(--button-bg); color: var(--button-text); border: none; padding: 10px 20px;
     font-size: 1em; border-radius: 5px; cursor: pointer; margin: 5px;
@@ -136,18 +140,19 @@ textarea { resize: vertical; }
     overflow-y: auto; max-height: 90vh;
 }
 .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.panel-header h2 { margin:0; flex-grow: 1; text-align: left; }
+.panel-header h2 { margin:0; flex-grow: 1; text-align: center; } /* Заголовок по центру */
+.panel-header .panel-header-icon:first-child { margin-right: auto; } /* Кнопка слева */
+.panel-header .panel-header-icon:last-child { margin-left: auto; } /* Кнопка справа */
+/* ⭐ ЕДИНЫЙ СТИЛЬ ДЛЯ ВСЕХ ИКОНОК В ЗАГОЛОВКЕ ⭐ */
 .panel-header-icon {
     all: unset; box-sizing: border-box; cursor: pointer; font-size: 22px;
-    color: #aaa; line-height: 1; padding: 5px; width: 28px; height: 28px;
-    text-align: center; transition: color 0.2s, transform 0.2s;
+    color: #aaa; line-height: 1; padding: 5px; width: 32px; height: 32px;
+    text-align: center; transition: color 0.2s, transform 0.2s; border-radius: 50%;
 }
-.panel-header-icon:hover { color: var(--button-bg); transform: scale(1.1); }
-.panel-close-btn { all: unset; box-sizing: border-box; cursor: pointer; font-size: 22px; color: #aaa; line-height: 1; padding: 5px; width: 28px; height: 28px; text-align: center; transition: color 0.2s, transform 0.2s; }
-.panel-close-btn:hover { color: var(--error-color); transform: scale(1.1); }
-.panel-back-btn { all: unset; box-sizing: border-box; cursor: pointer; font-size: 22px; color: #aaa; line-height: 1; padding: 5px; width: 28px; height: 28px; text-align: center; transition: color 0.2s, transform 0.2s; }
-.panel-back-btn:hover { color: var(--button-bg); transform: scale(1.1); }
-
+.panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+.panel-back-btn:hover { color: var(--button-bg); }
+.panel-close-btn:hover { color: var(--error-color); }
+#theme-reset-btn:hover, #background-reset-btn:hover { color: var(--button-bg); }
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
     all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
@@ -180,57 +185,36 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 
 /* ⭐ СТИЛИ ДЛЯ НОВОГО МЕНЮ ⭐ */
 .menu-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 1001; /* Выше чем заголовок, но ниже чем выпадающее меню */
-    font-size: 20px;
-    padding: 5px 10px;
-    margin: 0;
+    position: absolute; top: 15px; right: 15px; z-index: 1001;
+    font-size: 20px; padding: 5px 10px; margin: 0;
 }
 #dropdownMenu {
-    position:absolute;
-    top: 55px; /* Под кнопкой */
-    right: 15px;
-    z-index: 1002;
-    background:var(--panel-bg);
-    color:var(--text-color);
-    border-radius:8px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.3);
-    padding:10px;
-    min-width:200px;
+    position:absolute; top: 55px; right: 15px; z-index: 1002;
+    background:var(--panel-bg); color:var(--text-color); border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3); padding:10px; min-width:200px;
     border: 1px solid var(--input-border);
 }
-#dropdownMenu button {
-    width: 100%;
-    text-align: left;
-    margin: 2px 0;
-    padding: 8px 12px;
-}
+#dropdownMenu button { width: 100%; text-align: left; margin: 2px 0; padding: 8px 12px; }
 
 /* Стили для текстовой кнопки */
-.text-button {
-    background: none;
-    border: none;
-    color: var(--button-bg);
-    text-decoration: underline;
+.text-like-button {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
     cursor: pointer;
-    font-size: 16px;
-    padding: 0;
-    margin: 0;
+    transition: background-color 0.2s;
+    color: var(--text-color);
 }
-.text-button:hover {
-    filter: brightness(1.2);
+.text-like-button:hover {
+    background-color: var(--button-bg);
+    color: var(--button-text);
 }
 
 /* Стили для просмотрщика картинок */
-#image-viewer {
-    background: rgba(0, 0, 0, 0.8); padding: 2.5vh 2.5vw; box-sizing: border-box;
-}
-#image-viewer .panel-content {
-    background: none; padding: 0; box-shadow: none; width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center;
-}
+#image-viewer { background: rgba(0, 0, 0, 0.8); padding: 2.5vh 2.5vw; box-sizing: border-box; }
+#image-viewer .panel-content { background: none; padding: 0; box-shadow: none; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
 #image-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
 
 /* Стили для блока с чекбоксом */
@@ -239,8 +223,5 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     border-radius: 8px; display: flex; align-items: center; gap: 20px;
     border: 1px solid var(--input-border);
 }
-.selection-controls label {
-    font-size: 16px; cursor: pointer; display: flex; align-items: center;
-    gap: 8px; user-select: none;
-}
+.selection-controls label { font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none; }
 .selection-controls input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
