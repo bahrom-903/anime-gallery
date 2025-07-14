@@ -11,56 +11,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
 </head>
 <body class="theme-dark">
+    <!-- Этот HTML полностью соответствует вашему эталонному дизайну и коду client.js -->
     <div class="container">
+        <!-- Генератор -->
         <div class="generator-area">
-            <div class="main-header">
-                <div class="main-title-wrapper">
-                    <h1>🎨 Anime Gallery & 🧠 AI Generator</h1>
-                </div>
-                <div class="header-controls">
-                    <button id="menu-btn" class="icon-button">☰</button>
-                </div>
-            </div>
-            <textarea id="prompt-input" placeholder="Опишите ваше изображение..."></textarea>
-            <textarea id="negative-prompt-input" placeholder="Что не нужно рисовать..."></textarea>
-            <div class="prompt-controls">
-                <select id="style-selector"></select>
-                <button id="random-prompt-btn" class="icon-button" title="Случайный промпт">🎲</button>
-            </div>
+            <button id="menu-btn" class="icon-button top-right">☰</button>
+            <h1 class="main-title">🎨 AI Anime Generator 🧠</h1>
+            <textarea id="prompt-input" placeholder="Опишите вашу идею здесь..."></textarea>
             <div class="generator-controls">
-                <button id="generate-btn">Генерация AI</button>
+                <button id="generate-btn">Сгенерировать AI</button>
                 <button id="find-similar-btn">Найти в сети</button>
-                <button id="random-image-btn" title="Случайное из сети">🎲 Случайное</button>
+                <button id="random-image-btn">Случайное аниме</button>
             </div>
-            <div id="loader" class="loader hidden">
-                <div class="spinner"></div>
-                <p id="loader-text"></p>
-            </div>
+            <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-text"></p></div>
             <div id="result-image-container"></div>
             <p id="error-message" class="error-message hidden"></p>
             <div id="result-controls" class="result-controls hidden">
-                <button id="save-btn">Сохранить</button>
-                <button id="preview-btn">Предпросмотр</button>
+                <button id="save-btn">💾 Сохранить</button>
+                <button id="preview-btn">🔍 Предпросмотр</button>
             </div>
         </div>
+
+        <!-- Галерея -->
         <div class="gallery-wrapper">
-            <h2>Галерея</h2>
+            <h2>🖼️ Галерея</h2>
             <div id="category-controls" class="category-controls"></div>
             <div class="gallery-main-controls">
-                <button id="upload-btn">Загрузить свое</button>
-                <input type="file" id="upload-input" class="hidden">
-                <button id="export-selected-btn">Экспорт</button>
-                <button id="set-bg-from-gallery-btn">Фоном</button>
-                <button id="delete-selected-btn">Удалить</button>
+                <button id="upload-btn">📥 Загрузить своё</button>
+                <button id="export-selected-btn">📤 Экспорт</button>
+                <button id="set-bg-from-gallery-btn">🖼️ Сделать фоном</button>
+                <button id="delete-selected-btn">🗑️ Удалить</button>
             </div>
             <div id="selection-controls" class="selection-controls hidden">
                 <label><input type="checkbox" id="select-all-checkbox"> Выбрать всё</label>
-                <label><input type="checkbox" id="select-ai-checkbox"> Выбрать только AI</label>
             </div>
             <div class="gallery" id="gallery"></div>
         </div>
     </div>
-    <!-- Скрипт теперь подключается в корне и не является модулем -->
-    <script src="main.js"></script>
+    
+    <!-- Подключаем ОДИН скрипт, который теперь будет называться client.js -->
+    <script src="client.js"></script>
 </body>
 </html>
