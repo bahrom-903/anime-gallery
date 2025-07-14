@@ -11,8 +11,8 @@ import { initializeThemeAndBackground } from './core/themeManager.js';
 
 // Импорт компонентов
 import { initializeGenerator } from './components/generator.js';
+import { initializeGallery } from './components/gallery.js';
 // ... в будущем здесь будут импорты других компонентов:
-// import { initializeGallery } from './components/gallery.js';
 // import { initializePanels } from './components/panels.js';
 // import { initializeAuth } from './components/auth.js';
 
@@ -29,13 +29,13 @@ function initializeApp() {
     // 3. "Оживляем" компонент генератора
     initializeGenerator();
 
-    // 4. "Оживляем" компонент галереи (когда он будет готов)
-    // initializeGallery();
+    // 4. "Оживляем" компонент галереи
+    initializeGallery();
 
     // 5. "Оживляем" все панели (когда они будут готовы)
     // initializePanels();
 
-    // 6. "Оживляем" компонент авторизации (когда он будет готов)
+    // 6. "Оживляем" компонент авторизации (когда он будет готовы)
     // initializeAuth();
 
     console.log('Приложение успешно инициализировано!');
@@ -44,6 +44,4 @@ function initializeApp() {
 
 // --- Запуск приложения ---
 
-// Мы используем DOMContentLoaded, чтобы быть уверенными, что весь HTML
-// уже загружен, прежде чем мы начнем с ним работать.
 document.addEventListener('DOMContentLoaded', initializeApp);
