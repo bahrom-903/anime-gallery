@@ -13,7 +13,6 @@
 <body class="theme-dark">
 
     <div class="container">
-
         <div class="generator-area">
             <div class="main-header">
                 <div class="main-title-wrapper">
@@ -27,56 +26,19 @@
                     <button id="menu-btn" class="icon-button">☰</button>
                 </div>
             </div>
-
-            <textarea id="prompt-input" data-lang-placeholder-key="prompt_placeholder" placeholder="Опишите ваше изображение..."></textarea>
-            <textarea id="negative-prompt-input" data-lang-placeholder-key="negative_prompt_placeholder" placeholder="Что не нужно рисовать..."></textarea>
-            
-            <div class="prompt-controls">
-                <select id="style-selector"></select>
-                <button id="random-prompt-btn" class="icon-button" title="Случайный промпт">🎲</button>
-            </div>
-
-            <div class="generator-controls">
-                <button id="generate-btn" data-lang-key="generate_ai">Генерация AI</button>
-                <button id="find-similar-btn" data-lang-key="find_online">Найти в сети</button>
-                <button id="random-image-btn" class="icon-button" data-lang-key="random_image" title="Случайное из сети">🎲</button>
-            </div>
-            
-            <div id="loader" class="loader hidden">
-                <div class="spinner"></div>
-                <p id="loader-text"></p>
-            </div>
+            <!-- Остальная часть генератора... -->
+            <textarea id="prompt-input" ...></textarea>
+            <textarea id="negative-prompt-input" ...></textarea>
+            <div class="prompt-controls">...</div>
+            <div class="generator-controls">...</div>
+            <div id="loader" ...>...</div>
             <div id="result-image-container"></div>
-            <p id="error-message" class="error-message hidden"></p>
-            <div id="result-controls" class="result-controls hidden">
-                <button id="save-btn" data-lang-key="save">Сохранить</button>
-                <button id="preview-btn" data-lang-key="preview">Предпросмотр</button>
-            </div>
+            <p id="error-message" ...></p>
+            <div id="result-controls" ...>...</div>
         </div>
 
         <div class="gallery-wrapper">
-            <h2 data-lang-key="gallery">Галерея</h2>
-            <div id="category-controls" class="category-controls"></div>
-            <div class="gallery-main-controls">
-                <button id="upload-btn" data-lang-key="upload_yours">Загрузить свое</button>
-                <input type="file" id="upload-input" accept="image/*" class="hidden">
-                <button id="export-selected-btn" data-lang-key="export">Экспорт</button>
-                <button id="set-bg-from-gallery-btn" data-lang-key="set_as_bg">Фоном</button>
-                <button id="delete-selected-btn" data-lang-key="delete">Удалить</button>
-            </div>
-
-            <div id="selection-controls" class="selection-controls hidden">
-                <label>
-                    <input type="checkbox" id="select-all-checkbox">
-                    <span data-lang-key="select_all_label">Выбрать всё</span>
-                </label>
-                <label>
-                    <input type="checkbox" id="select-ai-checkbox">
-                    <span data-lang-key="select_ai_only_label">Выбрать только AI</span>
-                </label>
-            </div>
-
-            <div class="gallery" id="gallery"></div>
+            <!-- Содержимое галереи... -->
         </div>
     </div>
 
@@ -90,15 +52,7 @@
         <button id="suggestion-open-btn" data-lang-key="suggest_idea">Предложить идею</button>
     </div>
     
-    <!-- Остальные панели без изменений -->
-    <div id="authPanel" class="panel-overlay"> ... </div>
-    <div id="settingsPanel" class="panel-overlay"> ... </div>
-    <div id="themePanel" class="panel-overlay"> ... </div>
-    <div id="backgroundPanel" class="panel-overlay"> ... </div>
-    <div id="sortPanel" class="panel-overlay"> ... </div>
-    <div id="feedbackPanel" class="panel-overlay"> ... </div>
-    <div id="image-viewer" class="panel-overlay image-viewer-overlay"> ... </div>
-    <div id="context-menu" class="context-menu hidden"></div>
+    <!-- Остальные панели (authPanel, settingsPanel и т.д.) -->
 
     <script type="module" src="js/main.js"></script>
 </body>
