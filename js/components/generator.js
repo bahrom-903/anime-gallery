@@ -13,6 +13,8 @@ import { reactive, updateState, AI_STYLES, RANDOM_PROMPT_BRAIN } from '../state.
 import { generateAiImage, getImageFromSource } from '../api/generation.js';
 // Импортируем локализацию
 import { t } from '../core/i18n.js';
+// Импортируем функцию добавления в галерею
+import { addImageToGallery } from './gallery.js';
 
 
 /**
@@ -21,19 +23,16 @@ import { t } from '../core/i18n.js';
  * @param {string} [message=''] - Сообщение для лоадера.
  */
 function setGeneratorUiState(isLoading, message = '') {
-    // Включаем/выключаем все кнопки генератора
     const buttons = [elements.generateBtn, elements.findSimilarBtn, elements.randomImageBtn, elements.randomPromptBtn];
     buttons.forEach(btn => {
         if (btn) btn.disabled = isLoading;
     });
 
-    // Показываем/скрываем лоадер
     elements.loader.classList.toggle('hidden', !isLoading);
     if (isLoading) {
         elements.loaderText.textContent = message;
     }
 
-    // При начале новой загрузки очищаем предыдущий результат и ошибки
     if (isLoading) {
         elements.imageContainer.innerHTML = '';
         elements.errorMessage.classList.add('hidden');
@@ -50,21 +49,20 @@ function setGeneratorUiState(isLoading, message = '') {
  * @param {boolean} isAiGenerated - Флаг, является ли изображение AI-генерацией.
  */
 function displayImage(imageUrl, prompt, isAiGenerated) {
-    // Сохраняем результат в глобальное состояние
     updateState({ lastAiResult: { imageUrl, prompt, isAiGenerated } });
 
     const img = new Image();
-    img.crossOrigin = "Anonymous"; // Важно для сохранения в галерею
+    img.crossOrigin = "Anonymous";
     img.src = imageUrl;
     img.alt = prompt;
 
     img.onload = () => {
-        elements.imageContainer.innerHTML = ''; // Очищаем контейнер
+        elements.imageContainer.innerHTML = '';
         elements.imageContainer.appendChild(img);
         elements.resultControls.classList.remove('hidden');
     };
     img.onerror = () => {
-        showError(t('error_network')); // Показываем ошибку, если картинка не загрузилась
+        showError(t('error_network'));
         setGeneratorUiState(false);
     };
 }
@@ -88,7 +86,7 @@ async function handleAiGeneration() {
     const category = reactive.currentCategory;
 
     if (!userPrompt) {
-        showError('Введите описание для генерации.'); // TODO: перевести
+        showError('Введите описание для генерации.');
         return;
     }
 
@@ -105,14 +103,44 @@ async function handleAiGeneration() {
     }
 }
 
+async function handleSaveToGallery() {
+    if (!reactive.lastAiResult) return;
+
+    setGeneratorUiState(true, 'Сохранение...');
+    try {
+        const response = await fetch(reactive.lastAiResult.imageUrl);
+        if (!response.ok) throw new Error('Сетевая ошибка при скачивании изображения');
+        
+        const blob = await response.blob();
+
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+        
+        await addImageToGallery(
+            dataUrl,
+            reactive.lastAiResult.prompt,
+            reactive.lastAiResult.isAiGenerated
+        );
+
+    } catch (error) {
+        console.error(error);
+        showError("Ошибка сохранения: " + error.message);
+    } finally {
+        setGeneratorUiState(false);
+    }
+}
+
+
 async function handleFindSimilar() {
-    // TODO: Добавить логику получения URL для поиска из state.js
     showError("Функция 'Найти в сети' в разработке.");
 }
 
 async function handleGetRandom() {
-     // TODO: Добавить логику получения URL для случайного из state.js
-    showError("Функция 'Случайное' в разработке.");
+    showError("Функ-я 'Случайное' в разработке.");
 }
 
 function handleRandomPrompt() {
@@ -124,10 +152,8 @@ function handleRandomPrompt() {
 
 /**
  * Инициализация компонента "Генератор".
- * Навешивает все обработчики событий и настраивает начальное состояние.
  */
 export function initializeGenerator() {
-    // Заполняем селектор стилей
     for (const [id, value] of Object.entries(AI_STYLES)) {
         const option = document.createElement('option');
         option.value = value;
@@ -135,11 +161,9 @@ export function initializeGenerator() {
         elements.styleSelector.appendChild(option);
     }
 
-    // Навешиваем обработчики на кнопки
     elements.generateBtn.addEventListener('click', handleAiGeneration);
     elements.findSimilarBtn.addEventListener('click', handleFindSimilar);
     elements.randomImageBtn.addEventListener('click', handleGetRandom);
     elements.randomPromptBtn.addEventListener('click', handleRandomPrompt);
-
-    // TODO: Добавить обработчики для кнопок 'Сохранить' и 'Предпросмотр'
+    elements.saveBtn.addEventListener('click', handleSaveToGallery);
 }
