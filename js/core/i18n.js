@@ -91,6 +91,10 @@ const translations = {
         error_network: 'Сетевая ошибка. Проверьте подключение.',
         status_sending: 'Отправка...',
         status_sent_success: 'Спасибо! Ваше сообщение отправлено.',
+        status_loading_gallery: 'Загрузка галереи...',
+        status_gallery_empty: 'В этой категории пока нет изображений. Попробуйте сгенерировать что-нибудь!',
+        error_gallery_load: 'Не удалось загрузить галерею.',
+        error_prompt_empty: 'Пожалуйста, введите описание для генерации.',
     },
 
     // Английский язык
@@ -172,6 +176,10 @@ const translations = {
         error_network: 'Network error. Please check your connection.',
         status_sending: 'Sending...',
         status_sent_success: 'Thank you! Your message has been sent.',
+        status_loading_gallery: 'Loading gallery...',
+        status_gallery_empty: 'There are no images in this category yet. Try generating something!',
+        error_gallery_load: 'Failed to load gallery.',
+        error_prompt_empty: 'Please enter a description to generate.',
     }
 };
 
