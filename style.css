@@ -138,7 +138,7 @@ textarea { resize: vertical; }
     overflow-y: auto; max-height: 90vh;
 }
 .panel-header { display:flex; align-items:center; margin-bottom:20px; }
-.panel-header h2 { flex-grow: 1; text-align: center; padding: 0 40px; }
+.panel-header h2 { flex-grow: 1; text-align: center; }
 .panel-header .panel-header-icon {
     all: unset; box-sizing: border-box; cursor: pointer; font-size: 24px;
     font-weight: bold; color: #aaa; line-height: 1; padding: 5px;
@@ -146,6 +146,8 @@ textarea { resize: vertical; }
     justify-content: center; transition: color 0.2s, transform 0.2s, background-color 0.2s; border-radius: 50%;
 }
 .panel-header .panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+.panel-header .panel-back-btn { margin-right: auto; }
+.panel-header .panel-close-btn, .panel-header #theme-reset-btn, .panel-header #background-reset-btn { margin-left: auto; }
 .panel-back-btn:hover { color: var(--button-bg); }
 .panel-close-btn:hover { color: var(--error-color); }
 #theme-reset-btn:hover, #background-reset-btn:hover { color: var(--button-bg); }
