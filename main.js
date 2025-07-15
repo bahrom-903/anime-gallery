@@ -79,7 +79,7 @@ const handlers = {
     setLanguage: (lang) => { setState('currentLanguage', lang); ui.setLanguage(elements, lang, config.TRANSLATIONS, handlers); },
     renderGallery: () => ui.renderGallery(elements, handlers),
     renderCategories: () => ui.renderCategories(elements, config.TRANSLATIONS, handleCategoryClick),
-    renderThemes: () => ui.renderThemes(elements),
+    renderThemes: () => ui.renderThemes(elements, ui.applyTheme),
     renderStyles: () => ui.renderStyles(elements, config.TRANSLATIONS),
     renderChangelog: () => ui.renderChangelog(elements),
     openPanel: ui.openPanel,
@@ -88,6 +88,18 @@ const handlers = {
     showContextMenu: (target, id) => ui.showContextMenu(elements, target, id, config.TRANSLATIONS, {setContextedItemId: (val) => setState('contextedItemId', val)}),
     handleFavFilter,
     getLangPack: () => config.TRANSLATIONS[getState().currentLanguage] || config.TRANSLATIONS.ru,
+    getGalleryData: () => {
+        return dbRequest('gallery', 'readonly', store => store.getAll()).then(allData => {
+            let categoryData = allData.filter(item => item.category === getState().currentCategory);
+            let dataToRender = getState().isFavFilterActive ? categoryData.filter(e => e.favorite) : [...categoryData];
+            const sortType = getState().currentSort;
+            if (sortType === 'date_asc') dataToRender.sort((a, b) => a.id - b.id);
+            else if (sortType === 'date_desc') dataToRender.sort((a, b) => b.id - a.id);
+            else if (sortType === 'random') dataToRender.sort(() => Math.random() - 0.5);
+            return dataToRender;
+        });
+    },
+    getStoredBackgrounds: () => dbRequest('defaultBackgrounds', 'readonly', store => store.getAll()),
 };
 
 // === 4. Финальная инициализация ===
@@ -101,7 +113,7 @@ const init = async () => {
         ui.applyTheme(savedTheme);
         const savedLang = localStorage.getItem('language') || 'ru';
         handlers.setLanguage(savedLang);
-        await ui.renderBackgrounds(elements, { getLangPack: handlers.getLangPack, getStoredBackgrounds: () => dbRequest('defaultBackgrounds', 'readonly', store => store.getAll()) });
+        await ui.renderBackgrounds(elements, handlers);
         await handlers.renderGallery();
         setupEventListeners(elements, handlers);
         console.log("Приложение успешно инициализировано!");
