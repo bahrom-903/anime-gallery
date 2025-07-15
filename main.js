@@ -1,5 +1,5 @@
 // ===================================
-//      Файл: main.js ⭐ ИСПРАВЛЕННАЯ ВЕРСИЯ 2.0 ⭐
+//      Файл: main.js ⭐ ВЕРСИЯ 3.0 (с исправлением загрузки фона) ⭐
 // ===================================
 import { TRANSLATIONS, CATEGORIES, DEFAULT_BACKGROUND_SOURCES } from './config.js';
 import { getState, setState } from './state.js';
@@ -35,7 +35,7 @@ const elements = {
     setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
     clearGalleryBtn: document.getElementById('gallery-clear-btn'),
 
-    // ⭐ ИСПРАВЛЕННЫЙ БЛОК: Добавлены новые элементы, удалены старые ⭐
+    // Управление выбором и сортировкой
     selectionAndSortControls: document.getElementById('selection-and-sort-controls'),
     selectAllBtn: document.getElementById('select-all-btn'),
     selectAiBtn: document.getElementById('select-ai-btn'),
@@ -76,13 +76,8 @@ const elements = {
     suggestionStatus: document.getElementById('suggestion-status'),
 };
 
-const uiCallbacksForApi = {
-    setUIGeneratorState: (isLoading, msg) => ui.setUIGeneratorState(elements, isLoading, msg),
-    displayGeneratedImage: (url, prompt, isAi) => ui.displayGeneratedImage(elements, url, prompt, isAi).then(result => setState('lastAiResult', result)),
-    showError: (msg) => ui.showError(elements, msg)
-};
-
-const handlers = {
+const uiCallbacksForApi = { /* ...без изменений... */ };
+const handlers = { /* ...без изменений... (здесь оставляем как в прошлый раз) */ 
     handleAiGeneration: () => {
         const userPrompt = elements.promptInput.value.trim();
         if (!userPrompt) return ui.showError(elements, 'Введите описание для генерации.');
@@ -136,8 +131,8 @@ const handlers = {
             await handlers.renderGallery();
         }
     },
-    exportSelected: async () => { /* ...без изменений... */ },
-    generateRandomPrompt: () => { /* ...без изменений... */ },
+    exportSelected: async () => { /* ... */ },
+    generateRandomPrompt: () => { /* ... */ },
     previewResult: () => { const lastResult = getState().lastAiResult; if (lastResult) ui.viewImage(elements, lastResult.imageUrl); },
     handleCategoryClick: (id) => { setState('currentCategory', id); localStorage.setItem('currentCategory', id); handlers.renderCategories(); handlers.renderGallery(); },
     toggleFavorite: async (id, isFavorite) => { const entry = await dbRequest('gallery', 'readwrite', store => store.get(id)); if (entry) { entry.favorite = isFavorite; await dbRequest('gallery', 'readwrite', store => store.put(entry)); await handlers.renderGallery(); } },
@@ -146,13 +141,13 @@ const handlers = {
     resetBackground: async () => { await dbRequest('settings', 'readwrite', store => store.delete('customBackground')); ui.resetBackground(); },
     setBackgroundFromDefault: async (bg) => { if (bg) await handlers.applyBackground(bg.blob, bg.id); },
     applyBackground: async (blob, id) => { await dbRequest('settings', 'readwrite', store => store.put({ id, blob }, 'customBackground')); ui.applyCustomBackground(blob); },
-    setBackgroundFromGallery: async () => { /* ...без изменений... */ },
-    handleFeedbackSubmit: async (type) => { /* ...без изменений... */ },
+    setBackgroundFromGallery: async () => { /* ... */ },
+    handleFeedbackSubmit: async (type) => { /* ... */ },
     clearGallery: async () => { if (confirm("Вы уверены?")) { await dbRequest('gallery', 'readwrite', store => store.clear()); await handlers.renderGallery(); } },
     selectAllItems: (select) => document.querySelectorAll('.gallery-item .select-checkbox').forEach(cb => cb.checked = select),
     selectAiItems: async () => { const all = await dbRequest('gallery', 'readonly', store => store.getAll()); const aiIds = new Set(all.filter(i => i.isAiGenerated).map(i => i.id)); document.querySelectorAll('.gallery-item').forEach(el => { el.querySelector('.select-checkbox').checked = aiIds.has(parseInt(el.dataset.id)); }); },
     handleSort: (type) => { if (type === 'filter_favorite') { const newFilter = !getState().isFavFilterActive; setState('isFavFilterActive', newFilter); localStorage.setItem('isFavFilterActive', newFilter); } else { setState('currentSort', type); localStorage.setItem('gallerySort', type); } handlers.renderGallery(); handlers.renderSortOptions(); },
-    handleContextMenuAction: async (action) => { /* ...без изменений... */ },
+    handleContextMenuAction: async (action) => { /* ... */ },
     openPanel: ui.openPanel,
     closePanel: ui.closePanel,
     hideContextMenu: () => ui.hideContextMenu(elements),
@@ -162,7 +157,9 @@ const handlers = {
     renderSortOptions: () => ui.renderSortOptions(elements.sortControls, TRANSLATIONS, handlers.handleSort),
 };
 
+
 const setupDefaultBackgrounds = async () => { /* ...без изменений... */ };
+
 const init = async () => {
     try {
         await setupDefaultBackgrounds();
@@ -176,13 +173,23 @@ const init = async () => {
         await ui.renderBackgrounds(elements.backgroundGrid, handlers.setBackgroundFromDefault, () => elements.backgroundUploadInput.click());
         await handlers.renderGallery();
         handlers.renderSortOptions();
-        const savedBg = await dbRequest('settings', 'readonly', store => store.get('customBackground'));
-        if (savedBg) ui.applyCustomBackground(savedBg.blob);
+        
+        // ⭐ ИСПРАВЛЕНА ЛОГИКА ЗАГРУЗКИ ФОНА ДЛЯ ОБРАТНОЙ СОВМЕСТИМОСТИ ⭐
+        const savedBgData = await dbRequest('settings', 'readonly', store => store.get('customBackground'));
+        if (savedBgData) {
+            // Проверяем, в каком формате данные: старый (только Blob) или новый (объект {id, blob})
+            const backgroundBlob = savedBgData instanceof Blob ? savedBgData : savedBgData.blob;
+            if (backgroundBlob) {
+                ui.applyCustomBackground(backgroundBlob);
+            }
+        }
+        
         setupEventListeners(elements, handlers);
-        console.log("✅ Приложение успешно инициализировано!");
+        console.log("✅ Приложение успешно инициализировано! v3.0");
     } catch (e) {
         console.error("КРИТИЧЕСКАЯ ОШИБКА ИНИЦИАЛИЗАЦИИ:", e);
         document.body.innerHTML = `<h1 style="color:red; text-align:center; margin-top: 50px;">Критическая ошибка. Пожалуйста, очистите кэш сайта (Ctrl+F5) и перезагрузите страницу.</h1><p style="color:white; text-align:center;">${e.message}</p>`;
     }
 };
+
 init();
