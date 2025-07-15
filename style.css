@@ -74,9 +74,13 @@ textarea { resize: vertical; }
     display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
     margin-bottom: 15px;
 }
-.result-area {
-    margin-top: 20px; min-height: 256px; display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
+/* ⭐ ЦЕНТРИРОВАНИЕ СГЕНЕРИРОВАННОЙ КАРТИНКИ ⭐ */
+#result-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 256px; /* Оставляем для лоадера */
+    margin-top: 20px;
 }
 .result-controls {
     display: flex;
@@ -139,16 +143,19 @@ textarea { resize: vertical; }
 }
 .panel-header { display:flex; align-items:center; margin-bottom:20px; }
 .panel-header h2 { flex-grow: 1; text-align: center; }
-.panel-header .panel-header-icon {
+.panel-header .panel-header-icon:first-child { margin-right: auto; }
+.panel-header .panel-header-icon:last-child { margin-left: auto; }
+/* ⭐ ЕДИНЫЙ СТИЛЬ ДЛЯ ВСЕХ ИКОНОК В ЗАГОЛОВКЕ ⭐ */
+.panel-header-icon {
     all: unset; box-sizing: border-box; cursor: pointer; font-size: 24px;
     font-weight: bold; color: #aaa; line-height: 1; padding: 5px;
     width: 36px; height: 36px; display: flex; align-items: center;
     justify-content: center; transition: color 0.2s, transform 0.2s, background-color 0.2s; border-radius: 50%;
 }
-.panel-header .panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
-.panel-header .panel-back-btn:hover { color: var(--button-bg); }
-.panel-header .panel-close-btn:hover { color: var(--error-color); }
-.panel-header #theme-reset-btn:hover, .panel-header #background-reset-btn:hover { color: var(--button-bg); }
+.panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+.panel-back-btn:hover { color: var(--button-bg); }
+.panel-close-btn:hover { color: var(--error-color); }
+#theme-reset-btn:hover, #background-reset-btn:hover { color: var(--button-bg); }
 
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
@@ -194,7 +201,7 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 }
 #dropdownMenu button { width: 100%; text-align: left; margin: 2px 0; padding: 8px 12px; }
 
-/* ⭐ СТИЛИ ДЛЯ КНОПКИ "ВЫБРАТЬ AI" ⭐ */
+/* Стили для текстовой кнопки */
 .text-like-button {
     background: var(--input-bg);
     border: 1px solid var(--input-border);
