@@ -80,7 +80,7 @@ const handlers = {
     renderThemes: () => ui.renderThemes(elements, ui.applyTheme),
     renderStyles: () => ui.renderStyles(elements, config.TRANSLATIONS),
     renderSortOptions: () => ui.renderSortOptions(elements, config.TRANSLATIONS),
-    renderChangelog: () => ui.renderChangelog(elements, config.TRANSLATIONS),
+    renderChangelog: () => ui.renderChangelog(elements),
     hideContextMenu: () => ui.hideContextMenu(elements),
     openPanel: ui.openPanel,
     closePanel: ui.closePanel,
@@ -98,16 +98,14 @@ const init = async () => {
         ui.applyTheme(savedTheme);
         const savedLang = localStorage.getItem('language') || 'ru';
         handlers.setLanguage(savedLang);
-        await ui.renderBackgrounds(elements);
+        await ui.renderBackgrounds(elements, setBackgroundFromDefault);
         await handlers.renderGallery();
+        setupEventListeners(elements, handlers); // Перенесён сюда
+        console.log("Приложение успешно инициализировано!");
     } catch (e) {
         console.error("КРИТИЧЕСКАЯ ОШИБКА ИНИЦИАЛИЗАЦИИ:", e);
         document.body.innerHTML = `<h1 style="color:red; text-align:center; margin-top: 50px;">Критическая ошибка. Пожалуйста, очистите кэш сайта (Ctrl+F5) и перезагрузите страницу.</h1>`;
     }
 };
 
-// Запускаем всё
-init().then(() => {
-    setupEventListeners(elements, handlers);
-    console.log("Приложение успешно инициализировано!");
-});
+init(); // Запускаем всё
