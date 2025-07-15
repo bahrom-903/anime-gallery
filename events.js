@@ -29,11 +29,16 @@ export const setupEventListeners = (elements, handlers) => {
     document.querySelectorAll('.panel-overlay').forEach(panel => {
         panel.addEventListener('click', (e) => {
             const target = e.target.closest('button');
-            if (target?.classList.contains('panel-close-btn') || e.target === panel) {
+            if (target?.classList.contains('panel-close-btn')) {
                 ui.closePanel(panel);
             } else if (target?.classList.contains('panel-back-btn')) {
                 ui.closePanel(panel);
-                ui.openPanel(elements.settingsPanel);
+                // Для панелей "Зала славы", "Баг-репорта" и "Идеи" кнопка "Назад" должна вести в Настройки
+                if (panel === elements.changelogPanel || panel === elements.bugReportPanel || panel === elements.suggestionPanel) {
+                    ui.openPanel(elements.settingsPanel);
+                }
+            } else if (e.target === panel) {
+                ui.closePanel(panel);
             }
         });
     });
