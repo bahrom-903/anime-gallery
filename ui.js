@@ -41,7 +41,7 @@ export const renderStyles = (elements, translations) => {
     }
 };
 
-export const renderSortOptions = (elements, translations, menuElement) => {
+export const renderSortOptions = (menuElement, translations) => {
     const langPack = translations[getState().currentLanguage] || translations.ru;
     const sortOptions = {
         'date_desc': langPack.sort_newest, 'date_asc': langPack.sort_oldest,
@@ -56,8 +56,8 @@ export const renderSortOptions = (elements, translations, menuElement) => {
     }
 };
 
-export const renderBackgrounds = (elements, handlers) => {
-    const langPack = handlers.getLangPack();
+export const renderBackgrounds = (elements, getLangPack, getStoredBackgrounds) => {
+    const langPack = getLangPack();
     elements.backgroundGrid.innerHTML = '';
     
     const uploadCard = document.createElement("div");
@@ -66,7 +66,7 @@ export const renderBackgrounds = (elements, handlers) => {
     uploadCard.innerHTML = `<div class="preview-box" style="display:flex; align-items:center; justify-content:center;font-size:3em;">+</div><div class="preview-name">${langPack.upload_your_bg}</div>`;
     elements.backgroundGrid.appendChild(uploadCard);
 
-    handlers.getStoredBackgrounds().then(storedBgs => {
+    getStoredBackgrounds().then(storedBgs => {
         storedBgs.forEach(bg => {
             const objectURL = URL.createObjectURL(bg.blob);
             const card = document.createElement("div");
@@ -131,7 +131,7 @@ export const setLanguage = (elements, lang, translations, callbacks) => {
         const key = el.dataset.langPlaceholderKey;
         if (langPack[key]) el.placeholder = langPack[key];
     });
-    callbacks.renderAll();
+    callbacks.renderAllDynamicContent();
 };
 
 export const applyTheme = (id) => {
@@ -196,7 +196,7 @@ export const showSortMenu = (elements, buttonElement, handlers) => {
     hideSortMenu(elements);
     const rect = buttonElement.getBoundingClientRect();
     const menu = elements.sortMenu;
-    renderSortOptions(elements, handlers.getLangPack(), menu);
+    renderSortOptions(menu, handlers.getLangPack());
     menu.classList.remove('hidden');
     menu.style.left = `${rect.left + window.scrollX}px`;
     menu.style.top = `${rect.bottom + window.scrollY + 5}px`;
