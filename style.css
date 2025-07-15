@@ -1,5 +1,5 @@
 /* =================================================================
-          CSS-ФАЙЛ. ⭐ ВЕРСИЯ 4.0 (ФИНАЛЬНЫЕ ШТРИХИ) ⭐
+          CSS-ФАЙЛ. ⭐ ВЕРСИЯ 5.0 (ФИНАЛЬНЫЙ РЕФАКТОРИНГ UI) ⭐
    ================================================================= */
 :root { --bg-color: #1f2937; --bg-color-rgb: 31,41,55; --text-color: #f9fafb; --panel-bg: #111827; --panel-bg-rgb: 17,24,39; --button-bg: #3b82f6; --button-text: #ffffff; --input-bg: #374151; --input-border: #4b5563; --error-color: #ef4444; --button-bg-rgb: 59, 130, 246; --active-color: #10b981;}
 body.theme-light { --bg-color: #f9fafb; --bg-color-rgb: 249,250,251; --text-color: #111827; --panel-bg: #ffffff; --panel-bg-rgb: 255,255,255; --button-bg: #3b82f6; --button-text: #ffffff; --input-bg: #e5e7eb; --input-border: #d1d5db; --active-color: #10b981; }
@@ -19,17 +19,14 @@ button:hover { filter: brightness(1.1); }
 button:active { transform: scale(0.98); }
 button:disabled { background-color: #9ca3af; color: #e5e7eb; cursor: not-allowed; transform: none; filter: none; }
 button.danger { background-color: var(--error-color); }
-button.danger:hover { filter: brightness(1.1); }
 
 textarea, select { width: 100%; padding: 12px; border: 1px solid var(--input-border); border-radius: 8px; font-size: 16px; box-sizing: border-box; background: var(--input-bg); color: var(--text-color); margin-bottom: 10px; }
 textarea { resize: vertical; }
-#prompt-input { height: 80px; } #negative-prompt-input { height: 50px; } .feedback-textarea { height: 150px; }
-
 .prompt-controls, .generator-controls, .result-controls, .gallery-actions-bar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 15px; }
 #result-image-container { display: flex; justify-content: center; align-items: center; margin-top: 15px; }
 #result-image-container img { display: block; max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-.error, .success { font-weight: bold; text-align: center; margin-top: 10px; }
-.error { color: var(--error-color); } .success { color: var(--active-color); } .hidden { display: none !important; }
+.error { color: var(--error-color); font-weight: bold; text-align: center; padding: 10px; }
+.hidden { display: none !important; }
 #loader { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 0; }
 .spinner { border: 8px solid #f3f3f340; border-top: 8px solid var(--button-bg); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -42,34 +39,34 @@ textarea { resize: vertical; }
 .select-checkbox { transform:scale(1.5); margin: 3px; cursor: pointer; } .favorite-star { font-size:24px; cursor:pointer; text-shadow: 0 0 4px black; line-height: 1; user-select: none; }
 .item-menu-btn { font-size: 20px; cursor: pointer; background: none; border: none; color: var(--text-color); padding: 0; margin: 0; line-height: 1; text-shadow: 0 0 4px black; }
 
-/* ⭐ ИСПРАВЛЕНЫ СТИЛИ КНОПОК КАТЕГОРИЙ (ПРАВИЛЬНОЕ ПОВЕДЕНИЕ) ⭐ */
 .category-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-bottom: 15px; }
 .category-controls button { background: var(--input-bg); color: var(--text-color); border: 1px solid var(--input-border); }
-.category-controls button:hover { background: var(--button-bg); color: var(--button-text); }
+.category-controls button:hover { filter: brightness(1.2); }
 .category-controls button.active-category { background: var(--button-bg); color: var(--button-text); border-color: var(--button-bg); box-shadow: 0 0 10px -2px var(--button-bg); }
 
-.selection-controls { margin-bottom: 15px; padding: 10px; background: var(--input-bg); border-radius: 8px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid var(--input-border); }
-.selection-buttons, .sort-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;}
-.text-like-button { background: var(--panel-bg); border: 1px solid var(--input-border); border-radius: 5px; padding: 8px 12px; font-size: 14px; cursor: pointer; transition: all 0.2s; color: var(--text-color); margin: 0; }
-.text-like-button:hover { background-color: var(--button-bg); color: var(--button-text); border-color: var(--button-bg); }
-.sort-controls .text-like-button.active-sort { background-color: var(--active-color); color: var(--button-text); border-color: var(--active-color); }
+/* ⭐ НОВЫЕ СТИЛИ ДЛЯ БЛОКА УПРАВЛЕНИЯ ⭐ */
+.selection-controls { margin-bottom: 15px; padding: 10px; background: var(--input-bg); border-radius: 8px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid var(--input-border); }
+.sort-controls, .filter-controls, .selection-buttons { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; flex-grow: 1;}
+.filter-controls { justify-content: center; }
+.selection-buttons { justify-content: flex-end; }
+.text-like-button { background: var(--button-bg); border: 1px solid transparent; border-radius: 5px; padding: 8px 12px; font-size: 14px; cursor: pointer; transition: all 0.2s; color: var(--button-text); margin: 0; white-space: nowrap; }
+.text-like-button:not(.active-sort) { background: var(--panel-bg); color: var(--text-color); border: 1px solid var(--input-border);}
+.text-like-button:hover { filter: brightness(1.1); }
+.text-like-button.active-sort { background-color: var(--active-color); color: var(--button-text); border-color: var(--active-color); }
 
 .menu-btn { position: absolute; top: 15px; right: 15px; z-index: 1001; font-size: 20px; padding: 5px 10px; margin: 0; }
 .dropdown-menu { position:absolute; top: 60px; right: 15px; z-index: 1002; background:var(--panel-bg); color:var(--text-color); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.3); padding:10px; min-width:200px; border: 1px solid var(--input-border); }
-/* ⭐ ИСПРАВЛЕНА ПОДСВЕТКА КНОПОК В МЕНЮ ⭐ */
 .dropdown-menu button { width: 100%; text-align: left; margin: 2px 0; padding: 8px 12px; background: none; color: var(--text-color); }
 .dropdown-menu button:hover { background-color: var(--button-bg); color: var(--button-text); }
-
-.context-menu { display: none; position: absolute; z-index: 1010; background: var(--panel-bg); border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); padding: 5px; border: 1px solid var(--input-border); }
-.context-menu button { width: 100%; background: none; border: none; color: var(--text-color); text-align: left; padding: 8px 12px; margin: 0; font-size: 14px; cursor: pointer; }
-.context-menu button:hover { background-color: rgba(255, 255, 255, 0.1); }
 
 .panel-overlay { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index:1001; justify-content:center; align-items:center; }
 .panel-content { background: var(--panel-bg); width: 90%; max-width: 500px; padding:20px; border-radius:12px; color:var(--text-color); box-sizing:border-box; overflow-y: auto; max-height: 90vh; }
 .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
 .panel-header h2 { margin:0; flex-grow: 1; text-align: center; padding: 0 10px; }
-.panel-header-icon { background: var(--button-bg); color: var(--button-text); all: unset; box-sizing: border-box; cursor: pointer; font-size: 18px; line-height: 1; padding: 8px; width: 34px; height: 34px; text-align: center; transition: all 0.2s; border-radius: 5px; background-color: var(--button-bg); color: var(--button-text); font-weight: bold; }
+/* ⭐ НОВЫЕ СТИЛИ ДЛЯ SVG-ИКОНОК ⭐ */
+.panel-header-icon { all: unset; box-sizing: border-box; cursor: pointer; background: var(--button-bg); border-radius: 5px; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
 .panel-header-icon:hover { filter: brightness(1.1); }
+.panel-header-icon svg { width: 20px; height: 20px; fill: var(--button-text); }
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margin: 5px 0; }
 .panel-button { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--input-bg); color: var(--text-color); padding: 12px; border-radius: 5px; border: 1px solid var(--input-border); cursor: pointer; transition: all 0.2s; }
@@ -78,13 +75,12 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 .preview-grid { display:grid; gap:10px; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); }
 .preview-card { background: var(--input-bg); border: 2px solid transparent; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: center; font-size: 14px; overflow: hidden; }
 .preview-card:hover { transform: scale(1.03); border-color: var(--button-bg); }
-.preview-card .preview-box { width: 100%; height: 60px; background-size: cover; background-position: center; margin-bottom: 6px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: var(--text-color); }
+.preview-card .preview-box { width: 100%; height: 60px; margin-bottom: 6px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: var(--text-color); }
 .preview-card .preview-name { padding: 4px; }
-.theme-dark .preview-box { background: #1f2937; } .theme-light .preview-box { background: #f9fafb; border: 1px solid #e5e7eb; } .theme-retro .preview-box { background: #f4e9d8; } .theme-dracula .preview-box { background: #282a36; } .theme-nord .preview-box { background: #2e3440; } .theme-solarized .preview-box { background: #002b36; } .theme-gruvbox .preview-box { background: #282828; } .theme-monokai .preview-box { background: #272822; } .theme-tomorrow_night .preview-box { background: #1d1f21; } .theme-one_dark .preview-box { background: #282c34; } .theme-cyberpunk .preview-box { background: #240046; } .theme-matrix .preview-box { background: #000; color: #0f0;} .theme-crimson .preview-box { background: #660000; } .theme-synthwave .preview-box { background: #26214f; }
+/* ⭐ ИСПРАВЛЕНО: СТИЛИ ДЛЯ ПРЕВЬЮ ФОНОВ ⭐ */
+.preview-box[style] { background-size: contain; background-repeat: no-repeat; background-position: center; }
+/* ⭐ ИСПРАВЛЕНО: "ЖЕСТКИЕ" ЦВЕТА ДЛЯ ПРЕВЬЮ ТЕМ, ЧТОБЫ ОНИ НЕ МЕНЯЛИСЬ ⭐ */
+.theme-dark { background: #1f2937; } .theme-light { background: #f9fafb; border: 1px solid #e5e7eb; } .theme-retro { background: #f4e9d8; } .theme-dracula { background: #282a36; } .theme-nord { background: #2e3440; } .theme-solarized { background: #002b36; } .theme-gruvbox { background: #282828; } .theme-monokai { background: #272822; } .theme-tomorrow_night { background: #1d1f21; } .theme-one_dark { background: #282c34; } .theme-cyberpunk { background: #240046; } .theme-matrix { background: #000; color: #0f0;} .theme-crimson { background: #660000; } .theme-synthwave { background: #26214f; }
 
 .viewer-overlay { cursor: pointer; }
 .viewer-content { cursor: default; }
-
-.changelog-content h3 { margin-top: 20px; margin-bottom: 10px; color: var(--button-bg); border-bottom: 1px solid var(--input-border); padding-bottom: 5px; }
-.changelog-content ul { list-style-type: '✅ '; padding-left: 20px; } .changelog-content li { margin-bottom: 8px; }
-.contributor-thanks { text-align: center; margin-top: 20px; opacity: 0.8; }
