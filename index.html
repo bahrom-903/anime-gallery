@@ -1,5 +1,5 @@
 <!-- =================================================================
-          HTML-ФАЙЛ. ⭐ ФИНАЛЬНАЯ УЛУЧШЕННАЯ ВЕРСИЯ ⭐
+          HTML-ФАЙЛ. ⭐ ФИНАЛЬНАЯ ОТПОЛИРОВАННАЯ ВЕРСИЯ ⭐
    ================================================================= -->
 <!DOCTYPE html>
 <html lang="ru">
@@ -15,7 +15,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- ⭐ ЗАГОЛОВОК ВЫНЕСЕН НА ГЛАВНЫЙ УРОВЕНЬ ДЛЯ ПРАВИЛЬНОЙ СТРУКТУРЫ ⭐ -->
         <h1 data-lang-key="app_title">🎨 Аниме Галерея 🧠 AI-генератор</h1>
 
         <!-- Генератор -->
@@ -29,10 +28,7 @@
             <h2 data-lang-key="new_generation">Новая генерация</h2>
             <textarea id="prompt-input" data-lang-placeholder-key="prompt_placeholder"></textarea>
             <textarea id="negative-prompt-input" data-lang-placeholder-key="negative_prompt_placeholder"></textarea>
-            
-            <div class="prompt-controls">
-                <select id="style-selector"></select>
-            </div>
+            <div class="prompt-controls"><select id="style-selector"></select></div>
 
             <div class="generator-controls">
                 <button id="generate-btn" data-lang-key="generate_ai">✨ Сгенерировать AI</button>
@@ -40,10 +36,8 @@
                 <button id="find-similar-btn" data-lang-key="find_online">🌎 Найти в сети</button>
                 <button id="random-image-btn" data-lang-key="random_image">🎲 Случайное</button>
             </div>
-            <div id="loader" class="loader hidden">
-                <div class="spinner"></div>
-                <p id="loader-text"></p>
-            </div>
+
+            <div id="loader" class="loader hidden"><div class="spinner"></div><p id="loader-text"></p></div>
             <div id="result-image-container"></div>
             <p id="error-message" class="error hidden"></p>
             <div class="result-controls hidden">
@@ -56,36 +50,41 @@
         <div class="gallery-wrapper">
             <h2 data-lang-key="gallery">📁 Галерея</h2>
             <div id="category-controls" class="category-controls"></div>
-            <div class="gallery-controls">
+            <div class="gallery-actions-bar">
                 <button id="upload-btn" data-lang-key="upload_yours">📥 Загрузить своё</button>
                 <input type="file" id="upload-input" accept="image/*" class="hidden">
                 <button id="export-btn" data-lang-key="export">📤 Экспорт</button>
                 <button id="set-bg-from-gallery-btn" data-lang-key="set_as_bg">🏞️ Сделать фоном</button>
-                <button id="delete-btn" data-lang-key="delete">🗑 Удалить</button>
+                <button id="delete-btn" data-lang-key="delete">🗑️ Удалить</button>
             </div>
 
-            <!-- ⭐ УЛУЧШЕННЫЙ И СТИЛИЗОВАННЫЙ БЛОК УПРАВЛЕНИЯ ВЫБОРОМ ⭐ -->
-            <div id="selection-controls" class="selection-controls hidden">
-                <label>
-                    <input type="checkbox" id="select-all-checkbox">
-                    <span data-lang-key="select_all_label">Выбрать всё</span>
-                </label>
-                <button id="select-ai-btn" class="text-like-button" data-lang-key="select_ai_only_label">Выбрать только AI</button>
+            <!-- ⭐ БЛОК УПРАВЛЕНИЯ ВЫБОРОМ И СОРТИРОВКОЙ. ПЕРЕНЕСЕНО И ОБЪЕДИНЕНО ⭐ -->
+            <div id="selection-and-sort-controls" class="selection-controls hidden">
+                <div class="selection-buttons">
+                    <button id="select-all-btn" class="text-like-button" data-lang-key="select_all_label">Выбрать всё</button>
+                    <button id="select-ai-btn" class="text-like-button" data-lang-key="select_ai_only_label">Выбрать только AI</button>
+                    <button id="deselect-all-btn" class="text-like-button" data-lang-key="deselect_all_label">Снять выделение</button>
+                </div>
+                <div id="sort-controls" class="sort-controls">
+                    <!-- Кнопки сортировки будут добавлены сюда из JS -->
+                </div>
             </div>
 
             <div class="gallery" id="gallery"></div>
         </div>
     </div>
 
-    <!-- Панели, которые открываются поверх всего -->
-    <div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">Настройки</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div class="panel-items"><button id="theme-panel-open-btn" class="panel-button" data-lang-key="themes">🎨 Темы</button><button id="background-panel-open-btn" class="panel-button" data-lang-key="backgrounds">🖼️ Фоны</button><button id="sort-panel-open-btn" class="panel-button" data-lang-key="sorting">🔀 Сортировка</button><hr><button id="changelog-open-btn" class="panel-button" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button id="bug-report-open-btn" class="panel-button" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button id="suggestion-open-btn" class="panel-button" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button id="gallery-clear-btn" class="panel-button danger" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
+    <!-- Панели -->
+    <div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">Настройки</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div class="panel-items"><button id="theme-panel-open-btn" class="panel-button" data-lang-key="themes">🎨 Темы</button><button id="background-panel-open-btn" class="panel-button" data-lang-key="backgrounds">🖼️ Фоны</button><hr><button id="changelog-open-btn" class="panel-button" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button id="bug-report-open-btn" class="panel-button" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button id="suggestion-open-btn" class="panel-button" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button id="gallery-clear-btn" class="panel-button danger" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
     <div id="themePanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="themes">Темы</h2><button id="theme-reset-btn" class="panel-header-icon" title="Сбросить тему">🔄</button></div><div id="themeGrid" class="preview-grid"></div></div></div>
-    <div id="backgroundPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="backgrounds">Фоны</h2><button id="background-reset-btn" class="panel-header-icon" title="Сбросить фон">🔄</button></div><div class="panel-items"><button id="background-upload-btn" class="panel-button" data-lang-key="upload_your_bg">📤 Загрузить свой фон</button><input type="file" id="background-upload-input" class="hidden" accept="image/*"></div><div id="backgroundGrid" class="preview-grid"></div></div></div>
-    <div id="sortPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="sorting">Сортировка</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div id="sortGrid" class="panel-items"></div></div></div>
+    <div id="backgroundPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="backgrounds">Фоны</h2><button id="background-reset-btn" class="panel-header-icon" title="Сбросить фон">🔄</button></div><div id="backgroundGrid" class="preview-grid"></div></div></div>
+    <!-- ⭐ УДАЛЕНА ПАНЕЛЬ СОРТИРОВКИ, ТАК КАК ОНА ТЕПЕРЬ В ОСНОВНОМ ИНТЕРФЕЙСЕ -->
     <div id="changelogPanel" class="panel-overlay"><div class="panel-content changelog-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="changelog">Зал Славы и Версии</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div id="changelog-content-area"></div></div></div>
     <div id="bugReportPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="report_bug">Сообщить о проблеме</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="bug_report_desc"></p><textarea id="bug-report-text" class="feedback-textarea" data-lang-placeholder-key="bug_report_placeholder"></textarea><button id="submit-bug-report-btn" data-lang-key="send">Отправить</button><p id="bug-report-status" class="hidden"></p></div></div>
     <div id="suggestionPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="suggest_idea">Предложить идею</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="suggestion_desc"></p><textarea id="suggestion-text" class="feedback-textarea" data-lang-placeholder-key="suggestion_placeholder"></textarea><button id="submit-suggestion-btn" data-lang-key="send">Отправить</button><p id="suggestion-status" class="hidden"></p></div></div>
-    <div id="image-viewer" class="panel-overlay"><div class="viewer-content"><img id="viewer-img" src="" alt="Image Preview"></div><button class="viewer-close-btn">✖</button></div>
+    
+    <!-- ⭐ ПРОСМОТРЩИК ИЗОБРАЖЕНИЙ: КРЕСТИК УДАЛЕН. ЗАКРЫТИЕ ПО КЛИКУ НА ФОН ⭐ -->
+    <div id="image-viewer" class="panel-overlay viewer-overlay"><div class="viewer-content"><img id="viewer-img" src="" alt="Image Preview"></div></div>
 
     <!-- Контекстное меню -->
     <div id="context-menu" class="context-menu"></div>
