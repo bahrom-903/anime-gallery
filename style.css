@@ -74,13 +74,9 @@ textarea { resize: vertical; }
     display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
     margin-bottom: 15px;
 }
-/* ⭐ ЦЕНТРИРОВАНИЕ СГЕНЕРИРОВАННОЙ КАРТИНКИ ⭐ */
 #result-image-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 256px; /* Оставляем для лоадера */
-    margin-top: 20px;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 256px; margin-top: 20px;
 }
 .result-controls {
     display: flex;
@@ -142,21 +138,17 @@ textarea { resize: vertical; }
     overflow-y: auto; max-height: 90vh;
 }
 .panel-header { display:flex; align-items:center; margin-bottom:20px; }
-.panel-header h2 { flex-grow: 1; text-align: center; }
-.panel-header .panel-header-icon:first-child { margin-right: auto; }
-.panel-header .panel-header-icon:last-child { margin-left: auto; }
-/* ⭐ ЕДИНЫЙ СТИЛЬ ДЛЯ ВСЕХ ИКОНОК В ЗАГОЛОВКЕ ⭐ */
-.panel-header-icon {
+.panel-header h2 { flex-grow: 1; text-align: center; padding: 0 40px; }
+.panel-header .panel-header-icon {
     all: unset; box-sizing: border-box; cursor: pointer; font-size: 24px;
     font-weight: bold; color: #aaa; line-height: 1; padding: 5px;
     width: 36px; height: 36px; display: flex; align-items: center;
     justify-content: center; transition: color 0.2s, transform 0.2s, background-color 0.2s; border-radius: 50%;
 }
-.panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
-.panel-back-btn:hover { color: var(--button-bg); }
-.panel-close-btn:hover { color: var(--error-color); }
-#theme-reset-btn:hover, #background-reset-btn:hover { color: var(--button-bg); }
-
+.panel-header .panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+.panel-header .panel-back-btn:hover { color: var(--button-bg); }
+.panel-header .panel-close-btn:hover { color: var(--error-color); }
+.panel-header #theme-reset-btn:hover, .panel-header #background-reset-btn:hover { color: var(--button-bg); }
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
     all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
@@ -166,9 +158,8 @@ textarea { resize: vertical; }
 }
 .panel-button:hover { background-color: rgba(255, 255, 255, 0.1); }
 hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margin: 5px 0; }
-#sortGrid, #themeGrid, #backgroundGrid { display:grid; gap:10px; }
-#sortGrid { grid-template-columns:1fr; }
-#themeGrid, #backgroundGrid { grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); }
+#sortGrid { display:grid; gap:10px; grid-template-columns:1fr; }
+#themeGrid, #backgroundGrid { display:grid; gap:10px; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); }
 .preview-card {
     background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 6px;
     cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-align: center;
@@ -188,7 +179,7 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 .changelog-content ul { list-style-type: '✅ '; padding-left: 20px; }
 .changelog-content li { margin-bottom: 8px; }
 
-/* ⭐ СТИЛИ ДЛЯ НОВОГО МЕНЮ ⭐ */
+/* ⭐ СТИЛИ ДЛЯ МЕНЮ ⭐ */
 .menu-btn {
     position: absolute; top: 15px; right: 15px; z-index: 1001;
     font-size: 20px; padding: 5px 10px; margin: 0;
@@ -201,26 +192,15 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 }
 #dropdownMenu button { width: 100%; text-align: left; margin: 2px 0; padding: 8px 12px; }
 
-/* Стили для текстовой кнопки */
+/* ⭐ СТИЛИ ДЛЯ КНОПКИ "ВЫБРАТЬ AI" ⭐ */
 .text-like-button {
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 5px;
-    padding: 8px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    background: var(--input-bg); border: 1px solid var(--input-border);
+    border-radius: 5px; padding: 8px 12px; font-size: 14px;
+    cursor: pointer; transition: background-color 0.2s, color 0.2s;
     color: var(--text-color);
 }
-.text-like-button:hover {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-}
-.text-like-button.active {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    box-shadow: 0 0 8px -2px var(--button-bg);
-}
+.text-like-button:hover { background-color: var(--button-bg); color: var(--button-text); }
+.text-like-button.active { background-color: var(--button-bg); color: var(--button-text); box-shadow: 0 0 8px -2px var(--button-bg); }
 
 /* Стили для просмотрщика картинок */
 #image-viewer { background: rgba(0, 0, 0, 0.8); padding: 2.5vh 2.5vw; box-sizing: border-box; }
@@ -235,3 +215,6 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 }
 .selection-controls label { font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none; }
 .selection-controls input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+
+/* ⭐ СТИЛИ ДЛЯ ОТОБРАЖЕНИЯ ЦВЕТА ТЕМЫ ⭐ */
+.preview-box.theme-dark { background-color: #1f2937; } .preview-box.theme-light { background-color: #f9fafb; } .preview-box.theme-gray { background-color: #d1d5db; } .preview-box.theme-retro { background-color: #f4e9d8; } .preview-box.theme-dracula { background-color: #282a36; } .preview-box.theme-nord { background-color: #2e3440; } .preview-box.theme-solarized { background-color: #002b36; } .preview-box.theme-gruvbox { background-color: #282828; } .preview-box.theme-monokai { background-color: #272822; } .preview-box.theme-tomorrow_night { background-color: #1d1f21; } .preview-box.theme-one_dark { background-color: #282c34; } .preview-box.theme-cyberpunk { background-color: #0d0221; } .preview-box.theme-matrix { background-color: #000000; } .preview-box.theme-crimson { background-color: #1a1a1a; } .preview-box.theme-synthwave { background-color: #261c4f; }
