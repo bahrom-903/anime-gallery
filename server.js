@@ -1,5 +1,5 @@
 // =================================================================
-//          СЕРВЕР. ФИНАЛЬНАЯ ВЕРСИЯ. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+//          СЕРВЕР. ⭐ ФИНАЛЬНАЯ УЛУЧШЕННАЯ ВЕРСИЯ ⭐
 // =================================================================
 
 import express from 'express';
@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 
 const app = express();
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static('.')); // Обслуживаем статику из корневой папки
 
 const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
@@ -20,11 +20,13 @@ const BROWSER_HEADERS = {
 
 // ====================================================================
 //           ⭐ МОЗГ ГЕНЕРАТОРА: КАРТА СКРЫТЫХ ПРОМПТОВ ⭐
+// Это реализация твоей идеи "супер-промптов". Теперь для каждой
+// категории к запросу пользователя добавляются эти "усилители".
 // ====================================================================
 const PROMPT_BRAIN = {
     waifu: {
         positive: 'anime artwork, anime style, key visual, vibrant, studio quality, masterpiece, best quality,',
-        negative: 'photo, realistic, 3d, render, photography, real life, text, watermark, low quality, worst quality, blurry'
+        negative: 'photo, realistic, 3d, render, photography, real life, text, watermark, low quality, worst quality, blurry, morbid, signature, ugly'
     },
     anime_gif: {
         positive: 'anime artwork, anime style, key visual, vibrant, studio quality, masterpiece, best quality,',
@@ -32,7 +34,7 @@ const PROMPT_BRAIN = {
     },
     cyberpunk: {
         positive: 'cyberpunk art, neon lights, futuristic city, cinematic, detailed, atmospheric, high-tech, masterpiece,',
-        negative: 'drawing, painting, anime, nature, day, bright, cartoon'
+        negative: 'drawing, painting, anime, nature, day, bright, cartoon, text, watermark'
     },
     nature: {
         positive: 'landscape photography, national geographic, 4k, photorealistic, stunning, beautiful, detailed, masterpiece,',
@@ -61,13 +63,13 @@ app.post('/generate-image', async (req, res) => {
         const { prompt: userPrompt, negative_prompt: userNegativePrompt, category } = req.body;
         if (!userPrompt) return res.status(400).json({ error: 'Промпт не может быть пустым.' });
 
-        // Выбираем "мозг" для текущей категории или "мозг" по умолчанию
+        // ⭐ Выбираем "мозг" для текущей категории или "мозг" по умолчанию
         const brain = PROMPT_BRAIN[category] || PROMPT_BRAIN.default;
 
-        // Собираем финальный промпт: сначала скрытый, потом пользовательский
+        // ⭐ Собираем финальный промпт: сначала скрытый, потом пользовательский
         const finalPositivePrompt = `${brain.positive} ${userPrompt}`;
         
-        // Собираем финальный негативный промпт: сначала скрытый, потом пользовательский
+        // ⭐ Собираем финальный негативный промпт: сначала скрытый, потом пользовательский
         const finalNegativePrompt = `${brain.negative}, ${userNegativePrompt || ''}`;
 
         const model = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4";
@@ -106,17 +108,19 @@ app.post('/get-image-from-source', async (req, res) => {
             throw new Error(`Внешний сервис недоступен (статус: ${response.status})`);
         }
         
+        // API waifu.im/pics возвращают JSON, остальные - редирект на картинку
         if (url.includes('waifu.im') || url.includes('waifu.pics')) {
             const data = await response.json();
-            let imageUrl = data.images && data.images[0] ? data.images[0].url : null;
-            if (!imageUrl) { imageUrl = data.url; }
+            // Обрабатываем разные форматы ответа
+            let imageUrl = (data.images && data.images[0]) ? data.images[0].url : data.url;
 
             if (!imageUrl) {
                 throw new Error('API не вернул правильный формат ответа.');
             }
-            res.json({ imageUrl: imageUrl });
+            res.json({ imageUrl: imageUrl, isAiGenerated: false }); // ⭐ Добавлен флаг isAiGenerated
         } else {
-            res.json({ imageUrl: response.url });
+            // Для unsplash и других, URL картинки находится в ответе
+            res.json({ imageUrl: response.url, isAiGenerated: false }); // ⭐ Добавлен флаг isAiGenerated
         }
     } catch (error) {
         console.error(`!!! КРИТИЧЕСКАЯ ОШИБКА GET-IMAGE-FROM-SOURCE для ${url}:`, error.message);
@@ -137,24 +141,25 @@ app.post('/feedback', async (req, res) => {
         
         if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
             console.error('!!! КРИТИЧЕСКАЯ ОШИБКА: Переменные окружения TELEGRAM не найдены!');
-            return res.status(500).json({ error: 'Сервер не настроен для приема отзывов.' });
+            // Для пользователя вернем ошибку, что функция временно недоступна
+            return res.status(500).json({ error: 'Сервис отзывов временно не работает.' });
         }
         
         console.log(`-> FEEDBACK: Получен отзыв типа "${type}". Отправка в Telegram...`);
         const title = type === 'bug' ? '🐞 Новый баг-репорт' : '💡 Новое предложение';
-        const text = `<b>${title}</b>\n\n<pre>${message}</pre>`;
+        const text = `<b>${title}</b>\n\n<pre>${message.replace(/</g, "<").replace(/>/g, ">")}</pre>`; // Экранируем HTML в сообщении
         const telegramApiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
         
         const tgResponse = await fetch(telegramApiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'User-Agent': BROWSER_HEADERS['User-Agent'] },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'HTML' }),
         });
         
         const responseData = await tgResponse.json();
         if (!responseData.ok) {
             console.error(`!!! ОШИБКА TELEGRAM API: ${responseData.description}`);
-            throw new Error(`Telegram API Error: ${responseData.description}`);
+            throw new Error('Не удалось связаться с Telegram.');
         }
         
         console.log('-> FEEDBACK: Сообщение успешно отправлено в Telegram.');
@@ -166,4 +171,4 @@ app.post('/feedback', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log(`Сервер запущен и слушает порт ${PORT}. Все готово к работе!`); });
+app.listen(PORT, () => { console.log(`✅ Сервер запущен и слушает порт ${PORT}. Все готово к работе!`); });
