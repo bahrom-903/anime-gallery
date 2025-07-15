@@ -1,5 +1,5 @@
 // ===================================
-//      Файл: main.js ⭐ ФИНАЛЬНАЯ ВЕРСИЯ ⭐
+//      Файл: main.js ⭐ ИСПРАВЛЕННАЯ ВЕРСИЯ 2.0 ⭐
 // ===================================
 import { TRANSLATIONS, CATEGORIES, DEFAULT_BACKGROUND_SOURCES } from './config.js';
 import { getState, setState } from './state.js';
@@ -35,7 +35,7 @@ const elements = {
     setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
     clearGalleryBtn: document.getElementById('gallery-clear-btn'),
 
-    // Управление выбором и сортировкой
+    // ⭐ ИСПРАВЛЕННЫЙ БЛОК: Добавлены новые элементы, удалены старые ⭐
     selectionAndSortControls: document.getElementById('selection-and-sort-controls'),
     selectAllBtn: document.getElementById('select-all-btn'),
     selectAiBtn: document.getElementById('select-ai-btn'),
@@ -107,60 +107,62 @@ const handlers = {
         catch (e) { ui.showError(elements, `Ошибка сохранения в базу данных: ${e.message}`); }
     },
     saveResultToGallery: async () => {
-        const lastResult = getState().lastAiResult;
-        if (!lastResult) return;
-        ui.setUIGeneratorState(elements, true, 'Сохранение...');
+        const lastResult = getState().lastAiResult; if (!lastResult) return; ui.setUIGeneratorState(elements, true, 'Сохранение...');
         try {
             const response = await fetch(lastResult.imageUrl, { credentials: 'omit' });
-            if (!response.ok) throw new Error("Сетевая ошибка при скачивании изображения");
+            if (!response.ok) throw new Error("Сетевая ошибка");
             const blob = await response.blob();
-            const dataUrl = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
+            const dataUrl = await new Promise((resolve, reject) => { const r = new FileReader(); r.onloadend = () => resolve(r.result); r.onerror = reject; r.readAsDataURL(blob); });
             await handlers.addEntryToGallery(dataUrl, lastResult.prompt, lastResult.isAiGenerated);
-        } catch (e) { ui.showError(elements, "Ошибка сохранения: " + e.message); }
-        finally { ui.setUIGeneratorState(elements, false); }
+        } catch (e) { ui.showError(elements, "Ошибка сохранения: " + e.message); } finally { ui.setUIGeneratorState(elements, false); }
     },
     handleUpload: (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const file = e.target.files[0]; if (!file) return;
         const langPack = TRANSLATIONS[getState().currentLanguage] || TRANSLATIONS.ru;
         const categoryName = langPack[`cat_${getState().currentCategory}`] || getState().currentCategory;
         if (confirm(`Вы уверены, что хотите добавить этот файл в категорию "${categoryName}"?`)) {
             const reader = new FileReader();
             reader.onload = async (event) => { ui.setUIGeneratorState(elements, true, 'Загрузка...'); try { await handlers.addEntryToGallery(event.target.result, file.name, false); } catch (err) { ui.showError(elements, err.message); } finally { ui.setUIGeneratorState(elements, false); } };
             reader.readAsDataURL(file);
-        }
-        e.target.value = '';
+        } e.target.value = '';
     },
-    deleteSelected: async () => { /* ...без изменений... */ },
+    handleBackgroundUpload: (e) => { const file = e.target.files[0]; if (file && file.type.startsWith('image/')) handlers.applyBackground(file, 'custom'); e.target.value = ''; },
+    deleteSelected: async () => {
+        const selected = document.querySelectorAll('.gallery-item .select-checkbox:checked');
+        if (selected.length === 0) return alert("Ничего не выбрано.");
+        if (confirm(`Вы уверены, что хотите удалить ${selected.length} элемент(ов)?`)) {
+            const ids = Array.from(selected).map(cb => parseInt(cb.closest('.gallery-item').dataset.id));
+            await dbRequest('gallery', 'readwrite', store => { ids.forEach(id => store.delete(id)); });
+            await handlers.renderGallery();
+        }
+    },
     exportSelected: async () => { /* ...без изменений... */ },
     generateRandomPrompt: () => { /* ...без изменений... */ },
     previewResult: () => { const lastResult = getState().lastAiResult; if (lastResult) ui.viewImage(elements, lastResult.imageUrl); },
-    handleCategoryClick: (categoryId) => { setState('currentCategory', categoryId); localStorage.setItem('currentCategory', categoryId); handlers.renderCategories(); handlers.renderGallery(); },
-    toggleFavorite: async (id, isFavorite) => { /* ...без изменений... */ },
+    handleCategoryClick: (id) => { setState('currentCategory', id); localStorage.setItem('currentCategory', id); handlers.renderCategories(); handlers.renderGallery(); },
+    toggleFavorite: async (id, isFavorite) => { const entry = await dbRequest('gallery', 'readwrite', store => store.get(id)); if (entry) { entry.favorite = isFavorite; await dbRequest('gallery', 'readwrite', store => store.put(entry)); await handlers.renderGallery(); } },
     setLanguage: (lang) => { setState('currentLanguage', lang); ui.setLanguage(elements, lang, TRANSLATIONS, { renderCategories: handlers.renderCategories, renderThemes: handlers.renderThemes, renderStyles: () => ui.renderStyles(elements, TRANSLATIONS), renderSortOptions: handlers.renderSortOptions, renderChangelog: () => ui.renderChangelog(elements, TRANSLATIONS) }); },
     applyTheme: (id) => { ui.applyTheme(id); handlers.renderThemes(); },
     resetBackground: async () => { await dbRequest('settings', 'readwrite', store => store.delete('customBackground')); ui.resetBackground(); },
     setBackgroundFromDefault: async (bg) => { if (bg) await handlers.applyBackground(bg.blob, bg.id); },
-    handleBackgroundUpload: (file) => { if (file && file.type.startsWith('image/')) handlers.applyBackground(file, 'custom'); },
-    applyBackground: async (imageBlob, id) => { await dbRequest('settings', 'readwrite', store => store.put({ id, blob: imageBlob }, 'customBackground')); ui.applyCustomBackground(imageBlob); },
+    applyBackground: async (blob, id) => { await dbRequest('settings', 'readwrite', store => store.put({ id, blob }, 'customBackground')); ui.applyCustomBackground(blob); },
     setBackgroundFromGallery: async () => { /* ...без изменений... */ },
     handleFeedbackSubmit: async (type) => { /* ...без изменений... */ },
-    clearGallery: async () => { /* ...без изменений... */ },
-    selectAllItems: (select = true) => { document.querySelectorAll('.gallery-item .select-checkbox').forEach(cb => cb.checked = select); },
-    selectAiItems: async () => { const allItems = await dbRequest('gallery', 'readonly', store => store.getAll()); const aiItemIds = new Set(allItems.filter(item => item.isAiGenerated).map(item => item.id)); document.querySelectorAll('.gallery-item').forEach(itemEl => { const id = parseInt(itemEl.dataset.id); itemEl.querySelector('.select-checkbox').checked = aiItemIds.has(id); }); },
-    handleSort: (sortType) => { if (sortType === 'filter_favorite') { const newFilterState = !getState().isFavFilterActive; setState('isFavFilterActive', newFilterState); localStorage.setItem('isFavFilterActive', newFilterState); } else { setState('currentSort', sortType); localStorage.setItem('gallerySort', sortType); } handlers.renderGallery(); handlers.renderSortOptions(); },
+    clearGallery: async () => { if (confirm("Вы уверены?")) { await dbRequest('gallery', 'readwrite', store => store.clear()); await handlers.renderGallery(); } },
+    selectAllItems: (select) => document.querySelectorAll('.gallery-item .select-checkbox').forEach(cb => cb.checked = select),
+    selectAiItems: async () => { const all = await dbRequest('gallery', 'readonly', store => store.getAll()); const aiIds = new Set(all.filter(i => i.isAiGenerated).map(i => i.id)); document.querySelectorAll('.gallery-item').forEach(el => { el.querySelector('.select-checkbox').checked = aiIds.has(parseInt(el.dataset.id)); }); },
+    handleSort: (type) => { if (type === 'filter_favorite') { const newFilter = !getState().isFavFilterActive; setState('isFavFilterActive', newFilter); localStorage.setItem('isFavFilterActive', newFilter); } else { setState('currentSort', type); localStorage.setItem('gallerySort', type); } handlers.renderGallery(); handlers.renderSortOptions(); },
     handleContextMenuAction: async (action) => { /* ...без изменений... */ },
     openPanel: ui.openPanel,
     closePanel: ui.closePanel,
     hideContextMenu: () => ui.hideContextMenu(elements),
-    renderGallery: () => ui.renderGallery(elements, handlers.toggleFavorite, (target, id) => ui.showContextMenu(elements, target, id, TRANSLATIONS, { setContextedItemId: (val) => setState('contextedItemId', val) }), (src) => ui.viewImage(elements, src)),
+    renderGallery: () => ui.renderGallery(elements, handlers.toggleFavorite, (t, id) => ui.showContextMenu(elements, t, id, TRANSLATIONS, { setContextedItemId: (v) => setState('contextedItemId', v) }), (src) => ui.viewImage(elements, src)),
     renderThemes: () => ui.renderThemes(elements, handlers.applyTheme),
     renderCategories: () => ui.renderCategories(elements, TRANSLATIONS, handlers.handleCategoryClick),
-    renderSortOptions: () => ui.renderSortOptions(elements, TRANSLATIONS, handlers.handleSort),
+    renderSortOptions: () => ui.renderSortOptions(elements.sortControls, TRANSLATIONS, handlers.handleSort),
 };
 
 const setupDefaultBackgrounds = async () => { /* ...без изменений... */ };
-
 const init = async () => {
     try {
         await setupDefaultBackgrounds();
@@ -169,17 +171,13 @@ const init = async () => {
         setState('currentCategory', localStorage.getItem('currentCategory') || 'waifu');
         const savedTheme = localStorage.getItem('theme') || 'dark';
         const savedLang = localStorage.getItem('language') || 'ru';
-        
         handlers.applyTheme(savedTheme);
         handlers.setLanguage(savedLang);
-        
-        await ui.renderBackgrounds(elements, handlers.setBackgroundFromDefault, () => elements.backgroundUploadInput.click());
+        await ui.renderBackgrounds(elements.backgroundGrid, handlers.setBackgroundFromDefault, () => elements.backgroundUploadInput.click());
         await handlers.renderGallery();
         handlers.renderSortOptions();
-        
         const savedBg = await dbRequest('settings', 'readonly', store => store.get('customBackground'));
         if (savedBg) ui.applyCustomBackground(savedBg.blob);
-        
         setupEventListeners(elements, handlers);
         console.log("✅ Приложение успешно инициализировано!");
     } catch (e) {
@@ -187,5 +185,4 @@ const init = async () => {
         document.body.innerHTML = `<h1 style="color:red; text-align:center; margin-top: 50px;">Критическая ошибка. Пожалуйста, очистите кэш сайта (Ctrl+F5) и перезагрузите страницу.</h1><p style="color:white; text-align:center;">${e.message}</p>`;
     }
 };
-
 init();
