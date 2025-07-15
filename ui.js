@@ -1,9 +1,41 @@
-// =================================================================
-//          ui.js: ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
-// =================================================================
-
+// ===================================
+//      Файл: ui.js
+// ===================================
 import { THEMES, STYLES, CATEGORIES } from './config.js';
 import { getState } from './state.js';
+import { dbRequest } from './db.js';
+
+// Вспомогательная функция, которую мы будем использовать только внутри этого файла
+const renderPreviewCards = (gridElement, items, type, nameKey, clickHandler) => {
+    gridElement.innerHTML = '';
+    items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "preview-card";
+        card.dataset[type] = item.id;
+        
+        const name = item[nameKey] || (item.id.charAt(0).toUpperCase() + item.id.slice(1).replace(/_/g, ' '));
+        
+        card.innerHTML = `<div class="preview-box theme-${item.id}"></div><div class="preview-name">${name}</div>`;
+        card.addEventListener('click', () => clickHandler(item.id));
+        gridElement.appendChild(card);
+    });
+};
+
+// Все функции ниже будут экспортированы для использования в других модулях
+export const renderThemes = (elements, applyTheme) => {
+    renderPreviewCards(elements.themeGrid, THEMES, 'theme', 'name', applyTheme);
+};
+
+export const renderStyles = (elements, translations) => {
+    elements.styleSelector.innerHTML = '';
+    const langPack = translations[getState().currentLanguage] || translations.ru;
+    for (const [id, value] of Object.entries(STYLES)) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = (langPack[`style_${id}`] || id);
+        elements.styleSelector.appendChild(option);
+    }
+};
 
 export const renderCategories = (elements, translations, handleCategoryClick) => {
     elements.categoryControls.innerHTML = '';
@@ -18,55 +50,35 @@ export const renderCategories = (elements, translations, handleCategoryClick) =>
     }
 };
 
-export const renderThemes = (elements) => {
-    elements.themeGrid.innerHTML = '';
-    THEMES.forEach(t => {
-        const c = document.createElement("div");
-        c.className = "preview-card";
-        c.dataset.theme = t.id;
-        const themeName = t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/_/g, ' ');
-        c.innerHTML = `<div class="preview-box theme-${t.id}"></div><div class="preview-name">${themeName}</div>`;
-        elements.themeGrid.appendChild(c);
-    });
-};
-
-export const renderStyles = (elements, translations) => {
-    elements.styleSelector.innerHTML = '';
-    const langPack = translations[getState().currentLanguage] || translations.ru;
-    for (const [id, value] of Object.entries(STYLES)) {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = (langPack[`style_${id}`] || id);
-        elements.styleSelector.appendChild(option);
-    }
-};
-
-export const renderSortOptions = (menuElement, translations) => {
+export const renderSortOptions = (elements, translations) => {
     const langPack = translations[getState().currentLanguage] || translations.ru;
     const sortOptions = {
         'date_desc': langPack.sort_newest, 'date_asc': langPack.sort_oldest,
-        'random': langPack.sort_random,
+        'random': langPack.sort_random, 'separator': '---',
+        'filter_favorite': langPack.sort_favorites
     };
-    menuElement.innerHTML = '';
+    elements.sortGrid.innerHTML = '';
     for (const [key, value] of Object.entries(sortOptions)) {
+        if (key === 'separator') {
+            elements.sortGrid.appendChild(document.createElement('hr'));
+            continue;
+        }
         const button = document.createElement('button');
+        button.className = 'panel-button';
         button.dataset.sort = key;
         button.textContent = value;
-        menuElement.appendChild(button);
+        if (key === 'filter_favorite' && getState().isFavFilterActive) {
+            button.classList.add('active-filter');
+        }
+        elements.sortGrid.appendChild(button);
     }
 };
 
-export const renderBackgrounds = (elements, getLangPack, getStoredBackgrounds) => {
-    const langPack = getLangPack();
-    elements.backgroundGrid.innerHTML = '';
-    
-    const uploadCard = document.createElement("div");
-    uploadCard.className = "preview-card";
-    uploadCard.id = "background-upload-card";
-    uploadCard.innerHTML = `<div class="preview-box" style="display:flex; align-items:center; justify-content:center;font-size:3em;">+</div><div class="preview-name">${langPack.upload_your_bg}</div>`;
-    elements.backgroundGrid.appendChild(uploadCard);
-
-    getStoredBackgrounds().then(storedBgs => {
+export const renderBackgrounds = async (elements) => {
+    try {
+        const storedBgs = await dbRequest('defaultBackgrounds', 'readonly', store => store.getAll());
+        elements.backgroundGrid.innerHTML = '';
+        document.querySelectorAll('#backgroundGrid [data-object-url]').forEach(el => URL.revokeObjectURL(el.dataset.objectUrl));
         storedBgs.forEach(bg => {
             const objectURL = URL.createObjectURL(bg.blob);
             const card = document.createElement("div");
@@ -75,16 +87,30 @@ export const renderBackgrounds = (elements, getLangPack, getStoredBackgrounds) =
             card.innerHTML = `<div class="preview-box" style="background-image: url(${objectURL});" data-object-url="${objectURL}"></div><div class="preview-name">${bg.id}</div>`;
             elements.backgroundGrid.appendChild(card);
         });
-    });
+    } catch(e) {
+        console.error("Ошибка рендера фонов:", e);
+    }
 };
-    
-export const renderGallery = (elements, handlers) => {
-    handlers.getGalleryData().then(dataToRender => {
+
+export const renderGallery = async (elements, toggleFavorite, showContextMenu, viewImage) => {
+    try {
+        const allGalleryData = await dbRequest('gallery', 'readonly', store => store.getAll());
         elements.galleryContainer.innerHTML = "";
+
+        let categoryData = allGalleryData.filter(item => item.category === getState().currentCategory);
+        let dataToRender = getState().isFavFilterActive ? categoryData.filter(e => e.favorite) : [...categoryData];
+        
+        // Сортировка
+        const sortType = getState().currentSort;
+        if (sortType === 'date_asc') dataToRender.sort((a, b) => a.id - b.id);
+        else if (sortType === 'date_desc') dataToRender.sort((a, b) => b.id - a.id);
+        else if (sortType === 'random') dataToRender.sort(() => Math.random() - 0.5);
+
+        // Показ/скрытие панели выбора
         elements.selectionControls.classList.toggle('hidden', dataToRender.length === 0);
         elements.selectAllCheckbox.checked = false;
-        elements.favFilterActionBtn.classList.toggle('active', getState().isFavFilterActive);
 
+        // Рендер элементов
         dataToRender.forEach(entry => {
             const item = document.createElement('div');
             item.className = "gallery-item";
@@ -94,7 +120,7 @@ export const renderGallery = (elements, handlers) => {
             img.src = entry.data;
             img.loading = "lazy";
             img.alt = entry.prompt;
-            img.addEventListener('dblclick', () => handlers.viewImage(entry.data));
+            img.addEventListener('dblclick', () => viewImage(entry.data));
 
             const controls = document.createElement('div');
             controls.className = 'item-controls';
@@ -106,20 +132,22 @@ export const renderGallery = (elements, handlers) => {
             const fav = document.createElement('div');
             fav.innerText = entry.favorite ? '⭐' : '☆';
             fav.className = 'favorite-star';
-            fav.addEventListener('click', (e) => { e.stopPropagation(); handlers.toggleFavorite(entry.id, !entry.favorite); });
+            fav.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(entry.id, !entry.favorite); });
 
             const menuBtn = document.createElement('button');
             menuBtn.className = 'item-menu-btn';
             menuBtn.innerHTML = '⋮';
-            menuBtn.addEventListener('click', (e) => { e.stopPropagation(); handlers.showContextMenu(e.target, entry.id); });
+            menuBtn.addEventListener('click', (e) => { e.stopPropagation(); showContextMenu(e.target, entry.id); });
 
             controls.append(cb, fav, menuBtn);
             item.append(img, controls);
             elements.galleryContainer.appendChild(item);
         });
-    }).catch(e => handlers.showError(`Не удалось загрузить галерею: ${e.message}`));
+    } catch (e) {
+        showError(elements, `Не удалось загрузить галерею: ${e.message}`);
+    }
 };
-    
+
 export const setLanguage = (elements, lang, translations, callbacks) => {
     localStorage.setItem('language', lang);
     const langPack = translations[lang] || translations.ru;
@@ -131,7 +159,12 @@ export const setLanguage = (elements, lang, translations, callbacks) => {
         const key = el.dataset.langPlaceholderKey;
         if (langPack[key]) el.placeholder = langPack[key];
     });
-    callbacks.renderAllDynamicContent();
+    // Вызываем коллбэки для перерисовки динамических элементов
+    callbacks.renderCategories();
+    callbacks.renderThemes();
+    callbacks.renderStyles();
+    callbacks.renderSortOptions();
+    callbacks.renderChangelog();
 };
 
 export const applyTheme = (id) => {
@@ -182,37 +215,17 @@ export const showContextMenu = (elements, buttonElement, itemId, translations, c
     const langPack = translations[getState().currentLanguage] || translations.ru;
     const rect = buttonElement.getBoundingClientRect();
     const menu = elements.contextMenu;
-    menu.classList.remove('hidden');
+    menu.style.display = 'block';
     menu.style.left = `${rect.left + window.scrollX}px`;
     menu.style.top = `${rect.bottom + window.scrollY + 5}px`;
     menu.innerHTML = `<button data-action="rename">${langPack.ctx_rename}</button><button data-action="copy-prompt">${langPack.ctx_copy_prompt}</button>`;
 };
-    
+
 export const hideContextMenu = (elements) => {
-    if (elements.contextMenu) elements.contextMenu.classList.add('hidden');
+    if (elements.contextMenu) elements.contextMenu.style.display = 'none';
 };
 
-export const showSortMenu = (elements, buttonElement, handlers) => {
-    hideSortMenu(elements);
-    const rect = buttonElement.getBoundingClientRect();
-    const menu = elements.sortMenu;
-    renderSortOptions(menu, handlers.getLangPack());
-    menu.classList.remove('hidden');
-    menu.style.left = `${rect.left + window.scrollX}px`;
-    menu.style.top = `${rect.bottom + window.scrollY + 5}px`;
-    
-    menu.querySelectorAll('button').forEach(btn => {
-        btn.onclick = () => {
-            handlers.handleSort(btn.dataset.sort);
-            hideSortMenu(elements);
-        };
-    });
-};
-
-export const hideSortMenu = (elements) => {
-    if(elements.sortMenu) elements.sortMenu.classList.add('hidden');
-};
-
-export const renderChangelog = (elements) => {
+export const renderChangelog = (elements, translations) => {
+    // Здесь можно будет добавить логику для разных языков, если понадобится
     elements.changelogContentArea.innerHTML = `<h3>V 1.0 - Diamond Patch</h3><ul><li>Улучшен AI-генератор с помощью системы скрытых промптов.</li><li>Исправлен дизайн и логика меню.</li><li>Добавлена возможность выбора только AI-изображений.</li><li>Множественные исправления ошибок и улучшение стабильности.</li></ul><div class="contributor-thanks">Особая благодарность всем, кто сообщал об ошибках!</div>`;
 };

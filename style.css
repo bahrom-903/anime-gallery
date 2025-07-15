@@ -1,5 +1,5 @@
 /* =================================================================
-          CSS: ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
+          CSS-ФАЙЛ. САМЫЙ ФИНАЛЬНЫЙ АККОРД. ЗАМЕНИТЬ ПОЛНОСТЬЮ.
    ================================================================= */
 
 :root {
@@ -25,7 +25,7 @@ body {
 }
 .container { max-width:1200px; margin:auto; padding:20px; box-sizing: border-box; }
 .generator-area {
-    position: relative;
+    position: relative; /* Нужно для позиционирования кнопки меню */
     background: var(--panel-bg); padding: 20px; border-radius: 12px;
     margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
@@ -42,8 +42,10 @@ body.has-custom-bg .generator-area, body.has-custom-bg .gallery-wrapper {
     -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);
 }
 h1, h2 { text-align: center; }
+/* ⭐ Стили для главного заголовка ⭐ */
 h1 { margin-top: 0; margin-bottom: 20px; }
-.generator-area > h2, .gallery-wrapper > h2 { margin-top: 0; }
+/* Убираем верхний отступ у заголовка внутри панели */
+.generator-area > h2 { margin-top: 0; }
 button {
     background: var(--button-bg); color: var(--button-text); border: none; padding: 10px 20px;
     font-size: 1em; border-radius: 5px; cursor: pointer; margin: 5px;
@@ -74,9 +76,9 @@ textarea { resize: vertical; }
     display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
     margin-bottom: 15px;
 }
-#result-image-container {
-    display: flex; justify-content: center; align-items: center;
-    min-height: 256px; margin-top: 20px;
+.result-area {
+    margin-top: 20px; min-height: 256px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
 }
 .result-controls {
     display: flex;
@@ -118,16 +120,16 @@ textarea { resize: vertical; }
     font-size: 20px; cursor: pointer; background: none; border: none;
     color: var(--text-color); padding: 0; margin: 0; line-height: 1; text-shadow: 0 0 4px black;
 }
-#context-menu, #sort-menu {
+#context-menu {
     display: none; position: absolute; z-index: 1010; background: var(--panel-bg);
     border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); padding: 5px;
     border: 1px solid var(--input-border);
 }
-#context-menu button, #sort-menu button {
+#context-menu button {
     width: 100%; background: none; border: none; color: var(--text-color);
     text-align: left; padding: 8px 12px; margin: 0; font-size: 14px; cursor: pointer;
 }
-#context-menu button:hover, #sort-menu button:hover { background-color: rgba(255, 255, 255, 0.1); }
+#context-menu button:hover { background-color: rgba(255, 255, 255, 0.1); }
 .panel-overlay {
     display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
     background:#000000bb; z-index:1001; justify-content:center; align-items:center;
@@ -137,19 +139,20 @@ textarea { resize: vertical; }
     border-radius:12px; color:var(--text-color); box-sizing:border-box;
     overflow-y: auto; max-height: 90vh;
 }
-.panel-header { display:flex; align-items:center; margin-bottom:20px; }
-.panel-header h2 { flex-grow: 1; text-align: center; }
-.panel-header .panel-header-icon {
-    all: unset; box-sizing: border-box; cursor: pointer; font-size: 24px;
-    font-weight: bold; color: #aaa; line-height: 1; padding: 5px;
-    width: 36px; height: 36px; display: flex; align-items: center;
-    justify-content: center; transition: color 0.2s, transform 0.2s, background-color 0.2s; border-radius: 50%;
+.panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.panel-header h2 { margin:0; flex-grow: 1; text-align: center; } /* Заголовок по центру */
+.panel-header .panel-header-icon:first-child { margin-right: auto; } /* Кнопка слева */
+.panel-header .panel-header-icon:last-child { margin-left: auto; } /* Кнопка справа */
+/* ⭐ ЕДИНЫЙ СТИЛЬ ДЛЯ ВСЕХ ИКОНОК В ЗАГОЛОВКЕ ⭐ */
+.panel-header-icon {
+    all: unset; box-sizing: border-box; cursor: pointer; font-size: 22px;
+    color: #aaa; line-height: 1; padding: 5px; width: 32px; height: 32px;
+    text-align: center; transition: color 0.2s, transform 0.2s; border-radius: 50%;
 }
-.panel-header .panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
-.panel-header .panel-back-btn { margin-right: auto; }
-.panel-header .panel-close-btn, .panel-header #theme-reset-btn, .panel-header #background-reset-btn { margin-left: auto; }
-.panel-back-btn:hover, #theme-reset-btn:hover, #background-reset-btn:hover { color: var(--button-bg); }
+.panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+.panel-back-btn:hover { color: var(--button-bg); }
 .panel-close-btn:hover { color: var(--error-color); }
+#theme-reset-btn:hover, #background-reset-btn:hover { color: var(--button-bg); }
 .panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
     all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
@@ -159,8 +162,9 @@ textarea { resize: vertical; }
 }
 .panel-button:hover { background-color: rgba(255, 255, 255, 0.1); }
 hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margin: 5px 0; }
-#sortGrid { display:grid; gap:10px; grid-template-columns:1fr; }
-#themeGrid, #backgroundGrid { display:grid; gap:10px; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); }
+#sortGrid, #themeGrid, #backgroundGrid { display:grid; gap:10px; }
+#sortGrid { grid-template-columns:1fr; }
+#themeGrid, #backgroundGrid { grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); }
 .preview-card {
     background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 6px;
     cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-align: center;
@@ -172,13 +176,14 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
     background-position: center; margin-bottom: 6px;
 }
 .preview-card .preview-name { padding: 4px; }
-.changelog-content { text-align: left; }
 .changelog-content h3 {
     margin-top: 20px; margin-bottom: 10px; color: var(--button-bg);
     border-bottom: 1px solid var(--input-border); padding-bottom: 5px;
 }
 .changelog-content ul { list-style-type: '✅ '; padding-left: 20px; }
 .changelog-content li { margin-bottom: 8px; }
+
+/* ⭐ СТИЛИ ДЛЯ НОВОГО МЕНЮ ⭐ */
 .menu-btn {
     position: absolute; top: 15px; right: 15px; z-index: 1001;
     font-size: 20px; padding: 5px 10px; margin: 0;
@@ -186,23 +191,33 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 #dropdownMenu {
     position:absolute; top: 55px; right: 15px; z-index: 1002;
     background:var(--panel-bg); color:var(--text-color); border-radius:8px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.3); padding:10px; min-width:250px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3); padding:10px; min-width:200px;
     border: 1px solid var(--input-border);
 }
 #dropdownMenu button { width: 100%; text-align: left; margin: 2px 0; padding: 8px 12px; }
+
+/* Стили для текстовой кнопки */
 .text-like-button {
-    background: var(--input-bg); border: 1px solid var(--input-border);
-    border-radius: 5px; padding: 8px 12px; font-size: 14px;
-    cursor: pointer; transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
     color: var(--text-color);
 }
-.text-like-button:hover { background-color: var(--button-bg); color: var(--button-text); }
-.text-like-button.active { background-color: var(--button-bg); color: var(--button-text); box-shadow: 0 0 8px -2px var(--button-bg); }
+.text-like-button:hover {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+}
 
+/* Стили для просмотрщика картинок */
 #image-viewer { background: rgba(0, 0, 0, 0.8); padding: 2.5vh 2.5vw; box-sizing: border-box; }
 #image-viewer .panel-content { background: none; padding: 0; box-shadow: none; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
 #image-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
 
+/* Стили для блока с чекбоксом */
 .selection-controls {
     margin-bottom: 15px; padding: 10px; background: rgba(var(--panel-bg-rgb), 0.5);
     border-radius: 8px; display: flex; align-items: center; gap: 20px;
@@ -210,13 +225,3 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 }
 .selection-controls label { font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none; }
 .selection-controls input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
-.gallery-actions { margin-left: auto; display: flex; gap: 10px; }
-.gallery-action-btn {
-    all: unset; box-sizing: border-box; font-size: 22px; cursor: pointer;
-    color: var(--text-color); padding: 5px; opacity: 0.7; transition: opacity 0.2s, transform 0.2s;
-}
-.gallery-action-btn:hover { opacity: 1; transform: scale(1.1); }
-.gallery-action-btn.active { opacity: 1; color: var(--button-bg); }
-
-/* ⭐ СТИЛИ ДЛЯ ОТОБРАЖЕНИЯ ЦВЕТА ТЕМЫ ⭐ */
-.preview-box.theme-dark { background-color: #1f2937; } .preview-box.theme-light { background-color: #f9fafb; } .preview-box.theme-gray { background-color: #d1d5db; } .preview-box.theme-retro { background-color: #f4e9d8; } .preview-box.theme-dracula { background-color: #282a36; } .preview-box.theme-nord { background-color: #2e3440; } .preview-box.theme-solarized { background-color: #002b36; } .preview-box.theme-gruvbox { background-color: #282828; } .preview-box.theme-monokai { background-color: #272822; } .preview-box.theme-tomorrow_night { background-color: #1d1f21; } .preview-box.theme-one_dark { background-color: #282c34; } .preview-box.theme-cyberpunk { background-color: #0d0221; } .preview-box.theme-matrix { background-color: #000000; } .preview-box.theme-crimson { background-color: #1a1a1a; } .preview-box.theme-synthwave { background-color: #261c4f; }
