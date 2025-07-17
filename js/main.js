@@ -32,6 +32,7 @@ const elements = {
     exportBtn: document.getElementById('export-selected-btn'),
     deleteBtn: document.getElementById('delete-selected-btn'),
     setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
+    exportBtn: document.getElementById('export-selected-btn'), // ⭐ 
     selectionControls: document.getElementById('selection-controls'),
     selectAllCheckbox: document.getElementById('select-all-checkbox'),
     selectAiBtn: document.getElementById('select-ai-btn'),
