@@ -9,7 +9,10 @@ import { dbRequest } from './db.js';
 // --- Функции рендера для панелей ---
 
 export const renderThemes = (elements, applyTheme) => {
-    elements.themeGrid.innerHTML = '';
+    const grid = elements.themeGrid;
+    if (!grid) return;
+    grid.innerHTML = '';
+    
     THEMES.forEach(item => {
         const card = document.createElement("div");
         card.className = "preview-card";
@@ -17,26 +20,32 @@ export const renderThemes = (elements, applyTheme) => {
         
         const name = item.id.charAt(0).toUpperCase() + item.id.slice(1).replace(/_/g, ' ');
         
-        // ⭐ Добавляем класс для стилизации цветного превью
+        // Добавляем класс для стилизации цветного превью
         card.innerHTML = `<div class="preview-box theme-${item.id}"></div><div class="preview-name">${name}</div>`;
         card.addEventListener('click', () => applyTheme(item.id));
-        elements.themeGrid.appendChild(card);
+        grid.appendChild(card);
     });
 };
 
 export const renderStyles = (elements, translations) => {
-    elements.styleSelector.innerHTML = '';
+    const selector = elements.styleSelector;
+    if (!selector) return;
+    selector.innerHTML = '';
+
     const langPack = translations[getState().currentLanguage] || translations.ru;
     for (const [id, value] of Object.entries(STYLES)) {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = (langPack[`style_${id}`] || id);
-        elements.styleSelector.appendChild(option);
+        selector.appendChild(option);
     }
 };
 
 export const renderCategories = (elements, translations, handleCategoryClick) => {
-    elements.categoryControls.innerHTML = '';
+    const controls = elements.categoryControls;
+    if (!controls) return;
+    controls.innerHTML = '';
+
     const langPack = translations[getState().currentLanguage] || translations.ru;
     for (const id of Object.keys(CATEGORIES)) {
         const btn = document.createElement('button');
@@ -44,21 +53,25 @@ export const renderCategories = (elements, translations, handleCategoryClick) =>
         btn.textContent = (langPack[`cat_${id}`] || id.replace(/_/g, ' '));
         if (id === getState().currentCategory) btn.classList.add('active-category');
         btn.addEventListener('click', () => handleCategoryClick(id));
-        elements.categoryControls.appendChild(btn);
+        controls.appendChild(btn);
     }
 };
 
 export const renderSortOptions = (elements, translations) => {
+    const grid = elements.sortGrid;
+    if (!grid) return;
+    grid.innerHTML = '';
+
     const langPack = translations[getState().currentLanguage] || translations.ru;
     const sortOptions = {
         'date_desc': langPack.sort_newest, 'date_asc': langPack.sort_oldest,
         'random': langPack.sort_random, 'separator': '---',
         'filter_favorite': langPack.sort_favorites
     };
-    elements.sortGrid.innerHTML = '';
+
     for (const [key, value] of Object.entries(sortOptions)) {
         if (key === 'separator') {
-            elements.sortGrid.appendChild(document.createElement('hr'));
+            grid.appendChild(document.createElement('hr'));
             continue;
         }
         const button = document.createElement('button');
@@ -68,27 +81,32 @@ export const renderSortOptions = (elements, translations) => {
         if (key === 'filter_favorite' && getState().isFavFilterActive) {
             button.classList.add('active-filter');
         }
-        elements.sortGrid.appendChild(button);
+        grid.appendChild(button);
     }
 };
 
-// ⭐ Переписанная функция для рендера фонов
-export const renderBackgrounds = async (elements, handleUploadClick) => {
+export const renderBackgrounds = async (elements) => {
     try {
-        const storedBgs = await dbRequest('defaultBackgrounds', 'readonly', store => store.getAll());
         const grid = elements.backgroundGrid;
+        if (!grid) {
+            console.error("Элемент backgroundGrid не найден!");
+            return;
+        }
+        
+        const storedBgs = await dbRequest('defaultBackgrounds', 'readonly', store => store.getAll());
         grid.innerHTML = '';
 
         // 1. Создаем кастомную карточку "Загрузить"
         const uploadCard = document.createElement("div");
         uploadCard.className = "preview-card";
-        uploadCard.dataset.bgId = "upload-new";
+        uploadCard.dataset.bgId = "upload-new"; // Этот data-атрибут будет отловлен в events.js
         uploadCard.innerHTML = `<div class="preview-box upload-box">📥</div><div class="preview-name" data-lang-key="upload_your_bg">Загрузить свой фон</div>`;
-        uploadCard.addEventListener('click', () => elements.backgroundUploadInput.click());
         grid.appendChild(uploadCard);
 
-        // 2. Рендерим остальные фоны
-        document.querySelectorAll('#backgroundGrid [data-object-url]').forEach(el => URL.revokeObjectURL(el.dataset.objectUrl));
+        // 2. Рендерим остальные фоны из базы данных
+        const existingObjectURLs = document.querySelectorAll('#backgroundPanel [data-object-url]');
+        existingObjectURLs.forEach(el => URL.revokeObjectURL(el.dataset.objectUrl));
+        
         storedBgs.forEach(bg => {
             const objectURL = URL.createObjectURL(bg.blob);
             const card = document.createElement("div");
@@ -107,28 +125,30 @@ export const renderBackgrounds = async (elements, handleUploadClick) => {
 export const renderGallery = async (elements, toggleFavorite, showContextMenu, viewImage) => {
     try {
         const allGalleryData = await dbRequest('gallery', 'readonly', store => store.getAll());
+        if (!elements.galleryContainer) return;
         elements.galleryContainer.innerHTML = "";
 
         let categoryData = allGalleryData.filter(item => item.category === getState().currentCategory);
         let dataToRender = [...categoryData];
         
-        // ⭐ Исправленная логика фильтрации
         if (getState().isFavFilterActive) {
             const favoriteItems = categoryData.filter(e => e.favorite);
-            // Применяем фильтр, только если есть что фильтровать
-            if (favoriteItems.length > 0) {
-                dataToRender = favoriteItems;
+            if (favoriteItems.length > 0 || categoryData.length === 0) {
+                 dataToRender = favoriteItems;
             }
         }
         
-        // Сортировка
         const sortType = getState().currentSort;
         if (sortType === 'date_asc') dataToRender.sort((a, b) => a.id - b.id);
         else if (sortType === 'date_desc') dataToRender.sort((a, b) => b.id - a.id);
         else if (sortType === 'random') dataToRender.sort(() => Math.random() - 0.5);
 
-        elements.selectionControls.classList.toggle('hidden', dataToRender.length === 0);
-        elements.selectAllCheckbox.checked = false;
+        if (elements.selectionControls) {
+            elements.selectionControls.classList.toggle('hidden', dataToRender.length === 0);
+        }
+        if(elements.selectAllCheckbox) {
+            elements.selectAllCheckbox.checked = false;
+        }
 
         dataToRender.forEach(entry => {
             const item = document.createElement('div');
@@ -195,18 +215,21 @@ export const setUIGeneratorState = (elements, isLoading, message = '') => {
     const btns = [elements.generateBtn, elements.findSimilarBtn, elements.randomImageBtn, elements.randomPromptBtn];
     btns.forEach(btn => { if (btn) btn.disabled = isLoading; });
     
-    elements.loader.classList.toggle('hidden', !isLoading);
-    elements.errorMessage.classList.add('hidden');
-    elements.imageContainer.innerHTML = '';
-    elements.resultControls.classList.add('hidden');
+    if (elements.loader) elements.loader.classList.toggle('hidden', !isLoading);
+    if (elements.errorMessage) elements.errorMessage.classList.add('hidden');
+    if (elements.imageContainer) elements.imageContainer.innerHTML = '';
+    if (elements.resultControls) elements.resultControls.classList.add('hidden');
 
-    if (isLoading) {
+    if (isLoading && elements.loaderText) {
         elements.loaderText.textContent = message;
     }
 };
 
 export const displayGeneratedImage = (elements, imageUrl, prompt, isAiGenerated) => {
     return new Promise((resolve, reject) => {
+        if (!elements.imageContainer || !elements.resultControls) {
+            return reject(new Error("UI-элементы для отображения результата не найдены."));
+        }
         const img = new Image();
         img.crossOrigin = "Anonymous";
         img.src = imageUrl;
@@ -222,22 +245,26 @@ export const displayGeneratedImage = (elements, imageUrl, prompt, isAiGenerated)
 };
 
 export const showError = (elements, message) => {
-    elements.errorMessage.textContent = message;
-    elements.errorMessage.classList.remove('hidden');
+    if (elements.errorMessage) {
+        elements.errorMessage.textContent = message;
+        elements.errorMessage.classList.remove('hidden');
+    }
 };
 
 export const showFeedbackStatus = (element, message, type) => {
-    element.textContent = message;
-    element.className = type; // 'success' or 'error'
-    element.classList.remove('hidden');
+    if (element) {
+        element.textContent = message;
+        element.className = type; // 'success' or 'error'
+        element.classList.remove('hidden');
+    }
 };
 
 export const openPanel = (panel) => { if (panel) panel.style.display = 'flex'; };
 export const closePanel = (panel) => { if (panel) panel.style.display = 'none'; };
 
 export const viewImage = (elements, src) => {
-    elements.viewerImg.src = src;
-    openPanel(elements.imageViewer);
+    if (elements.viewerImg) elements.viewerImg.src = src;
+    if (elements.imageViewer) openPanel(elements.imageViewer);
 };
 
 export const showContextMenu = (elements, buttonElement, itemId, translations, callbacks) => {
@@ -246,10 +273,13 @@ export const showContextMenu = (elements, buttonElement, itemId, translations, c
     const langPack = translations[getState().currentLanguage] || translations.ru;
     const rect = buttonElement.getBoundingClientRect();
     const menu = elements.contextMenu;
-    menu.style.display = 'block';
-    menu.style.left = `${rect.left + window.scrollX}px`;
-    menu.style.top = `${rect.bottom + window.scrollY + 5}px`;
-    menu.innerHTML = `<button data-action="rename">${langPack.ctx_rename}</button><button data-action="copy-prompt">${langPack.ctx_copy_prompt}</button>`;
+
+    if (menu) {
+        menu.style.display = 'block';
+        menu.style.left = `${rect.left + window.scrollX}px`;
+        menu.style.top = `${rect.bottom + window.scrollY + 5}px`;
+        menu.innerHTML = `<button data-action="rename">${langPack.ctx_rename}</button><button data-action="copy-prompt">${langPack.ctx_copy_prompt}</button>`;
+    }
 };
 
 export const hideContextMenu = (elements) => {
@@ -257,6 +287,7 @@ export const hideContextMenu = (elements) => {
 };
 
 export const renderChangelog = (elements, translations) => {
-    elements.changelogContentArea.innerHTML = `<h3>V 1.0 - Diamond Patch</h3><ul><li>Улучшен AI-генератор с помощью системы скрытых промптов.</li><li>Исправлен дизайн и логика меню.</li><li>Добавлена возможность выбора только AI-изображений.</li><li>Множественные исправления ошибок и улучшение стабильности.</li></ul><div class="contributor-thanks">Особая благодарность всем, кто сообщал об ошибках!</div>`;
+    if (elements.changelogContentArea) {
+        elements.changelogContentArea.innerHTML = `<h3>V 1.0 - Diamond Patch</h3><ul><li>Улучшен AI-генератор с помощью системы скрытых промптов.</li><li>Исправлен дизайн и логика меню.</li><li>Добавлена возможность выбора только AI-изображений.</li><li>Множественные исправления ошибок и улучшение стабильности.</li></ul><div class="contributor-thanks">Особая благодарность всем, кто сообщал об ошибках!</div>`;
+    }
 };
-
