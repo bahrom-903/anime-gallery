@@ -1,8 +1,3 @@
---- START OF FILE /js/main.js ---
-// ===================================
-//      Файл: main.js
-//      Роль: Главный инициализатор приложения
-// ===================================
 import { TRANSLATIONS, CATEGORIES, DEFAULT_BACKGROUND_SOURCES } from './config.js';
 import { getState, setState } from './state.js';
 import { dbRequest } from './db.js';
@@ -550,4 +545,4 @@ const init = async () => {
 
 // Запускаем всё!
 init();
---- END OF FILE /js/main.js ---
+
