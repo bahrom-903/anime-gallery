@@ -16,7 +16,7 @@
     position: relative;
     margin-bottom: 15px;
     break-inside: avoid;
-    background: var(--input-bg); /* Используем более контрастный фон */
+    background: var(--input-bg);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -73,25 +73,29 @@
     text-shadow: 0 0 4px black;
 }
 
-/* ⭐⭐ СТИЛИ ДЛЯ НОВОЙ ПАНЕЛИ УПРАВЛЕНИЯ ⭐⭐ */
+/* ⭐⭐ НОВЫЕ СТИЛИ ДЛЯ ПАНЕЛИ УПРАВЛЕНИЯ ⭐⭐ */
 .selection-controls {
     margin-bottom: 15px;
-    padding: 10px;
+    padding: 8px;
     background: rgba(var(--panel-bg-rgb), 0.5);
     border-radius: 8px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    justify-content: center; /* Центрируем всю группу */
+    gap: 8px;
     border: 1px solid var(--input-border);
 }
 
 .selection-controls button {
     background-color: var(--input-bg);
     border: 1px solid var(--input-border);
-    padding: 8px 15px;
+    padding: 8px 12px; /* Уменьшили паддинги для компактности */
     margin: 0;
     font-size: 0.9em;
+    flex-grow: 1; /* Кнопки занимают равное место */
+    flex-basis: 0; /* Начальная ширина 0 для корректной работы flex-grow */
+    text-align: center;
 }
 
 .selection-controls button:hover {
@@ -100,7 +104,6 @@
     filter: none;
 }
 
-/* Стиль для активных кнопок сортировки и фильтра */
 .selection-controls button.active {
     background-color: var(--button-bg);
     color: var(--button-text);
@@ -112,8 +115,10 @@
 }
 
 .selection-controls .separator {
-    color: var(--input-border);
-    margin: 0 5px;
+    width: 1px;
+    height: 24px;
+    background-color: var(--input-border);
+    margin: 0 8px;
 }
 
 #category-controls button.active-category {
@@ -123,7 +128,6 @@
     filter: brightness(1.2);
 }
 
-/* Сетки для превью в панелях */
 .preview-grid {
     display: grid;
     gap: 10px;
