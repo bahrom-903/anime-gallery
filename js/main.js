@@ -1,3 +1,4 @@
+
 import { TRANSLATIONS, CATEGORIES, DEFAULT_BACKGROUND_SOURCES } from './config.js';
 import { getState, setState } from './state.js';
 import { dbRequest } from './db.js';
@@ -5,10 +6,7 @@ import { handleServerRequest } from './api.js';
 import * as ui from './ui.js';
 import { setupEventListeners } from './events.js';
 
-// === 1. ОБЪЕКТ С DOM-ЭЛЕМЕНТАМИ ===
-// Все элементы, с которыми мы работаем, собраны здесь для удобства.
 const elements = {
-    // Генератор
     generateBtn: document.getElementById('generate-btn'),
     findSimilarBtn: document.getElementById('find-similar-btn'),
     randomImageBtn: document.getElementById('random-image-btn'),
@@ -23,22 +21,17 @@ const elements = {
     errorMessage: document.getElementById('error-message'),
     saveBtn: document.getElementById('save-btn'),
     previewBtn: document.getElementById('preview-btn'),
-
-    // Галерея
     galleryContainer: document.getElementById('gallery'),
     categoryControls: document.getElementById('category-controls'),
     uploadBtn: document.getElementById('upload-btn'),
     uploadInput: document.getElementById('upload-input'),
-    exportBtn: document.getElementById('export-selected-btn'),
-    deleteBtn: document.getElementById('delete-selected-btn'),
+    exportBtn: document.getElementById('export-btn'),
+    deleteBtn: document.getElementById('delete-btn'),
     setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
     selectionControls: document.getElementById('selection-controls'),
-    selectAllCheckbox: document.getElementById('select-all-checkbox'),
+    selectAllBtn: document.getElementById('select-all-btn'),
     selectAiBtn: document.getElementById('select-ai-btn'),
-    // ⭐⭐ ВОТ ИСПРАВЛЕНИЕ: КНОПКА СОРТИРОВКИ ТЕПЕРЬ ПРАВИЛЬНО ОБЪЯВЛЕНА ⭐⭐
-    sortPanelOpenBtn: document.getElementById('sort-panel-open-btn'),
-
-    // Меню и Панели
+    filterFavBtn: document.getElementById('filter-fav-btn'),
     menuBtn: document.getElementById('menu-btn'),
     dropdownMenu: document.getElementById('dropdownMenu'),
     settingsPanel: document.getElementById('settingsPanel'),
@@ -47,18 +40,14 @@ const elements = {
     themePanelOpenBtn: document.getElementById('theme-panel-open-btn'),
     themeResetBtn: document.getElementById('theme-reset-btn'),
     themeGrid: document.getElementById('themeGrid'),
-    sortPanel: document.getElementById('sortPanel'),
-    sortGrid: document.getElementById('sortGrid'),
     backgroundPanel: document.getElementById('backgroundPanel'),
     backgroundPanelOpenBtn: document.getElementById('background-panel-open-btn'),
     backgroundResetBtn: document.getElementById('background-reset-btn'),
-    backgroundGrid: document.querySelector('#backgroundPanel .preview-grid'), // Этот селектор тоже исправлен
+    backgroundGrid: document.getElementById('backgroundGrid'),
     backgroundUploadInput: document.getElementById('background-upload-input'),
     changelogOpenBtn: document.getElementById('changelog-open-btn'),
     changelogPanel: document.getElementById('changelogPanel'),
     changelogContentArea: document.getElementById('changelog-content-area'),
-    
-    // Обратная связь
     bugReportOpenBtn: document.getElementById('bug-report-open-btn'),
     suggestionOpenBtn: document.getElementById('suggestion-open-btn'),
     bugReportPanel: document.getElementById('bugReportPanel'),
@@ -69,8 +58,6 @@ const elements = {
     submitSuggestionBtn: document.getElementById('submit-suggestion-btn'),
     bugReportStatus: document.getElementById('bug-report-status'),
     suggestionStatus: document.getElementById('suggestion-status'),
-
-    // Прочее
     imageViewer: document.getElementById('image-viewer'),
     viewerImg: document.getElementById('viewer-img'),
     clearGalleryBtn: document.getElementById('gallery-clear-btn'),
@@ -78,328 +65,15 @@ const elements = {
     langSwitcherBtn: document.getElementById('lang-switcher-btn'),
 };
 
-// === 2. БИЗНЕС-ЛОГИКА (ОБРАБОТЧИКИ) ===
-// Все функции, которые выполняют основную работу приложения.
+// ... (код функций addEntryToGallery, handleCategoryClick, uiCallbacks, handleAiGeneration, findSimilarOnline, getRandomImage, saveResultToGallery, toggleFavorite, deleteSelected, exportSelected, clearGallery, handleUpload, generateRandomPrompt, applyBackground, resetBackground, setBackgroundFromDefault, handleBackgroundUpload, setBackgroundFromGallery, handleFeedbackSubmit, setupDefaultBackgrounds, handleContextMenuAction остается без изменений)
 
-/**
- * Добавляет запись в IndexedDB и обновляет галерею.
- * @param {string} dataUrl - Изображение в формате Data URL.
- * @param {string} prompt - Описание изображения.
- * @param {boolean} isAi - Флаг, указывающий, сгенерировано ли изображение AI.
- */
-const addEntryToGallery = async (dataUrl, prompt, isAi) => {
-    const newEntry = {
-        id: Date.now(),
-        prompt: prompt || `image_${Date.now()}`,
-        data: dataUrl,
-        favorite: false,
-        date: new Date().toISOString(),
-        category: getState().currentCategory,
-        isAiGenerated: !!isAi,
-    };
-    try {
-        await dbRequest('gallery', 'readwrite', store => store.put(newEntry));
-        await handlers.renderGallery();
-    } catch (e) {
-        ui.showError(elements, `Ошибка сохранения в базу данных: ${e.message}`);
-    }
-};
+// ⭐⭐ ПЕРЕПИСАНА ЛОГИКА ВЫБОРА И СОРТИРОВКИ ⭐⭐
 
-/**
- * Обрабатывает клик по категории, обновляет состояние и перерисовывает интерфейс.
- * @param {string} categoryId - ID выбранной категории.
- */
-const handleCategoryClick = (categoryId) => {
-    setState('currentCategory', categoryId);
-    localStorage.setItem('currentCategory', categoryId);
-    handlers.renderCategories();
-    handlers.renderGallery();
-};
-
-const uiCallbacks = {
-    setUIGeneratorState: (isLoading, msg) => ui.setUIGeneratorState(elements, isLoading, msg),
-    displayGeneratedImage: (url, prompt, isAi) => ui.displayGeneratedImage(elements, url, prompt, isAi).then(result => setState('lastAiResult', result)),
-    showError: (msg) => ui.showError(elements, msg),
-};
-
-const handleAiGeneration = () => {
-    const userPrompt = elements.promptInput.value.trim();
-    const stylePrompt = elements.styleSelector.value;
-    if (!userPrompt) {
-        return ui.showError(elements, 'Введите описание.');
-    }
-    const finalPrompt = `${userPrompt}${stylePrompt}`;
-    const negativePrompt = elements.negativePromptInput.value.trim();
-    handleServerRequest(
-        '/generate-image',
-        { prompt: finalPrompt, negative_prompt: negativePrompt, category: getState().currentCategory },
-        uiCallbacks,
-        { loadingMessage: 'Отправка на сервер...', successMessage: 'AI-генерация...', promptForDisplay: userPrompt }
-    );
-};
-
-const findSimilarOnline = () => {
-    const category = CATEGORIES[getState().currentCategory];
-    const source = category.sources?.search || category.sources?.random;
-    if (source) {
-        handleServerRequest(
-            '/get-image-from-source',
-            { url: source },
-            uiCallbacks,
-            { loadingMessage: 'Поиск в сети...', successMessage: 'Загрузка...', promptForDisplay: `Поиск: ${getState().currentCategory}` }
-        );
-    }
-};
-
-const getRandomImage = () => {
-    const category = CATEGORIES[getState().currentCategory];
-    const source = category.sources?.random;
-    if (source) {
-        handleServerRequest(
-            '/get-image-from-source',
-            { url: source },
-            uiCallbacks,
-            { loadingMessage: 'Ищем случайное...', successMessage: 'Загрузка...', promptForDisplay: `Случайное: ${getState().currentCategory}` }
-        );
-    }
-};
-
-const saveResultToGallery = async () => {
-    const lastResult = getState().lastAiResult;
-    if (!lastResult) return;
-
-    ui.setUIGeneratorState(elements, true, 'Сохранение...');
-    try {
-        const response = await fetch(lastResult.imageUrl, { credentials: 'omit' });
-        if (!response.ok) throw new Error("Сетевая ошибка при скачивании изображения");
-        
-        const blob = await response.blob();
-        const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
-        
-        await addEntryToGallery(dataUrl, lastResult.prompt, lastResult.isAiGenerated);
-    } catch (e) {
-        ui.showError(elements, "Ошибка сохранения: " + e.message);
-    } finally {
-        ui.setUIGeneratorState(elements, false);
-    }
-};
-
-const toggleFavorite = async (id, isFavorite) => {
-    try {
-        const entry = await dbRequest('gallery', 'readwrite', store => store.get(id));
-        if (entry) {
-            entry.favorite = isFavorite;
-            await dbRequest('gallery', 'readwrite', store => store.put(entry));
-            await handlers.renderGallery();
-        }
-    } catch (e) {
-        console.error("Ошибка при переключении избранного:", e);
-    }
-};
-
-const deleteSelected = async () => {
-    const selectedItems = document.querySelectorAll('.gallery-item .select-checkbox:checked');
-    if (selectedItems.length === 0) return alert("Ничего не выбрано.");
-    if (!confirm(`Вы уверены, что хотите удалить ${selectedItems.length} элемент(ов)?`)) return;
-
-    for (const cb of selectedItems) {
-        const id = parseInt(cb.closest('.gallery-item').dataset.id);
-        await dbRequest('gallery', 'readwrite', store => store.delete(id));
-    }
-    await handlers.renderGallery();
-};
-
-const exportSelected = async () => {
-    const selectedItems = document.querySelectorAll('.gallery-item .select-checkbox:checked');
-    if (selectedItems.length === 0) return alert("Ничего не выбрано");
-    
-    const zip = new JSZip();
-    for (const cb of selectedItems) {
-        const id = parseInt(cb.closest('.gallery-item').dataset.id);
-        const item = await dbRequest('gallery', 'readonly', store => store.get(id));
-        if (item && item.data) {
-            const fileName = (item.prompt ? item.prompt.replace(/[\\/:*?"<>|]/g, '').substring(0, 50) : `image_${item.id}`) || `image_${item.id}`;
-            zip.file(`${fileName}.png`, item.data.split(',')[1], { base64: true });
-        }
-    }
-
-    zip.generateAsync({ type: "blob" }).then(content => {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(content);
-        a.download = `anime_gallery_${Date.now()}.zip`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-    });
-};
-
-const clearGallery = async () => {
-    if (confirm("Вы уверены, что хотите НАВСЕГДА удалить ВСЕ изображения из галереи?")) {
-        await dbRequest('gallery', 'readwrite', store => store.clear());
-        await handlers.renderGallery();
-    }
-};
-
-const handleUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const langPack = TRANSLATIONS[getState().currentLanguage] || TRANSLATIONS.ru;
-    const categoryName = langPack[`cat_${getState().currentCategory}`] || getState().currentCategory;
-    
-    if (confirm(`Вы уверены, что хотите добавить этот файл в категорию "${categoryName}"?`)) {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            ui.setUIGeneratorState(elements, true, 'Загрузка...');
-            try {
-                await addEntryToGallery(event.target.result, file.name, false);
-            } catch (err) {
-                ui.showError(elements, err.message);
-            } finally {
-                ui.setUIGeneratorState(elements, false);
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-    e.target.value = ''; // Сброс инпута
-};
-
-const generateRandomPrompt = () => {
-    const promptParts = {
-        subject: ["портрет девушки", "рыцарь в доспехах", "одинокое дерево", "фэнтези город", "космический корабль", "дракон", "старый маг", "кибер-самурай"],
-        details: ["светящиеся глаза", "в руках посох", "нежный взгляд", "капли дождя", "боевая поза", "в окружении бабочек", "с имплантами"],
-        style: ["в стиле аниме 90-х", "в стиле киберпанк", "эпичное фэнтези", "мрачная атмосфера", "яркие цвета", "пастельные тона"],
-        artist: ["от Artgerm", "от Greg Rutkowski", "от Makoto Shinkai", "в стиле Ghibli", "в стиле Riot Games"]
-    };
-    const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
-    elements.promptInput.value = `${getRandomElement(promptParts.subject)}, ${getRandomElement(promptParts.details)}, ${getRandomElement(promptParts.style)}, ${getRandomElement(promptParts.artist)}`;
-};
-
-const applyBackground = async (imageBlob) => {
-    try {
-        await dbRequest('settings', 'readwrite', store => store.put(imageBlob, 'customBackground'));
-        const objectURL = URL.createObjectURL(imageBlob);
-        document.body.style.setProperty('--bg-image-url', `url(${objectURL})`);
-        document.body.classList.add('has-custom-bg');
-    } catch (e) {
-        ui.showError(elements, "Не удалось сохранить фон: " + e.message);
-    }
-};
-
-const resetBackground = async () => {
-    try {
-        await dbRequest('settings', 'readwrite', store => store.delete('customBackground'));
-        document.body.style.removeProperty('--bg-image-url');
-        document.body.classList.remove('has-custom-bg');
-    } catch (e) {
-        ui.showError(elements, "Не удалось удалить фон: " + e.message);
-    }
-};
-
-const setBackgroundFromDefault = async (bgId) => {
-    try {
-        const bg = await dbRequest('defaultBackgrounds', 'readonly', store => store.get(bgId));
-        if (bg) await applyBackground(bg.blob);
-    } catch (e) {
-        console.error("Ошибка установки стандартного фона:", e);
-    }
-};
-
-const handleBackgroundUpload = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        applyBackground(file);
-    }
-    e.target.value = ''; // Сброс инпута
-};
-
-const setBackgroundFromGallery = async () => {
-    const checked = document.querySelectorAll('.gallery-item .select-checkbox:checked');
-    if (checked.length !== 1) return alert("Выберите ровно одно изображение.");
-
-    try {
-        const id = parseInt(checked[0].closest('.gallery-item').dataset.id);
-        const item = await dbRequest('gallery', 'readonly', store => store.get(id));
-        if (!item || !item.data) return;
-
-        const response = await fetch(item.data);
-        if (!response.ok) throw new Error('Не удалось преобразовать в Blob');
-        
-        const blob = await response.blob();
-        await applyBackground(blob);
-        alert('Фон успешно установлен!');
-    } catch (e) {
-        ui.showError(elements, `Не удалось установить фон: ${e.message}`);
-    }
-};
-
-const handleFeedbackSubmit = async (type) => {
-    const textElement = (type === 'bug') ? elements.bugReportText : elements.suggestionText;
-    const buttonElement = (type === 'bug') ? elements.submitBugReportBtn : elements.submitSuggestionBtn;
-    const statusElement = (type === 'bug') ? elements.bugReportStatus : elements.suggestionStatus;
-    
-    const message = textElement.value.trim();
-    if (!message) {
-        ui.showFeedbackStatus(statusElement, 'Поле не может быть пустым.', 'error');
-        return;
-    }
-
-    buttonElement.disabled = true;
-    ui.showFeedbackStatus(statusElement, 'Отправка...', 'success');
-
-    try {
-        const response = await fetch('/feedback', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, message })
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Ошибка на сервере');
-        
-        ui.showFeedbackStatus(statusElement, 'Спасибо! Сообщение успешно отправлено.', 'success');
-        textElement.value = '';
-    } catch (error) {
-        ui.showFeedbackStatus(statusElement, `Ошибка: ${error.message}`, 'error');
-    } finally {
-        buttonElement.disabled = false;
-        setTimeout(() => statusElement.classList.add('hidden'), 5000);
-    }
-};
-
-const setupDefaultBackgrounds = async () => {
-    try {
-        // Уникальный ключ версии, чтобы принудительно обновить фоны, если мы их изменим
-        const installed_key = 'backgrounds_installed_v1';
-        const installed = await dbRequest('settings', 'readonly', store => store.get(installed_key));
-        if (installed) return;
-
-        ui.setUIGeneratorState(elements, true, 'Первичная загрузка фонов...');
-        await dbRequest('defaultBackgrounds', 'readwrite', store => store.clear());
-
-        for (const source of DEFAULT_BACKGROUND_SOURCES) {
-            try {
-                const response = await fetch(source.url);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for ${source.name}`);
-                const blob = await response.blob();
-                await dbRequest('defaultBackgrounds', 'readwrite', store => store.put({ id: source.name, blob: blob }));
-            } catch (e) {
-                console.error(`Не удалось загрузить фон "${source.name}":`, e);
-            }
-        }
-        await dbRequest('settings', 'readwrite', store => store.put(true, installed_key));
-    } catch (e) {
-        ui.showError(elements, "Не удалось загрузить стандартные фоны. Проверьте консоль.");
-    } finally {
-        ui.setUIGeneratorState(elements, false);
-    }
-};
-
-const selectAllItems = (select = true) => {
-    document.querySelectorAll('#gallery .gallery-item .select-checkbox').forEach(cb => cb.checked = select);
+const selectAllItems = () => {
+    const checkboxes = document.querySelectorAll('#gallery .gallery-item .select-checkbox');
+    // Если хотя бы один не выбран, выбираем все. Иначе — снимаем выделение со всех.
+    const shouldSelectAll = ![...checkboxes].every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = shouldSelectAll);
 };
 
 const selectAiItems = async () => {
@@ -409,154 +83,180 @@ const selectAiItems = async () => {
         try {
             const itemData = await dbRequest('gallery', 'readonly', store => store.get(id));
             itemEl.querySelector('.select-checkbox').checked = !!(itemData && itemData.isAiGenerated);
-        } catch (e) {
-            console.error("Ошибка при проверке AI-метки для", id, e);
-        }
+        } catch(e) { console.error("Ошибка при проверке AI-метки для", id, e); }
     }
 };
 
 const handleSort = async (sortType) => {
     if (sortType === 'filter_favorite') {
-        // Проверяем, есть ли вообще избранные в текущей категории
         const allGalleryData = await dbRequest('gallery', 'readonly', store => store.getAll());
         const categoryData = allGalleryData.filter(item => item.category === getState().currentCategory);
         const favoriteItems = categoryData.filter(item => item.favorite);
 
-        if (favoriteItems.length > 0) {
+        if (favoriteItems.length > 0 || getState().isFavFilterActive) {
             setState('isFavFilterActive', !getState().isFavFilterActive);
             localStorage.setItem('isFavFilterActive', getState().isFavFilterActive);
-            handlers.renderGallery();
-            handlers.renderSortOptions();
-        } else {
-            // Если избранных нет, ничего не делаем, как и просил пользователь
-            console.log("Нет избранных для фильтрации.");
         }
     } else {
         setState('currentSort', sortType);
         localStorage.setItem('gallerySort', sortType);
-        handlers.renderGallery();
     }
+    await handlers.renderGallery();
 };
 
-const handleContextMenuAction = async (action) => {
-    const itemId = getState().contextedItemId;
-    if (!action || !itemId) return;
+// ... (остальной код main.js без изменений)
 
-    const item = await dbRequest('gallery', 'readonly', store => store.get(itemId));
-    if (!item) return;
+---
+*Примечание: я не стал приводить здесь весь код `main.js`, а только измененный блок, так как он очень большой. Ты можешь просто заменить эти три функции (`selectAllItems`, `selectAiItems`, `handleSort`) в своем файле.*
 
-    if (action === 'rename') {
-        const newPrompt = prompt("Введите новый промпт:", item.prompt);
-        if (newPrompt !== null && newPrompt.trim() !== "") {
-            item.prompt = newPrompt;
-            await dbRequest('gallery', 'readwrite', store => store.put(item));
-            await handlers.renderGallery();
+---
+
+#### **5. Файл `/js/events.js` (Заменить полностью)**
+*Изменения: `setupEventListeners` теперь слушает клики по новой панели управления.*
+
+```javascript
+--- START OF FILE /js/events.js ---
+import { getState } from './state.js';
+
+export const setupEventListeners = (elements, handlers) => {
+    
+    // Глобальные клики (закрытие меню и панелей)
+    document.body.addEventListener('click', (e) => {
+        if (elements.menuBtn && !elements.menuBtn.contains(e.target) && elements.dropdownMenu && !elements.dropdownMenu.contains(e.target)) {
+            elements.dropdownMenu.classList.add('hidden');
         }
-    } else if (action === 'copy-prompt') {
-        if (item.prompt) {
-            navigator.clipboard.writeText(item.prompt)
-                .then(() => alert('Промпт скопирован!'))
-                .catch(err => console.error('Ошибка копирования:', err));
+        if (elements.contextMenu && !elements.contextMenu.contains(e.target) && !e.target.classList.contains('item-menu-btn')) {
+            handlers.hideContextMenu();
         }
-    }
-    ui.hideContextMenu(elements);
-};
+    });
 
-// === 3. ЕДИНЫЙ ОБЪЕКТ HANDLERS ===
-// Собираем все функции-обработчики в один объект для передачи в setupEventListeners
-const handlers = {
-    handleAiGeneration,
-    findSimilarOnline,
-    getRandomImage,
-    generateRandomPrompt,
-    saveResultToGallery,
-    handleUpload,
-    exportSelected,
-    deleteSelected,
-    clearGallery,
-    setBgFromGalleryBtn: setBackgroundFromGallery,
-    toggleFavorite,
-    handleCategoryClick,
-    applyTheme: ui.applyTheme,
-    resetBackground,
-    setBackgroundFromDefault,
-    handleBackgroundUpload,
-    handleFeedbackSubmit,
-    selectAllItems,
-    selectAiItems,
-    handleSort,
-    handleContextMenuAction,
-    setLanguage: (lang) => {
-        setState('currentLanguage', lang);
-        ui.setLanguage(elements, lang, TRANSLATIONS, {
-            renderCategories: () => ui.renderCategories(elements, TRANSLATIONS, handleCategoryClick),
-            renderThemes: () => ui.renderThemes(elements, ui.applyTheme),
-            renderStyles: () => ui.renderStyles(elements, TRANSLATIONS),
-            renderSortOptions: () => ui.renderSortOptions(elements, TRANSLATIONS),
-            renderChangelog: () => ui.renderChangelog(elements, TRANSLATIONS)
-        });
-    },
-    renderGallery: () => ui.renderGallery(elements, toggleFavorite, (target, id) => ui.showContextMenu(elements, target, id, TRANSLATIONS, { setContextedItemId: (val) => setState('contextedItemId', val) }), (src) => ui.viewImage(elements, src)),
-    renderSortOptions: () => ui.renderSortOptions(elements, TRANSLATIONS),
-    renderCategories: () => ui.renderCategories(elements, TRANSLATIONS, handleCategoryClick),
-    hideContextMenu: () => ui.hideContextMenu(elements),
-    openPanel: ui.openPanel,
-    closePanel: ui.closePanel,
-    viewImage: (src) => ui.viewImage(elements, src)
-};
-
-// === 4. ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===
-const init = async () => {
-    try {
-        // --- ДИАГНОСТИКА: Шаг 1 ---
-        // Проверим, находит ли JavaScript наши элементы СРАЗУ после загрузки страницы.
-        console.log("--- ДИАГНОСТИКА: Проверка элементов ---");
-        for (const [key, value] of Object.entries(elements)) {
-            if (value === null) {
-                console.error(`Элемент НЕ НАЙДЕН: ${key}`);
+    if (elements.imageViewer) {
+        elements.imageViewer.addEventListener('click', (e) => {
+            if (e.target === elements.imageViewer) {
+                handlers.closePanel(elements.imageViewer);
             }
+        });
+    }
+
+    // Главное меню
+    if (elements.menuBtn) {
+        elements.menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            elements.dropdownMenu.classList.toggle('hidden');
+        });
+    }
+
+    // Закрытие всех панелей
+    document.querySelectorAll('.panel-overlay').forEach(panel => {
+        panel.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.classList.contains('panel-close-btn') || target.closest('.panel-close-btn')) {
+                handlers.closePanel(panel);
+            }
+            else if (target.classList.contains('panel-back-btn') || target.closest('.panel-back-btn')) {
+                handlers.closePanel(panel);
+                handlers.openPanel(elements.settingsPanel);
+            }
+        });
+    });
+
+    // Навигация по панелям (открытие)
+    const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
+        if (btn) {
+            btn.addEventListener('click', () => {
+                if (shouldCloseDropdown) elements.dropdownMenu.classList.add('hidden');
+                handlers.openPanel(panel);
+            });
         }
-        console.log("--- ДИАГНОСТИКА: Проверка завершена ---");
+    };
+    setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
+    setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
+    setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
+    setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel);
+    setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel);
+    setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
 
+    // Основные действия генератора
+    if (elements.generateBtn) elements.generateBtn.addEventListener('click', handlers.handleAiGeneration);
+    if (elements.randomPromptBtn) elements.randomPromptBtn.addEventListener('click', handlers.generateRandomPrompt);
+    if (elements.findSimilarBtn) elements.findSimilarBtn.addEventListener('click', handlers.findSimilarOnline);
+    if (elements.randomImageBtn) elements.randomImageBtn.addEventListener('click', handlers.getRandomImage);
+    if (elements.saveBtn) elements.saveBtn.addEventListener('click', handlers.saveResultToGallery);
+    if (elements.previewBtn) {
+        elements.previewBtn.addEventListener('click', () => {
+            const lastResult = getState().lastAiResult;
+            if (lastResult) handlers.viewImage(lastResult.imageUrl);
+        });
+    }
 
-        await setupDefaultBackgrounds();
+    // Действия с галереей
+    if (elements.uploadBtn) elements.uploadBtn.addEventListener('click', () => elements.uploadInput.click());
+    if (elements.uploadInput) elements.uploadInput.addEventListener('change', handlers.handleUpload);
+    if (elements.exportBtn) elements.exportBtn.addEventListener('click', handlers.exportSelected);
+    if (elements.deleteBtn) elements.deleteBtn.addEventListener('click', handlers.deleteSelected);
+    if (elements.setBgFromGalleryBtn) elements.setBgFromGalleryBtn.addEventListener('click', handlers.setBgFromGalleryBtn);
+    if (elements.clearGalleryBtn) elements.clearGalleryBtn.addEventListener('click', handlers.clearGallery);
+    
+    // Действия с темами и фонами
+    if (elements.themeResetBtn) elements.themeResetBtn.addEventListener('click', () => handlers.applyTheme('dark'));
+    if (elements.backgroundResetBtn) elements.backgroundResetBtn.addEventListener('click', handlers.resetBackground);
+    
+    if (elements.backgroundGrid) {
+        elements.backgroundGrid.addEventListener('click', (e) => {
+            const bgCard = e.target.closest('[data-bg-id]');
+            if (bgCard) {
+                if (bgCard.dataset.bgId === 'upload-new') {
+                    elements.backgroundUploadInput.click();
+                } else {
+                    handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
+                }
+            }
+        });
+    }
+    
+    if (elements.backgroundUploadInput) elements.backgroundUploadInput.addEventListener('change', handlers.handleBackgroundUpload);
 
-        // Загружаем настройки из localStorage или используем значения по умолчанию
-        setState('currentSort', localStorage.getItem('gallerySort') || 'date_desc');
-        setState('isFavFilterActive', localStorage.getItem('isFavFilterActive') === 'true');
-        setState('currentCategory', localStorage.getItem('currentCategory') || 'waifu');
-        
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        ui.applyTheme(savedTheme);
+    // Язык
+    if (elements.langSwitcherBtn) {
+        elements.langSwitcherBtn.addEventListener('click', () => {
+            const nextLang = getState().currentLanguage === 'ru' ? 'en' : 'ru';
+            handlers.setLanguage(nextLang);
+        });
+    }
+    
+    // Обратная связь
+    if (elements.submitBugReportBtn) elements.submitBugReportBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('bug'));
+    if (elements.submitSuggestionBtn) elements.submitSuggestionBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('suggestion'));
+    
+    // ⭐⭐ НОВЫЙ ОБРАБОТЧИК ДЛЯ ПАНЕЛИ УПРАВЛЕНИЯ ⭐⭐
+    if (elements.selectionControls) {
+        elements.selectionControls.addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (!button) return;
 
-        const savedLang = localStorage.getItem('language') || 'ru';
-        handlers.setLanguage(savedLang);
+            if (button.dataset.action === 'select_all') {
+                handlers.selectAllItems();
+            } else if (button.dataset.action === 'select_ai') {
+                handlers.selectAiItems();
+            } else if (button.dataset.sort) {
+                handlers.handleSort(button.dataset.sort);
+            }
+        });
+    }
 
-        // Рендерим динамические части интерфейса
-        await ui.renderBackgrounds(elements);
-        await handlers.renderGallery();
-
-        // Применяем сохраненный пользовательский фон, если он есть
-        const savedBgBlob = await dbRequest('settings', 'readonly', store => store.get('customBackground'));
-        if (savedBgBlob) {
-            const objectURL = URL.createObjectURL(savedBgBlob);
-            document.body.style.setProperty('--bg-image-url', `url(${objectURL})`);
-            document.body.classList.add('has-custom-bg');
-        }
-
-        // "Оживляем" все кнопки
-        setupEventListeners(elements, handlers);
-
-        console.log("Приложение успешно инициализировано!");
-
-    } catch (e) {
-        console.error("КРИТИЧЕСКАЯ ОШИБКА ИНИЦИАЛИЗАЦИИ:", e);
-        // ⭐ Добавляем более подробный вывод ошибки в консоль
-        console.error("Stack trace:", e.stack);
-        document.body.innerHTML = `<div style="color:red; text-align:center; margin-top: 50px; padding: 20px;"><h1>Критическая ошибка</h1><p>Не удалось запустить приложение. Пожалуйста, попробуйте очистить кэш сайта (Ctrl+Shift+R или Ctrl+F5) и перезагрузить страницу. Если проблема повторится, свяжитесь с поддержкой.</p><p>Детали: ${e.message}</p></div>`;
+    // Выбор темы
+    if (elements.themeGrid) {
+        elements.themeGrid.addEventListener('click', (e) => {
+            const themeEl = e.target.closest('[data-theme]');
+            if (themeEl) handlers.applyTheme(themeEl.dataset.theme);
+        });
+    }
+    
+    // Контекстное меню
+    if (elements.contextMenu) {
+        elements.contextMenu.addEventListener('click', (e) => {
+            const action = e.target.closest('[data-action]')?.dataset.action;
+            if (action) handlers.handleContextMenuAction(action);
+        });
     }
 };
-
-// Запускаем всё!
-init();
-
