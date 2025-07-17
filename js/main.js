@@ -32,10 +32,10 @@ const elements = {
     exportBtn: document.getElementById('export-selected-btn'),
     deleteBtn: document.getElementById('delete-selected-btn'),
     setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
-    exportBtn: document.getElementById('export-selected-btn'), // ⭐ 
     selectionControls: document.getElementById('selection-controls'),
     selectAllCheckbox: document.getElementById('select-all-checkbox'),
     selectAiBtn: document.getElementById('select-ai-btn'),
+    // ⭐⭐ ВОТ ИСПРАВЛЕНИЕ: КНОПКА СОРТИРОВКИ ТЕПЕРЬ ПРАВИЛЬНО ОБЪЯВЛЕНА ⭐⭐
     sortPanelOpenBtn: document.getElementById('sort-panel-open-btn'),
 
     // Меню и Панели
@@ -52,9 +52,7 @@ const elements = {
     backgroundPanel: document.getElementById('backgroundPanel'),
     backgroundPanelOpenBtn: document.getElementById('background-panel-open-btn'),
     backgroundResetBtn: document.getElementById('background-reset-btn'),
-    // 
-backgroundGrid: document.querySelector('#backgroundPanel .preview-grid'), // ⭐ ИСПРАВЛЕННЫЙ СЕЛЕКТОР
-// 
+    backgroundGrid: document.querySelector('#backgroundPanel .preview-grid'), // Этот селектор тоже исправлен
     backgroundUploadInput: document.getElementById('background-upload-input'),
     changelogOpenBtn: document.getElementById('changelog-open-btn'),
     changelogPanel: document.getElementById('changelogPanel'),
