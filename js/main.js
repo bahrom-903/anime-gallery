@@ -508,6 +508,17 @@ const handlers = {
 // === 4. ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ===
 const init = async () => {
     try {
+        // --- ДИАГНОСТИКА: Шаг 1 ---
+        // Проверим, находит ли JavaScript наши элементы СРАЗУ после загрузки страницы.
+        console.log("--- ДИАГНОСТИКА: Проверка элементов ---");
+        for (const [key, value] of Object.entries(elements)) {
+            if (value === null) {
+                console.error(`Элемент НЕ НАЙДЕН: ${key}`);
+            }
+        }
+        console.log("--- ДИАГНОСТИКА: Проверка завершена ---");
+
+
         await setupDefaultBackgrounds();
 
         // Загружаем настройки из localStorage или используем значения по умолчанию
@@ -522,7 +533,7 @@ const init = async () => {
         handlers.setLanguage(savedLang);
 
         // Рендерим динамические части интерфейса
-        await ui.renderBackgrounds(elements, handleBackgroundUpload);
+        await ui.renderBackgrounds(elements);
         await handlers.renderGallery();
 
         // Применяем сохраненный пользовательский фон, если он есть
@@ -540,6 +551,8 @@ const init = async () => {
 
     } catch (e) {
         console.error("КРИТИЧЕСКАЯ ОШИБКА ИНИЦИАЛИЗАЦИИ:", e);
+        // ⭐ Добавляем более подробный вывод ошибки в консоль
+        console.error("Stack trace:", e.stack);
         document.body.innerHTML = `<div style="color:red; text-align:center; margin-top: 50px; padding: 20px;"><h1>Критическая ошибка</h1><p>Не удалось запустить приложение. Пожалуйста, попробуйте очистить кэш сайта (Ctrl+Shift+R или Ctrl+F5) и перезагрузить страницу. Если проблема повторится, свяжитесь с поддержкой.</p><p>Детали: ${e.message}</p></div>`;
     }
 };
