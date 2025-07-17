@@ -52,7 +52,9 @@ const elements = {
     backgroundPanel: document.getElementById('backgroundPanel'),
     backgroundPanelOpenBtn: document.getElementById('background-panel-open-btn'),
     backgroundResetBtn: document.getElementById('background-reset-btn'),
-    backgroundGrid: document.getElementById('backgroundGrid'),
+    // 
+backgroundGrid: document.querySelector('#backgroundPanel .preview-grid'), // ⭐ ИСПРАВЛЕННЫЙ СЕЛЕКТОР
+// 
     backgroundUploadInput: document.getElementById('background-upload-input'),
     changelogOpenBtn: document.getElementById('changelog-open-btn'),
     changelogPanel: document.getElementById('changelogPanel'),
