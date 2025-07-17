@@ -66,12 +66,13 @@
             </div>
 
             <div id="selection-controls" class="selection-controls hidden">
-                <label>
-                    <input type="checkbox" id="select-all-checkbox">
-                    <span data-lang-key="select_all_label">Выбрать всё</span>
-                </label>
-                <button id="select-ai-btn" class="text-like-button" data-lang-key="select_ai_only_label">Выбрать только AI</button>
-                <button id="sort-panel-open-btn">🔀 Сортировка</button>
+                <button data-action="select_all" data-lang-key="select_all_label">Выбрать всё</button>
+                <button data-action="select_ai" data-lang-key="select_ai_only_label">Выбрать только AI</button>
+                <button class="filter-btn" data-filter="filter_favorite" data-lang-key="sort_favorites">Только избранное</button>
+                <span class="separator"></span>
+                <button class="sort-btn" data-sort="date_desc" data-lang-key="sort_newest">Сначала новые</button>
+                <button class="sort-btn" data-sort="date_asc" data-lang-key="sort_oldest">Сначала старые</button>
+                <button class="sort-btn" data-sort="random" data-lang-key="sort_random">Случайно</button>
             </div>
 
             <div class="gallery" id="gallery"></div>
@@ -81,12 +82,11 @@
     <!-- Панели, которые открываются поверх всего -->
     <div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">Настройки</h2><button class="panel-close-btn">✖</button></div><div class="panel-items"><button id="theme-panel-open-btn" class="panel-button" data-lang-key="themes">🎨 Темы</button><button id="background-panel-open-btn" class="panel-button" data-lang-key="backgrounds">🖼️ Фоны</button><hr><button id="changelog-open-btn" class="panel-button" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button id="bug-report-open-btn" class="panel-button" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button id="suggestion-open-btn" class="panel-button" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button id="gallery-clear-btn" class="panel-button" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
     <div id="themePanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="themes">Темы</h2><button id="theme-reset-btn" class="panel-header-icon" title="Сбросить тему">🔄</button></div><div id="themeGrid" class="preview-grid"></div></div></div>
-    <div id="sortPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="sorting">Сортировка</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div id="sortGrid"></div></div></div>
     <div id="backgroundPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="backgrounds">Фоны</h2><button id="background-reset-btn" class="panel-header-icon" title="Сбросить фон">🔄</button></div><div id="backgroundGrid" class="preview-grid"></div></div></div>
     <div id="changelogPanel" class="panel-overlay"><div class="panel-content changelog-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="changelog">Зал Славы и Версии</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div id="changelog-content-area"></div></div></div>
     <div id="bugReportPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="report_bug">Сообщить о проблеме</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="bug_report_desc"></p><textarea id="bug-report-text" class="feedback-textarea" data-lang-placeholder-key="bug_report_placeholder"></textarea><button id="submit-bug-report-btn" data-lang-key="send">Отправить</button><p id="bug-report-status" class="hidden"></p></div></div>
     <div id="suggestionPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="suggest_idea">Предложить идею</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="suggestion_desc"></p><textarea id="suggestion-text" class="feedback-textarea" data-lang-placeholder-key="suggestion_placeholder"></textarea><button id="submit-suggestion-btn" data-lang-key="send">Отправить</button><p id="suggestion-status" class="hidden"></p></div></div>
-    <div id="image-viewer-overlay" class="panel-overlay image-viewer-overlay"><div class="viewer-content-wrapper" id="viewer-content-wrapper"><img id="viewer-img" src="" alt="Image Preview"></div></div>
+    <div id="image-viewer-overlay" class="panel-overlay image-viewer-overlay"><div class="viewer-content-wrapper"><img id="viewer-img" src="" alt="Image Preview"></div></div>
     <div id="context-menu"></div>
 
   <script src="./js/main.js" type="module"></script>
