@@ -1,4 +1,3 @@
---- START OF FILE /js/events.js ---
 // ===================================
 //      Файл: events.js
 //      Роль: Привязка всех обработчиков событий к DOM-элементам
@@ -137,4 +136,4 @@ export const setupEventListeners = (elements, handlers) => {
         if (action) handlers.handleContextMenuAction(action);
     });
 };
---- END OF FILE /js/events.js ---
+
