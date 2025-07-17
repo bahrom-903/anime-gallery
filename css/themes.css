@@ -1,6 +1,20 @@
+
 /* ===================================
 //      ТЕМЫ ОФОРМЛЕНИЯ
 // =================================== */
+:root {
+    --bg-color: #1f2937; --bg-color-rgb: 31, 41, 55; --text-color: #f9fafb; --panel-bg: #111827;
+    --panel-bg-rgb: 17, 24, 39; --button-bg: #10b981; --button-text: #ffffff; --input-bg: #374151;
+    --input-border: #4b5563; --button-bg-rgb: 16, 185, 129;
+}
+
+body.has-custom-bg .generator-area,
+body.has-custom-bg .gallery-wrapper {
+    background-color: rgba(var(--panel-bg-rgb), 0.85); /* Сделали чуть менее прозрачным */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
 body.theme-light {
     --bg-color: #f9fafb; --bg-color-rgb: 249,250,251; --text-color: #111827; --panel-bg: #ffffff;
@@ -8,59 +22,61 @@ body.theme-light {
     --input-border: #d1d5db; --button-bg-rgb: 59, 130, 246;
 }
 body.theme-gray {
-    --bg-color: #313338; --text-color: #f2f3f5; --panel-bg: #1e1f22; --button-bg: #5865f2;
-    --input-bg: #383a40; --input-border: #4e5058;
+    --bg-color: #313338; --bg-color-rgb: 49,51,56; --text-color: #f2f3f5; --panel-bg: #1e1f22; 
+    --panel-bg-rgb: 30,31,34; --button-bg: #5865f2; --input-bg: #383a40; --input-border: #4e5058;
 }
+/* ⭐ ИСПРАВЛЕНА ТЕМА РЕТРО ⭐ */
 body.theme-retro {
-    --bg-color: #f4e9d8; --text-color: #5a3e2b; --panel-bg: #fff8e1; --button-bg: #8d6e63;
-    --input-bg: #efebe9; --input-border: #d7ccc8;
+    --bg-color: #f4e9d8; --bg-color-rgb: 244,233,216; --text-color: #5a3e2b; --panel-bg: #eaddc7;
+    --panel-bg-rgb: 234,221,199; --button-bg: #8d6e63; --button-text: #ffffff; --input-bg: #efebe9; 
+    --input-border: #d7ccc8;
 }
 body.theme-dracula {
-    --bg-color: #282a36; --text-color: #f8f8f2; --panel-bg: #21222c; --button-bg: #bd93f9;
-    --input-bg: #44475a; --input-border: #6272a4;
+    --bg-color: #282a36; --bg-color-rgb: 40,42,54; --text-color: #f8f8f2; --panel-bg: #21222c; 
+    --panel-bg-rgb: 33,34,44; --button-bg: #bd93f9; --input-bg: #44475a; --input-border: #6272a4;
 }
 body.theme-nord {
-    --bg-color: #2e3440; --text-color: #d8dee9; --panel-bg: #3b4252; --button-bg: #88c0d0;
-    --input-bg: #434c5e; --input-border: #4c566a;
+    --bg-color: #2e3440; --bg-color-rgb: 46,52,64; --text-color: #d8dee9; --panel-bg: #3b4252; 
+    --panel-bg-rgb: 59,66,82; --button-bg: #88c0d0; --input-bg: #434c5e; --input-border: #4c566a;
 }
 body.theme-solarized {
-    --bg-color: #002b36; --text-color: #839496; --panel-bg: #073642; --button-bg: #268bd2;
-    --input-bg: #003749; --input-border: #586e75;
+    --bg-color: #002b36; --bg-color-rgb: 0,43,54; --text-color: #839496; --panel-bg: #073642; 
+    --panel-bg-rgb: 7,54,66; --button-bg: #268bd2; --input-bg: #003749; --input-border: #586e75;
 }
 body.theme-gruvbox {
-    --bg-color: #282828; --text-color: #ebdbb2; --panel-bg: #1d2021; --button-bg: #fabd2f;
-    --input-bg: #3c3836; --input-border: #504945; --button-text: #282828;
+    --bg-color: #282828; --bg-color-rgb: 40,40,40; --text-color: #ebdbb2; --panel-bg: #1d2021; 
+    --panel-bg-rgb: 29,32,33; --button-bg: #fabd2f; --input-bg: #3c3836; --input-border: #504945; --button-text: #282828;
 }
 body.theme-monokai {
-    --bg-color: #272822; --text-color: #f8f8f2; --panel-bg: #1e1e1e; --button-bg: #a6e22e;
-    --input-bg: #3e3d32; --input-border: #75715e; --button-text: #272822;
+    --bg-color: #272822; --bg-color-rgb: 39,40,34; --text-color: #f8f8f2; --panel-bg: #1e1e1e; 
+    --panel-bg-rgb: 30,30,30; --button-bg: #a6e22e; --input-bg: #3e3d32; --input-border: #75715e; --button-text: #272822;
 }
 body.theme-tomorrow_night {
-    --bg-color: #1d1f21; --text-color: #c5c8c6; --panel-bg: #282a2e; --button-bg: #81a2be;
-    --input-bg: #373b41; --input-border: #42464d;
+    --bg-color: #1d1f21; --bg-color-rgb: 29,31,33; --text-color: #c5c8c6; --panel-bg: #282a2e; 
+    --panel-bg-rgb: 40,42,46; --button-bg: #81a2be; --input-bg: #373b41; --input-border: #42464d;
 }
 body.theme-one_dark {
-    --bg-color: #282c34; --text-color: #abb2bf; --panel-bg: #21252b; --button-bg: #61afef;
-    --input-bg: #3a3f4b; --input-border: #4b5263;
+    --bg-color: #282c34; --bg-color-rgb: 40,44,52; --text-color: #abb2bf; --panel-bg: #21252b; 
+    --panel-bg-rgb: 33,37,43; --button-bg: #61afef; --input-bg: #3a3f4b; --input-border: #4b5263;
 }
 body.theme-cyberpunk {
-    --bg-color: #0d0221; --text-color: #00f0ff; --panel-bg: #240b36; --button-bg: #f900ff;
-    --input-bg: #4f228a; --input-border: #8e44ad; --button-text: #ffffff;
+    --bg-color: #0d0221; --bg-color-rgb: 13,2,33; --text-color: #00f0ff; --panel-bg: #240b36; 
+    --panel-bg-rgb: 36,11,54; --button-bg: #f900ff; --input-bg: #4f228a; --input-border: #8e44ad; --button-text: #ffffff;
 }
 body.theme-matrix {
-    --bg-color: #000000; --text-color: #00ff41; --panel-bg: #0d0d0d; --button-bg: #00ff41;
-    --input-bg: #1a1a1a; --input-border: #333333; --button-text: #000000;
+    --bg-color: #000000; --bg-color-rgb: 0,0,0; --text-color: #00ff41; --panel-bg: #0d0d0d; 
+    --panel-bg-rgb: 13,13,13; --button-bg: #00ff41; --input-bg: #1a1a1a; --input-border: #333333; --button-text: #000000;
 }
 body.theme-crimson {
-    --bg-color: #1a0000; --text-color: #fdd; --panel-bg: #2a0000; --button-bg: #ff4d4d;
-    --input-bg: #4d0000; --input-border: #800000;
+    --bg-color: #1a0000; --bg-color-rgb: 26,0,0; --text-color: #fdd; --panel-bg: #2a0000; 
+    --panel-bg-rgb: 42,0,0; --button-bg: #ff4d4d; --input-bg: #4d0000; --input-border: #800000;
 }
 body.theme-synthwave {
-    --bg-color: #2c1f43; --text-color: #f0e6ff; --panel-bg: #201533; --button-bg: #ff6ac1;
-    --input-bg: #4a3a69; --input-border: #6c5a8f;
+    --bg-color: #2c1f43; --bg-color-rgb: 44,31,67; --text-color: #f0e6ff; --panel-bg: #201533; 
+    --panel-bg-rgb: 32,21,51; --button-bg: #ff6ac1; --input-bg: #4a3a69; --input-border: #6c5a8f;
 }
 
-/* ⭐ СТИЛИ ДЛЯ ПРЕВЬЮ ТЕМ ⭐ */
+/* СТИЛИ ДЛЯ ПРЕВЬЮ ТЕМ */
 .preview-box.theme-dark { background-color: #1f2937; }
 .preview-box.theme-light { background-color: #f9fafb; border: 1px solid #e5e7eb; }
 .preview-box.theme-gray { background-color: #313338; }
