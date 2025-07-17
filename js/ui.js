@@ -20,7 +20,6 @@ export const renderThemes = (elements, applyTheme) => {
         
         const name = item.id.charAt(0).toUpperCase() + item.id.slice(1).replace(/_/g, ' ');
         
-        // Добавляем класс для стилизации цветного превью
         card.innerHTML = `<div class="preview-box theme-${item.id}"></div><div class="preview-name">${name}</div>`;
         card.addEventListener('click', () => applyTheme(item.id));
         grid.appendChild(card);
@@ -57,34 +56,6 @@ export const renderCategories = (elements, translations, handleCategoryClick) =>
     }
 };
 
-export const renderSortOptions = (elements, translations) => {
-    const grid = elements.sortGrid;
-    if (!grid) return;
-    grid.innerHTML = '';
-
-    const langPack = translations[getState().currentLanguage] || translations.ru;
-    const sortOptions = {
-        'date_desc': langPack.sort_newest, 'date_asc': langPack.sort_oldest,
-        'random': langPack.sort_random, 'separator': '---',
-        'filter_favorite': langPack.sort_favorites
-    };
-
-    for (const [key, value] of Object.entries(sortOptions)) {
-        if (key === 'separator') {
-            grid.appendChild(document.createElement('hr'));
-            continue;
-        }
-        const button = document.createElement('button');
-        button.className = 'panel-button';
-        button.dataset.sort = key;
-        button.textContent = value;
-        if (key === 'filter_favorite' && getState().isFavFilterActive) {
-            button.classList.add('active-filter');
-        }
-        grid.appendChild(button);
-    }
-};
-
 export const renderBackgrounds = async (elements) => {
     try {
         const grid = elements.backgroundGrid;
@@ -96,14 +67,12 @@ export const renderBackgrounds = async (elements) => {
         const storedBgs = await dbRequest('defaultBackgrounds', 'readonly', store => store.getAll());
         grid.innerHTML = '';
 
-        // 1. Создаем кастомную карточку "Загрузить"
         const uploadCard = document.createElement("div");
         uploadCard.className = "preview-card";
-        uploadCard.dataset.bgId = "upload-new"; // Этот data-атрибут будет отловлен в events.js
+        uploadCard.dataset.bgId = "upload-new";
         uploadCard.innerHTML = `<div class="preview-box upload-box">📥</div><div class="preview-name" data-lang-key="upload_your_bg">Загрузить свой фон</div>`;
         grid.appendChild(uploadCard);
 
-        // 2. Рендерим остальные фоны из базы данных
         const existingObjectURLs = document.querySelectorAll('#backgroundPanel [data-object-url]');
         existingObjectURLs.forEach(el => URL.revokeObjectURL(el.dataset.objectUrl));
         
@@ -120,7 +89,24 @@ export const renderBackgrounds = async (elements) => {
     }
 };
 
-// --- Основные функции UI ---
+// ⭐⭐ НОВАЯ ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ КНОПОК УПРАВЛЕНИЯ ⭐⭐
+const renderControlButtons = (elements) => {
+    if (!elements.selectionControls) return;
+    
+    const { currentSort, isFavFilterActive } = getState();
+
+    elements.selectionControls.querySelectorAll('.sort-btn').forEach(btn => {
+        const isSortButton = !btn.dataset.sort.includes('filter');
+        const isFilterButton = btn.dataset.sort === 'filter_favorite';
+
+        if (isSortButton) {
+            btn.classList.toggle('active', btn.dataset.sort === currentSort);
+        }
+        if (isFilterButton) {
+            btn.classList.toggle('active', isFavFilterActive);
+        }
+    });
+};
 
 export const renderGallery = async (elements, toggleFavorite, showContextMenu, viewImage) => {
     try {
@@ -132,10 +118,7 @@ export const renderGallery = async (elements, toggleFavorite, showContextMenu, v
         let dataToRender = [...categoryData];
         
         if (getState().isFavFilterActive) {
-            const favoriteItems = categoryData.filter(e => e.favorite);
-            if (favoriteItems.length > 0 || categoryData.length === 0) {
-                 dataToRender = favoriteItems;
-            }
+            dataToRender = categoryData.filter(e => e.favorite);
         }
         
         const sortType = getState().currentSort;
@@ -144,11 +127,11 @@ export const renderGallery = async (elements, toggleFavorite, showContextMenu, v
         else if (sortType === 'random') dataToRender.sort(() => Math.random() - 0.5);
 
         if (elements.selectionControls) {
-            elements.selectionControls.classList.toggle('hidden', dataToRender.length === 0);
+            const hasItemsInCategory = allGalleryData.some(item => item.category === getState().currentCategory);
+            elements.selectionControls.classList.toggle('hidden', !hasItemsInCategory);
         }
-        if(elements.selectAllCheckbox) {
-            elements.selectAllCheckbox.checked = false;
-        }
+        
+        renderControlButtons(elements); // Обновляем состояние кнопок
 
         dataToRender.forEach(entry => {
             const item = document.createElement('div');
@@ -198,11 +181,11 @@ export const setLanguage = (elements, lang, translations, callbacks) => {
         const key = el.dataset.langPlaceholderKey;
         if (langPack[key]) el.placeholder = langPack[key];
     });
-    callbacks.renderCategories();
-    callbacks.renderThemes();
-    callbacks.renderStyles();
-    callbacks.renderSortOptions();
-    callbacks.renderChangelog();
+    // Вызываем коллбэки для перерисовки динамических элементов
+    if (callbacks.renderCategories) callbacks.renderCategories();
+    if (callbacks.renderThemes) callbacks.renderThemes();
+    if (callbacks.renderStyles) callbacks.renderStyles();
+    if (callbacks.renderChangelog) callbacks.renderChangelog();
 };
 
 export const applyTheme = (id) => {
@@ -288,6 +271,6 @@ export const hideContextMenu = (elements) => {
 
 export const renderChangelog = (elements, translations) => {
     if (elements.changelogContentArea) {
-        elements.changelogContentArea.innerHTML = `<h3>V 1.0 - Diamond Patch</h3><ul><li>Улучшен AI-генератор с помощью системы скрытых промптов.</li><li>Исправлен дизайн и логика меню.</li><li>Добавлена возможность выбора только AI-изображений.</li><li>Множественные исправления ошибок и улучшение стабильности.</li></ul><div class="contributor-thanks">Особая благодарность всем, кто сообщал об ошибках!</div>`;
+        elements.changelogContentArea.innerHTML = `<h3>V 1.2 - Interface Update</h3><ul><li>Полностью переделан интерфейс управления галереей.</li><li>Добавлена подсветка активных режимов сортировки и фильтрации.</li><li>Исправлен баг с цветом основных панелей во всех темах.</li><li>Исправлен цвет темы "Ретро".</li><li>Исправлены баги с неработающими кнопками.</li><li>Добавлено кеширование на стороне сервера для ускорения загрузки случайных изображений.</li></ul><div class="contributor-thanks">Особая благодарность за детальные отчеты об ошибках!</div>`;
     }
 };
