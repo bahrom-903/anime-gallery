@@ -23,7 +23,7 @@ export const setupEventListeners = (elements, handlers) => {
         }
     });
 
-    // ⭐ Закрытие просмотрщика по клику на фон (оверлей)
+    // Закрытие просмотрщика по клику на фон (оверлей)
     if (elements.imageViewer) {
         elements.imageViewer.addEventListener('click', (e) => {
             // Закрываем только если клик был на самом оверлее, а не на картинке внутри
@@ -34,10 +34,14 @@ export const setupEventListeners = (elements, handlers) => {
     }
 
     // --- Главное меню ---
-    elements.menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        elements.dropdownMenu.classList.toggle('hidden');
-    });
+    if (elements.menuBtn) {
+        elements.menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (elements.dropdownMenu) {
+                elements.dropdownMenu.classList.toggle('hidden');
+            }
+        });
+    }
 
     // --- Закрытие всех панелей ---
     document.querySelectorAll('.panel-overlay').forEach(panel => {
@@ -51,89 +55,114 @@ export const setupEventListeners = (elements, handlers) => {
             else if (target.classList.contains('panel-back-btn') || target.closest('.panel-back-btn')) {
                 handlers.closePanel(panel);
                 // Возвращаемся в главную панель настроек
-                handlers.openPanel(elements.settingsPanel);
+                if (elements.settingsPanel) {
+                    handlers.openPanel(elements.settingsPanel);
+                }
             }
         });
     });
 
     // --- Навигация по панелям (открытие) ---
     const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
-        if (btn) btn.addEventListener('click', () => {
-            if (shouldCloseDropdown) elements.dropdownMenu.classList.add('hidden');
-            handlers.openPanel(panel);
-        });
+        if (btn) {
+            btn.addEventListener('click', () => {
+                if (shouldCloseDropdown && elements.dropdownMenu) {
+                    elements.dropdownMenu.classList.add('hidden');
+                }
+                handlers.openPanel(panel);
+            });
+        }
     };
     setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
     setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
     setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
-    setupPanelButton(elements.sortPanelOpenBtn, elements.sortPanel); // Кнопка перемещена, но логика та же
+    setupPanelButton(elements.sortPanelOpenBtn, elements.sortPanel);
     setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel);
     setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel);
     setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
 
     // --- Основные действия генератора ---
-    elements.generateBtn.addEventListener('click', handlers.handleAiGeneration);
-    elements.randomPromptBtn.addEventListener('click', handlers.generateRandomPrompt);
-    elements.findSimilarBtn.addEventListener('click', handlers.findSimilarOnline);
-    elements.randomImageBtn.addEventListener('click', handlers.getRandomImage);
-    elements.saveBtn.addEventListener('click', handlers.saveResultToGallery);
-    elements.previewBtn.addEventListener('click', () => {
-        const lastResult = getState().lastAiResult;
-        if (lastResult) handlers.viewImage(lastResult.imageUrl);
-    });
+    if (elements.generateBtn) elements.generateBtn.addEventListener('click', handlers.handleAiGeneration);
+    if (elements.randomPromptBtn) elements.randomPromptBtn.addEventListener('click', handlers.generateRandomPrompt);
+    if (elements.findSimilarBtn) elements.findSimilarBtn.addEventListener('click', handlers.findSimilarOnline);
+    if (elements.randomImageBtn) elements.randomImageBtn.addEventListener('click', handlers.getRandomImage);
+    if (elements.saveBtn) elements.saveBtn.addEventListener('click', handlers.saveResultToGallery);
+    if (elements.previewBtn) {
+        elements.previewBtn.addEventListener('click', () => {
+            const lastResult = getState().lastAiResult;
+            if (lastResult) handlers.viewImage(lastResult.imageUrl);
+        });
+    }
 
     // --- Действия с галереей ---
-    elements.uploadBtn.addEventListener('click', () => elements.uploadInput.click());
-    elements.uploadInput.addEventListener('change', handlers.handleUpload);
-    elements.exportBtn.addEventListener('click', handlers.exportSelected);
-    elements.deleteBtn.addEventListener('click', handlers.deleteSelected);
-    elements.setBgFromGalleryBtn.addEventListener('click', handlers.setBgFromGalleryBtn);
-    elements.clearGalleryBtn.addEventListener('click', handlers.clearGallery);
+    if (elements.uploadBtn) elements.uploadBtn.addEventListener('click', () => elements.uploadInput.click());
+    if (elements.uploadInput) elements.uploadInput.addEventListener('change', handlers.handleUpload);
+    if (elements.exportBtn) elements.exportBtn.addEventListener('click', handlers.exportSelected);
+    if (elements.deleteBtn) elements.deleteBtn.addEventListener('click', handlers.deleteSelected);
+    if (elements.setBgFromGalleryBtn) elements.setBgFromGalleryBtn.addEventListener('click', handlers.setBgFromGalleryBtn);
+    if (elements.clearGalleryBtn) elements.clearGalleryBtn.addEventListener('click', handlers.clearGallery);
     
     // --- Действия с темами и фонами ---
-    elements.themeResetBtn.addEventListener('click', () => handlers.applyTheme('dark'));
-    elements.backgroundResetBtn.addEventListener('click', handlers.resetBackground);
-    elements.backgroundGrid.addEventListener('click', (e) => {
-        const bgCard = e.target.closest('[data-bg-id]');
-        if (bgCard) {
-            if (bgCard.dataset.bgId === 'upload-new') {
-                 // Эта логика теперь в ui.js, но для надежности можно оставить
-                elements.backgroundUploadInput.click();
-            } else {
-                handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
+    if (elements.themeResetBtn) elements.themeResetBtn.addEventListener('click', () => handlers.applyTheme('dark'));
+    if (elements.backgroundResetBtn) elements.backgroundResetBtn.addEventListener('click', handlers.resetBackground);
+    
+    // --- ДИАГНОСТИКА: Шаг 2 ---
+    // Проверим элемент backgroundGrid прямо перед тем, как его использовать
+    if (elements.backgroundGrid) {
+        elements.backgroundGrid.addEventListener('click', (e) => {
+            const bgCard = e.target.closest('[data-bg-id]');
+            if (bgCard) {
+                if (bgCard.dataset.bgId === 'upload-new') {
+                    if (elements.backgroundUploadInput) {
+                        elements.backgroundUploadInput.click();
+                    }
+                } else {
+                    handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
+                }
             }
-        }
-    });
-    elements.backgroundUploadInput.addEventListener('change', handlers.handleBackgroundUpload);
+        });
+    } else {
+        // Если элемент не найден, мы увидим это сообщение в консоли
+        console.error("КРИТИЧЕСКАЯ ОШИБКА в events.js: elements.backgroundGrid is null!");
+    }
+    
+    if (elements.backgroundUploadInput) elements.backgroundUploadInput.addEventListener('change', handlers.handleBackgroundUpload);
 
     // --- Язык ---
-    elements.langSwitcherBtn.addEventListener('click', () => {
-        const nextLang = getState().currentLanguage === 'ru' ? 'en' : 'ru';
-        handlers.setLanguage(nextLang);
-    });
+    if (elements.langSwitcherBtn) {
+        elements.langSwitcherBtn.addEventListener('click', () => {
+            const nextLang = getState().currentLanguage === 'ru' ? 'en' : 'ru';
+            handlers.setLanguage(nextLang);
+        });
+    }
     
     // --- Отправка обратной связи ---
-    elements.submitBugReportBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('bug'));
-    elements.submitSuggestionBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('suggestion'));
+    if (elements.submitBugReportBtn) elements.submitBugReportBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('bug'));
+    if (elements.submitSuggestionBtn) elements.submitSuggestionBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('suggestion'));
     
     // --- Управление выбором и сортировкой ---
-    elements.selectAllCheckbox.addEventListener('change', (e) => handlers.selectAllItems(e.target.checked));
-    elements.selectAiBtn.addEventListener('click', handlers.selectAiItems);
-    elements.sortGrid.addEventListener('click', (e) => {
-        const sortEl = e.target.closest('[data-sort]');
-        if (sortEl) handlers.handleSort(sortEl.dataset.sort);
-    });
+    if (elements.selectAllCheckbox) elements.selectAllCheckbox.addEventListener('change', (e) => handlers.selectAllItems(e.target.checked));
+    if (elements.selectAiBtn) elements.selectAiBtn.addEventListener('click', handlers.selectAiItems);
+    if (elements.sortGrid) {
+        elements.sortGrid.addEventListener('click', (e) => {
+            const sortEl = e.target.closest('[data-sort]');
+            if (sortEl) handlers.handleSort(sortEl.dataset.sort);
+        });
+    }
 
     // --- Выбор темы ---
-    elements.themeGrid.addEventListener('click', (e) => {
-        const themeEl = e.target.closest('[data-theme]');
-        if (themeEl) handlers.applyTheme(themeEl.dataset.theme);
-    });
+    if (elements.themeGrid) {
+        elements.themeGrid.addEventListener('click', (e) => {
+            const themeEl = e.target.closest('[data-theme]');
+            if (themeEl) handlers.applyTheme(themeEl.dataset.theme);
+        });
+    }
     
     // --- Контекстное меню ---
-    elements.contextMenu.addEventListener('click', (e) => {
-        const action = e.target.closest('[data-action]')?.dataset.action;
-        if (action) handlers.handleContextMenuAction(action);
-    });
+    if (elements.contextMenu) {
+        elements.contextMenu.addEventListener('click', (e) => {
+            const action = e.target.closest('[data-action]')?.dataset.action;
+            if (action) handlers.handleContextMenuAction(action);
+        });
+    }
 };
-
