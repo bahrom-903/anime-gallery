@@ -7,7 +7,6 @@
     column-gap: 15px;
     margin-top: 20px;
 }
-
 @media (max-width: 1200px) { .gallery { column-count: 4; } }
 @media (max-width: 900px) { .gallery { column-count: 3; } }
 @media (max-width: 600px) { .gallery { column-count: 2; } }
@@ -17,7 +16,7 @@
     position: relative;
     margin-bottom: 15px;
     break-inside: avoid;
-    background: var(--panel-bg);
+    background: var(--input-bg); /* Используем более контрастный фон */
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -74,43 +73,51 @@
     text-shadow: 0 0 4px black;
 }
 
+/* ⭐⭐ СТИЛИ ДЛЯ НОВОЙ ПАНЕЛИ УПРАВЛЕНИЯ ⭐⭐ */
 .selection-controls {
     margin-bottom: 15px;
     padding: 10px;
     background: rgba(var(--panel-bg-rgb), 0.5);
     border-radius: 8px;
     display: flex;
-    flex-wrap: wrap; /* ⭐ Добавлено для мобильных устройств */
+    flex-wrap: wrap;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
     border: 1px solid var(--input-border);
 }
 
-.selection-controls label {
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    user-select: none;
+.selection-controls button {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    padding: 8px 15px;
+    margin: 0;
+    font-size: 0.9em;
 }
 
-.selection-controls input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+.selection-controls button:hover {
+    border-color: var(--button-bg);
+    color: var(--button-bg);
+    filter: none;
 }
 
-/* ⭐ Кнопка управления категорией */
+/* Стиль для активных кнопок сортировки и фильтра */
+.selection-controls button.active {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border-color: var(--button-bg);
+}
+.selection-controls button.active:hover {
+    color: var(--button-text);
+    filter: brightness(1.1);
+}
+
+.selection-controls .separator {
+    color: var(--input-border);
+    margin: 0 5px;
+}
+
 #category-controls button.active-category {
     background: var(--button-bg);
-    color: var(--button-text);
-    box-shadow: 0 0 10px -2px var(--button-bg);
-    filter: brightness(1.2);
-}
-
-.panel-button.active-filter {
-    background-color: var(--button-bg);
     color: var(--button-text);
     box-shadow: 0 0 10px -2px var(--button-bg);
     filter: brightness(1.2);
@@ -121,12 +128,6 @@
     display: grid;
     gap: 10px;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-}
-
-#sortGrid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
 .preview-card {
@@ -159,7 +160,10 @@
     font-size: 24px;
 }
 
+.preview-card .upload-box {
+    background-color: var(--panel-bg);
+}
+
 .preview-card .preview-name {
     padding: 4px;
 }
-
