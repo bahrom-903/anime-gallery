@@ -1,4 +1,3 @@
---- START OF FILE /js/ui.js ---
 // ===================================
 //      Файл: ui.js
 //      Роль: Все функции, отвечающие за отрисовку и обновление интерфейса
@@ -260,4 +259,4 @@ export const hideContextMenu = (elements) => {
 export const renderChangelog = (elements, translations) => {
     elements.changelogContentArea.innerHTML = `<h3>V 1.0 - Diamond Patch</h3><ul><li>Улучшен AI-генератор с помощью системы скрытых промптов.</li><li>Исправлен дизайн и логика меню.</li><li>Добавлена возможность выбора только AI-изображений.</li><li>Множественные исправления ошибок и улучшение стабильности.</li></ul><div class="contributor-thanks">Особая благодарность всем, кто сообщал об ошибках!</div>`;
 };
---- END OF FILE /js/ui.js ---
+
