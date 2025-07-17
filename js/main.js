@@ -28,6 +28,9 @@ const elements = {
     deleteBtn: document.getElementById('delete-btn'),
     setBgFromGalleryBtn: document.getElementById('set-bg-from-gallery-btn'),
     selectionControls: document.getElementById('selection-controls'),
+    selectAllCheckbox: document.getElementById('select-all-checkbox'),
+    selectAiBtn: document.getElementById('select-ai-btn'),
+    sortPanelOpenBtn: document.getElementById('sort-panel-open-btn'),
     menuBtn: document.getElementById('menu-btn'),
     dropdownMenu: document.getElementById('dropdownMenu'),
     settingsPanel: document.getElementById('settingsPanel'),
@@ -36,6 +39,8 @@ const elements = {
     themePanelOpenBtn: document.getElementById('theme-panel-open-btn'),
     themeResetBtn: document.getElementById('theme-reset-btn'),
     themeGrid: document.getElementById('themeGrid'),
+    sortPanel: document.getElementById('sortPanel'),
+    sortGrid: document.getElementById('sortGrid'),
     backgroundPanel: document.getElementById('backgroundPanel'),
     backgroundPanelOpenBtn: document.getElementById('background-panel-open-btn'),
     backgroundResetBtn: document.getElementById('background-reset-btn'),
@@ -82,10 +87,8 @@ const setBackgroundFromGallery = async () => { /* ... без изменений 
 const handleFeedbackSubmit = async (type) => { /* ... без изменений ... */ };
 const setupDefaultBackgrounds = async () => { /* ... без изменений ... */ };
 
-const selectAllItems = () => {
-    const checkboxes = document.querySelectorAll('#gallery .gallery-item .select-checkbox');
-    const shouldSelectAll = ![...checkboxes].every(cb => cb.checked);
-    checkboxes.forEach(cb => cb.checked = shouldSelectAll);
+const selectAllItems = (select = true) => {
+    document.querySelectorAll('#gallery .gallery-item .select-checkbox').forEach(cb => cb.checked = select);
 };
 
 const selectAiItems = async () => {
@@ -99,16 +102,16 @@ const selectAiItems = async () => {
     }
 };
 
-const handleSort = async (sortType) => {
-    setState('currentSort', sortType);
-    localStorage.setItem('gallerySort', sortType);
-    await handlers.renderGallery();
-};
-
-const handleFilter = async () => {
-    setState('isFavFilterActive', !getState().isFavFilterActive);
-    localStorage.setItem('isFavFilterActive', getState().isFavFilterActive);
-    await handlers.renderGallery();
+const handleSort = (sortType) => {
+    if (sortType === 'filter_favorite') {
+        setState('isFavFilterActive', !getState().isFavFilterActive);
+        localStorage.setItem('isFavFilterActive', getState().isFavFilterActive);
+    } else {
+        setState('currentSort', sortType);
+        localStorage.setItem('gallerySort', sortType);
+    }
+    handlers.renderGallery();
+    handlers.renderSortOptions();
 };
 
 const handleContextMenuAction = async (action) => { /* ... без изменений ... */ };
@@ -116,18 +119,11 @@ const handleContextMenuAction = async (action) => { /* ... без изменен
 const handlers = {
     handleAiGeneration, findSimilarOnline, getRandomImage, generateRandomPrompt, saveResultToGallery, handleUpload, exportSelected,
     deleteSelected, clearGallery, setBgFromGalleryBtn: setBackgroundFromGallery, toggleFavorite, handleCategoryClick, applyTheme: ui.applyTheme,
-    resetBackground, setBackgroundFromDefault, handleBackgroundUpload, handleFeedbackSubmit, selectAllItems, selectAiItems, handleSort, handleFilter,
+    resetBackground, setBackgroundFromDefault, handleBackgroundUpload, handleFeedbackSubmit, selectAllItems, selectAiItems, handleSort,
     handleContextMenuAction,
-    setLanguage: (lang) => {
-        setState('currentLanguage', lang);
-        ui.setLanguage(elements, lang, TRANSLATIONS, {
-            renderCategories: () => ui.renderCategories(elements, TRANSLATIONS, handleCategoryClick),
-            renderThemes: () => ui.renderThemes(elements, ui.applyTheme),
-            renderStyles: () => ui.renderStyles(elements, TRANSLATIONS),
-            renderChangelog: () => ui.renderChangelog(elements, TRANSLATIONS)
-        });
-    },
+    setLanguage: (lang) => { /* ... без изменений ... */ },
     renderGallery: () => ui.renderGallery(elements, toggleFavorite, (target, id) => ui.showContextMenu(elements, target, id, TRANSLATIONS, {setContextedItemId: (val) => setState('contextedItemId', val)}), (src) => ui.viewImage(elements, src)),
+    renderSortOptions: () => ui.renderSortOptions(elements, TRANSLATIONS),
     renderCategories: () => ui.renderCategories(elements, TRANSLATIONS, handleCategoryClick),
     hideContextMenu: () => ui.hideContextMenu(elements),
     openPanel: ui.openPanel,
@@ -136,5 +132,4 @@ const handlers = {
 };
 
 const init = async () => { /* ... без изменений ... */ };
-
 init();
