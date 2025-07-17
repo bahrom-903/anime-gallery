@@ -1,0 +1,81 @@
+--- START OF FILE /css/layout.css ---
+/* ===================================
+//      СТИЛИ ОСНОВНОЙ РАЗМЕТКИ
+// =================================== */
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.generator-area {
+    position: relative; /* Для позиционирования кнопки меню */
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-wrapper {
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.has-custom-bg .generator-area,
+body.has-custom-bg .gallery-wrapper {
+    background-color: rgba(var(--panel-bg-rgb), 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.generator-area > h2,
+.gallery-wrapper > h2 {
+    margin-top: 0;
+}
+
+.prompt-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#prompt-input {
+    height: 80px;
+}
+
+#negative-prompt-input {
+    height: 50px;
+}
+
+.generator-controls, .gallery-main-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.result-area {
+    margin-top: 20px;
+    min-height: 256px;
+    /* ⭐ СТИЛИ ДЛЯ ЦЕНТРИРОВАНИЯ РЕЗУЛЬТАТА ⭐ */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.result-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+--- END OF FILE /css/layout.css ---
