@@ -59,10 +59,7 @@ export const renderCategories = (elements, translations, handleCategoryClick) =>
 export const renderBackgrounds = async (elements) => {
     try {
         const grid = elements.backgroundGrid;
-        if (!grid) {
-            console.error("Элемент backgroundGrid не найден!");
-            return;
-        }
+        if (!grid) return;
         
         const storedBgs = await dbRequest('defaultBackgrounds', 'readonly', store => store.getAll());
         grid.innerHTML = '';
@@ -89,23 +86,21 @@ export const renderBackgrounds = async (elements) => {
     }
 };
 
-// ⭐⭐ НОВАЯ ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ КНОПОК УПРАВЛЕНИЯ ⭐⭐
 const renderControlButtons = (elements) => {
     if (!elements.selectionControls) return;
     
     const { currentSort, isFavFilterActive } = getState();
 
+    // Обновляем кнопки сортировки
     elements.selectionControls.querySelectorAll('.sort-btn').forEach(btn => {
-        const isSortButton = !btn.dataset.sort.includes('filter');
-        const isFilterButton = btn.dataset.sort === 'filter_favorite';
-
-        if (isSortButton) {
-            btn.classList.toggle('active', btn.dataset.sort === currentSort);
-        }
-        if (isFilterButton) {
-            btn.classList.toggle('active', isFavFilterActive);
-        }
+        btn.classList.toggle('active', btn.dataset.sort === currentSort);
     });
+
+    // Обновляем кнопку-фильтр
+    const filterBtn = elements.selectionControls.querySelector('.filter-btn');
+    if (filterBtn) {
+        filterBtn.classList.toggle('active', isFavFilterActive);
+    }
 };
 
 export const renderGallery = async (elements, toggleFavorite, showContextMenu, viewImage) => {
@@ -131,7 +126,7 @@ export const renderGallery = async (elements, toggleFavorite, showContextMenu, v
             elements.selectionControls.classList.toggle('hidden', !hasItemsInCategory);
         }
         
-        renderControlButtons(elements); // Обновляем состояние кнопок
+        renderControlButtons(elements);
 
         dataToRender.forEach(entry => {
             const item = document.createElement('div');
@@ -181,7 +176,6 @@ export const setLanguage = (elements, lang, translations, callbacks) => {
         const key = el.dataset.langPlaceholderKey;
         if (langPack[key]) el.placeholder = langPack[key];
     });
-    // Вызываем коллбэки для перерисовки динамических элементов
     if (callbacks.renderCategories) callbacks.renderCategories();
     if (callbacks.renderThemes) callbacks.renderThemes();
     if (callbacks.renderStyles) callbacks.renderStyles();
@@ -237,7 +231,7 @@ export const showError = (elements, message) => {
 export const showFeedbackStatus = (element, message, type) => {
     if (element) {
         element.textContent = message;
-        element.className = type; // 'success' or 'error'
+        element.className = type;
         element.classList.remove('hidden');
     }
 };
@@ -271,6 +265,6 @@ export const hideContextMenu = (elements) => {
 
 export const renderChangelog = (elements, translations) => {
     if (elements.changelogContentArea) {
-        elements.changelogContentArea.innerHTML = `<h3>V 1.2 - Interface Update</h3><ul><li>Полностью переделан интерфейс управления галереей.</li><li>Добавлена подсветка активных режимов сортировки и фильтрации.</li><li>Исправлен баг с цветом основных панелей во всех темах.</li><li>Исправлен цвет темы "Ретро".</li><li>Исправлены баги с неработающими кнопками.</li><li>Добавлено кеширование на стороне сервера для ускорения загрузки случайных изображений.</li></ul><div class="contributor-thanks">Особая благодарность за детальные отчеты об ошибках!</div>`;
+        elements.changelogContentArea.innerHTML = `<h3>V 1.5 - Stability Patch</h3><ul><li>Исправлен критический баг с невозможностью закрыть просмотрщик изображений.</li><li>Полностью восстановлена работа всех кнопок в панели управления галереей.</li><li>Переработан дизайн и логика панели управления галереей в соответствии с новым ТЗ.</li></ul><div class="contributor-thanks">Работаем дальше!</div>`;
     }
 };
