@@ -1,4 +1,3 @@
-
 import { getState } from './state.js';
 
 export const setupEventListeners = (elements, handlers) => {
@@ -23,9 +22,7 @@ export const setupEventListeners = (elements, handlers) => {
     if (elements.menuBtn) {
         elements.menuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (elements.dropdownMenu) {
-                elements.dropdownMenu.classList.toggle('hidden');
-            }
+            if (elements.dropdownMenu) elements.dropdownMenu.classList.toggle('hidden');
         });
     }
 
@@ -37,22 +34,16 @@ export const setupEventListeners = (elements, handlers) => {
             }
             else if (target.classList.contains('panel-back-btn') || target.closest('.panel-back-btn')) {
                 handlers.closePanel(panel);
-                if (elements.settingsPanel) {
-                    handlers.openPanel(elements.settingsPanel);
-                }
+                if (elements.settingsPanel) handlers.openPanel(elements.settingsPanel);
             }
         });
     });
 
     const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
-        if (btn) {
-            btn.addEventListener('click', () => {
-                if (shouldCloseDropdown && elements.dropdownMenu) {
-                    elements.dropdownMenu.classList.add('hidden');
-                }
-                handlers.openPanel(panel);
-            });
-        }
+        if (btn) btn.addEventListener('click', () => {
+            if (shouldCloseDropdown && elements.dropdownMenu) elements.dropdownMenu.classList.add('hidden');
+            handlers.openPanel(panel);
+        });
     };
     setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
     setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
@@ -88,9 +79,7 @@ export const setupEventListeners = (elements, handlers) => {
             const bgCard = e.target.closest('[data-bg-id]');
             if (bgCard) {
                 if (bgCard.dataset.bgId === 'upload-new') {
-                    if (elements.backgroundUploadInput) {
-                        elements.backgroundUploadInput.click();
-                    }
+                    if (elements.backgroundUploadInput) elements.backgroundUploadInput.click();
                 } else {
                     handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
                 }
@@ -110,7 +99,6 @@ export const setupEventListeners = (elements, handlers) => {
     if (elements.submitBugReportBtn) elements.submitBugReportBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('bug'));
     if (elements.submitSuggestionBtn) elements.submitSuggestionBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('suggestion'));
     
-    // ⭐⭐ НОВЫЙ ЕДИНЫЙ ОБРАБОТЧИК ДЛЯ ПАНЕЛИ УПРАВЛЕНИЯ ⭐⭐
     if (elements.selectionControls) {
         elements.selectionControls.addEventListener('click', (e) => {
             const button = e.target.closest('button');
@@ -120,15 +108,10 @@ export const setupEventListeners = (elements, handlers) => {
             const sort = button.dataset.sort;
             const filter = button.dataset.filter;
 
-            if (action === 'select_all') {
-                handlers.selectAllItems();
-            } else if (action === 'select_ai') {
-                handlers.selectAiItems();
-            } else if (sort) {
-                handlers.handleSort(sort);
-            } else if (filter) {
-                handlers.handleFilter();
-            }
+            if (action === 'select_all') handlers.selectAllItems();
+            else if (action === 'select_ai') handlers.selectAiItems();
+            else if (sort) handlers.handleSort(sort);
+            else if (filter) handlers.handleFilter();
         });
     }
 
