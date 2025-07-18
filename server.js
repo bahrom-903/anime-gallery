@@ -10,9 +10,8 @@ import fetch from 'node-fetch';
 const app = express();
 app.use(express.json());
 
-// ⭐⭐ САМЫЙ ПРОСТОЙ И НАДЕЖНЫЙ СПОСОБ ⭐⭐
-// Эта команда говорит серверу: "Отдавай файлы из корневой папки,
-// в которой ты был запущен". Render всегда запускает код из корня.
+// Эта команда говорит серверу, чтобы он отдавал статические файлы (html, css, js)
+// из корневой папки проекта.
 app.use(express.static('.'));
 
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
