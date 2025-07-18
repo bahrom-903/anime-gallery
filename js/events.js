@@ -22,7 +22,8 @@ export const setupEventListeners = (elements, handlers) => {
     // Закрытие просмотрщика по клику на фон
     if (elements.imageViewer) {
         elements.imageViewer.addEventListener('click', (e) => {
-            if (e.target === elements.imageViewer) {
+            // Закрываем только если клик был на самом оверлее, а не на картинке внутри
+            if (e.target.classList.contains('image-viewer-overlay')) {
                 handlers.closePanel(elements.imageViewer);
             }
         });
@@ -146,7 +147,6 @@ export const setupEventListeners = (elements, handlers) => {
     }
 
     // БЛОК 6: ПРОЧИЕ ОБРАБОТЧИКИ
-    // Язык
     if (elements.langSwitcherBtn) {
         elements.langSwitcherBtn.addEventListener('click', () => {
             const nextLang = getState().currentLanguage === 'ru' ? 'en' : 'ru';
@@ -154,11 +154,9 @@ export const setupEventListeners = (elements, handlers) => {
         });
     }
     
-    // Обратная связь
     if (elements.submitBugReportBtn) elements.submitBugReportBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('bug'));
     if (elements.submitSuggestionBtn) elements.submitSuggestionBtn.addEventListener('click', () => handlers.handleFeedbackSubmit('suggestion'));
     
-    // Контекстное меню
     if (elements.contextMenu) {
         elements.contextMenu.addEventListener('click', (e) => {
             const action = e.target.closest('[data-action]')?.dataset.action;
