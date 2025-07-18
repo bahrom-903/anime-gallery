@@ -45,7 +45,7 @@
     flex-basis: 0; text-align: center;
 }
 .selection-controls button:hover {
-    border-color: var(--button-bg); color: var(--button-bg); filter: none;
+    border-color: var(--button-bg); color: var(--text-color); filter: none; background-color: color-mix(in srgb, var(--input-bg) 80%, white);
 }
 .selection-controls button.active {
     background-color: var(--button-bg); color: var(--button-text); border-color: var(--button-bg);
