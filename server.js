@@ -10,6 +10,11 @@ import fetch from 'node-fetch';
 const app = express();
 app.use(express.json());
 
+// ⭐⭐ ВОЗВРАЩАЕМ КЛЮЧЕВУЮ СТРОКУ НА МЕСТО ⭐⭐
+// Эта команда говорит серверу, чтобы он отдавал статические файлы (html, css, js)
+// из корневой папки проекта. Это исправит ошибку "Cannot GET /".
+app.use(express.static('.'));
+
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -81,9 +86,6 @@ app.post('/generate-image', async (req, res) => {
         const model = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4";
         
         console.log(`-> GENERATE: Категория: "${category}", Модель: "Stable Diffusion"`);
-        console.log(`-> FINAL PROMPT: ${finalPositivePrompt}`);
-        console.log(`-> FINAL NEGATIVE: ${finalNegativePrompt}`);
-
         const input = { prompt: finalPositivePrompt, negative_prompt: finalNegativePrompt };
         const output = await replicate.run(model, { input });
 
@@ -105,7 +107,6 @@ app.post('/get-image-from-source', async (req, res) => {
     const cacheKey = `random_image_${category}`;
     const cachedItem = serverCache.get(cacheKey);
 
-    // Проверяем, есть ли валидный кеш
     if (cachedItem && Date.now() - cachedItem.timestamp < CACHE_DURATION_MS) {
         console.log(`-> GET-IMAGE: Отдаем из кеша для категории "${category}"`);
         return res.json({ imageUrl: cachedItem.imageUrl });
@@ -125,7 +126,6 @@ app.post('/get-image-from-source', async (req, res) => {
             imageUrl = response.url;
         }
 
-        // Сохраняем результат в кеш
         serverCache.set(cacheKey, { imageUrl, timestamp: Date.now() });
         console.log(`-> GET-IMAGE: Сохранили в кеш для категории "${category}"`);
 
@@ -161,7 +161,6 @@ app.post('/feedback', async (req, res) => {
         
         const responseData = await tgResponse.json();
         if (!responseData.ok) {
-            console.error(`!!! ОШИБКА TELEGRAM API: ${responseData.description}`);
             throw new Error(`Telegram API Error: ${responseData.description}`);
         }
         
@@ -172,5 +171,6 @@ app.post('/feedback', async (req, res) => {
         res.status(500).json({ error: 'Критическая ошибка на сервере при отправке отзыва.' });
     }
 });
+
 // БЛОК 4: ЗАПУСК СЕРВЕРА
 app.listen(PORT, () => { console.log(`Сервер запущен и слушает порт ${PORT}. Все готово к работе!`); });
