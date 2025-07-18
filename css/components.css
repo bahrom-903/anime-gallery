@@ -70,15 +70,30 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 
 /* БЛОК: ПРОСМОТРЩИК ИЗОБРАЖЕНИЙ */
 .image-viewer-overlay {
-    background: rgba(0, 0, 0, 0.85); padding: 2.5vh 2.5vw;
-    box-sizing: border-box; cursor: pointer;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 2.5vh; /* Оставим только вертикальный отступ */
+    box-sizing: border-box;
+    cursor: pointer;
+    /* ⭐ ГЛАВНОЕ ИСПРАВЛЕНИЕ: говорим оверлею, чтобы он был сеткой */
+    display: grid;
+    place-items: center;
 }
+
 .viewer-content-wrapper {
-    cursor: default; width: 100%; height: 100%; display: flex;
-    justify-content: center; align-items: center;
+    cursor: default;
+    /* ⭐ УБИРАЕМ ВСЕ РАЗМЕРЫ, ЧТОБЫ ОН НЕ МЕШАЛ */
+    /* width: 100%; - УДАЛЕНО */
+    /* height: 100%; - УДАЛЕНО */
+    /* display: flex; - УДАЛЕНО */
+    /* justify-content: center; - УДАЛЕНО */
+    /* align-items: center; - УДАЛЕНО */
 }
+
 #viewer-img {
-    max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;
+    max-width: 95vw; /* Максимальная ширина - 95% от ширины экрана */
+    max-height: 95vh; /* Максимальная высота - 95% от высоты экрана */
+    object-fit: contain;
+    border-radius: 8px;
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
 
