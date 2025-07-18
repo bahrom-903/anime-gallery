@@ -5,19 +5,15 @@
 import express from 'express';
 import Replicate from 'replicate';
 import fetch from 'node-fetch';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 // БЛОК 1: КОНФИГУРАЦИЯ И ИНИЦИАЛИЗАЦИЯ
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
 app.use(express.json());
 
-// Эта команда говорит серверу, чтобы он отдавал статические файлы (html, css, js)
-// из корневой папки проекта.
-app.use(express.static(path.join(__dirname, '..')));
+// ⭐⭐ САМЫЙ ПРОСТОЙ И НАДЕЖНЫЙ СПОСОБ ⭐⭐
+// Эта команда говорит серверу: "Отдавай файлы из корневой папки,
+// в которой ты был запущен". Render всегда запускает код из корня.
+app.use(express.static('.'));
 
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -127,5 +123,5 @@ app.post('/feedback', async (req, res) => {
     }
 });
 
-// БЛОК 4: ЗАПУСК СЕРВЕРА
+// БЛОК 4: ЗАПУСК СЕРВЕРA
 app.listen(PORT, () => { console.log(`Сервер запущен и слушает порт ${PORT}. Все готово к работе!`); });
