@@ -1,6 +1,7 @@
 /* =================================================================
     ФАЙЛ: /css/components.css
 ================================================================= */
+
 /* БЛОК: ПАНЕЛИ */
 .panel-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -20,7 +21,7 @@
 .panel-header-icon {
     all: unset; box-sizing: border-box; cursor: pointer; font-size: 24px; color: #aaa; line-height: 1;
     width: 40px; height: 40px; display: grid; place-content: center;
-    transition: background-color 0.2s, transform 0.2s; border-radius: 50%;
+    transition: background-color 0.2s, transform 0.2s, color 0.2s; border-radius: 50%;
 }
 .panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
 .panel-back-btn:hover { color: var(--button-bg); }
