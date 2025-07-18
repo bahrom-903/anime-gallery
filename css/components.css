@@ -19,25 +19,33 @@
 
 /* ИСПРАВЛЕННЫЕ СТИЛИ КНОПОК В ШАПКЕ ПАНЕЛИ */
 .panel-header-icon {
-    all: unset; box-sizing: border-box; cursor: pointer; font-size: 24px; color: #aaa; line-height: 1;
-    width: 40px; height: 40px; display: grid; place-content: center;
-    transition: background-color 0.2s, transform 0.2s, color 0.2s; border-radius: 50%;
+    all: unset; 
+    box-sizing: border-box;
+    cursor: pointer;
+    color: #aaa; 
+    line-height: 1;
+    width: 40px; 
+    height: 40px;
+    display: grid; 
+    place-content: center;
+    transition: background-color 0.2s, transform 0.2s, color 0.2s;
+    border-radius: 50%;
 }
-.panel-header-icon:hover { background-color: rgba(255, 255, 255, 0.1); transform: scale(1.1); }
+.panel-header-icon:hover { 
+    background-color: rgba(255, 255, 255, 0.1); 
+    transform: scale(1.1); 
+    color: var(--text-color); 
+}
 .panel-back-btn:hover { color: var(--button-bg); }
-.panel-close-btn:hover { color: var(--error-color); }
+.panel-close-btn:hover { color: var(--error-color); } 
 #theme-reset-btn:hover, #background-reset-btn:hover { color: var(--button-bg); }
 
-.panel-items { display: flex; flex-direction: column; gap: 10px; }
-.panel-button {
-    all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
-    width: 100%; text-align: left; background: var(--input-bg); color: var(--text-color);
-    padding: 12px; border-radius: 5px; border: 1px solid var(--input-border); cursor: pointer;
-    transition: background-color 0.2s, box-shadow 0.2s;
+/* СТИЛИ ДЛЯ САМОЙ SVG-ИКОНКИ ВНУТРИ КНОПКИ */
+.panel-header-icon svg {
+    width: 22px;  /* Размер самой иконки */
+    height: 22px;
+    stroke: currentColor; /* Эта магия заставляет иконку наследовать цвет от родительской кнопки */
 }
-.panel-button:hover { background-color: rgba(255, 255, 255, 0.1); }
-hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margin: 5px 0; }
-
 /* БЛОК: ЛОАДЕР */
 #loader { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .spinner {
