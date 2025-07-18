@@ -9,7 +9,6 @@ import fetch from 'node-fetch';
 // БЛОК 1: КОНФИГУРАЦИЯ И ИНИЦИАЛИЗАЦИЯ
 const app = express();
 app.use(express.json());
-app.use(express.static('.'));
 
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
