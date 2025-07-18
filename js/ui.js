@@ -218,16 +218,12 @@ export const showFeedbackStatus = (element, message, type) => {
 
 export const openPanel = (panel) => {
     if (panel) {
-        // Убираем класс hidden, если он есть
-        panel.classList.remove('hidden');
-        // Устанавливаем display: flex, чтобы панель стала видимой
         panel.style.display = 'flex';
     }
 };
 
 export const closePanel = (panel) => {
     if (panel) {
-        // Устанавливаем display: none, чтобы панель скрылась
         panel.style.display = 'none';
     }
 };
@@ -257,6 +253,6 @@ export const hideContextMenu = (elements) => {
 
 export const renderChangelog = (elements, translations) => {
     if (elements.changelogContentArea) {
-        elements.changelogContentArea.innerHTML = `<h3>V 1.6 - Absolute Stability Patch</h3><ul><li>Исправлен критический баг с невозможностью закрыть просмотрщик изображений.</li><li>Полностью восстановлена работа всех кнопок в панели управления галереей.</li><li>Переработан дизайн и логика панели управления галереей в соответствии с новым ТЗ.</li><li>Исправлен дизайн кнопок "Назад" и "Сброс".</li><li>Восстановлен главный заголовок.</li></ul>`;
+        elements.changelogContentArea.innerHTML = `<h3>V 3.0 - Stable Base</h3><ul><li>Проект откачен до стабильной версии.</li><li>Начата серия хирургических исправлений.</li></ul>`;
     }
 };
