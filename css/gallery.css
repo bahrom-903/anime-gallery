@@ -1,173 +1,79 @@
-
-/* ===================================
-//      СТИЛИ ГАЛЕРЕИ
-// =================================== */
+/* =================================================================
+    ФАЙЛ: /css/gallery.css
+================================================================= */
+/* БЛОК: СЕТКА ГАЛЕРЕИ */
 .gallery {
-    column-count: 5;
-    column-gap: 15px;
-    margin-top: 20px;
+    column-count: 5; column-gap: 15px; margin-top: 20px;
 }
 @media (max-width: 1200px) { .gallery { column-count: 4; } }
 @media (max-width: 900px) { .gallery { column-count: 3; } }
 @media (max-width: 600px) { .gallery { column-count: 2; } }
 
+/* БЛОК: ЭЛЕМЕНТ ГАЛЕРЕИ (КАРТОЧКА) */
 .gallery-item {
-    display: inline-block;
-    position: relative;
-    margin-bottom: 15px;
-    break-inside: avoid;
-    background: var(--input-bg);
-    border-radius: 8px;
-    overflow: hidden;
+    display: inline-block; position: relative; margin-bottom: 15px; break-inside: avoid;
+    background: var(--input-bg); border-radius: 8px; overflow: hidden;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-
-.gallery-item img {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
+.gallery-item img { display: block; width: 100%; height: auto; }
 #result-image-container img {
-    display: block;
-    max-width: 100%;
-    max-height: 400px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: block; max-width: 100%; max-height: 400px;
+    border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-
 .item-controls {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background-color: rgba(var(--panel-bg-rgb), 0.5);
-    padding: 4px;
-    border-radius: 5px;
+    position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 8px;
+    background-color: rgba(var(--panel-bg-rgb), 0.5); padding: 4px; border-radius: 5px;
 }
-
-.select-checkbox {
-    transform: scale(1.4);
-    margin: 3px;
-    cursor: pointer;
-}
-
-.favorite-star {
-    font-size: 22px;
-    cursor: pointer;
-    text-shadow: 0 0 4px black;
-    line-height: 1;
-}
-
+.select-checkbox { transform: scale(1.4); margin: 3px; cursor: pointer; }
+.favorite-star { font-size: 22px; cursor: pointer; text-shadow: 0 0 4px black; line-height: 1; }
 .item-menu-btn {
-    font-size: 20px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: var(--text-color);
-    padding: 0;
-    margin: 0;
-    line-height: 1;
-    text-shadow: 0 0 4px black;
+    font-size: 20px; cursor: pointer; background: none; border: none; color: var(--text-color);
+    padding: 0; margin: 0; line-height: 1; text-shadow: 0 0 4px black;
 }
 
-/* ⭐⭐ НОВЫЕ СТИЛИ ДЛЯ ПАНЕЛИ УПРАВЛЕНИЯ ⭐⭐ */
+/* БЛОК: ПАНЕЛЬ УПРАВЛЕНИЯ ГАЛЕРЕЕЙ (SELECTION CONTROLS) */
 .selection-controls {
-    margin-bottom: 15px;
-    padding: 8px;
-    background: rgba(var(--panel-bg-rgb), 0.5);
-    border-radius: 8px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center; /* Центрируем всю группу */
-    gap: 8px;
-    border: 1px solid var(--input-border);
+    margin-bottom: 15px; padding: 8px; background: rgba(var(--panel-bg-rgb), 0.5);
+    border-radius: 8px; display: flex; flex-wrap: wrap; align-items: center;
+    justify-content: center; gap: 8px; border: 1px solid var(--input-border);
 }
 
 .selection-controls button {
-    background-color: var(--input-bg);
-    border: 1px solid var(--input-border);
-    padding: 8px 12px; /* Уменьшили паддинги для компактности */
-    margin: 0;
-    font-size: 0.9em;
-    flex-grow: 1; /* Кнопки занимают равное место */
-    flex-basis: 0; /* Начальная ширина 0 для корректной работы flex-grow */
-    text-align: center;
+    background-color: var(--input-bg); border: 1px solid var(--input-border);
+    padding: 8px 12px; margin: 0; font-size: 0.9em; flex-grow: 1;
+    flex-basis: 0; text-align: center;
 }
-
 .selection-controls button:hover {
-    border-color: var(--button-bg);
-    color: var(--button-bg);
-    filter: none;
+    border-color: var(--button-bg); color: var(--button-bg); filter: none;
 }
-
 .selection-controls button.active {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    border-color: var(--button-bg);
+    background-color: var(--button-bg); color: var(--button-text); border-color: var(--button-bg);
 }
-.selection-controls button.active:hover {
-    color: var(--button-text);
-    filter: brightness(1.1);
-}
-
+.selection-controls button.active:hover { color: var(--button-text); filter: brightness(1.1); }
 .selection-controls .separator {
-    width: 1px;
-    height: 24px;
-    background-color: var(--input-border);
-    margin: 0 8px;
+    width: 1px; height: 24px; background-color: var(--input-border); margin: 0 8px;
+    flex-grow: 0; flex-shrink: 0;
 }
 
+/* БЛОК: ПРОЧИЕ ЭЛЕМЕНТЫ УПРАВЛЕНИЯ */
 #category-controls button.active-category {
-    background: var(--button-bg);
-    color: var(--button-text);
-    box-shadow: 0 0 10px -2px var(--button-bg);
-    filter: brightness(1.2);
+    background: var(--button-bg); color: var(--button-text);
+    box-shadow: 0 0 10px -2px var(--button-bg); filter: brightness(1.2);
 }
 
 .preview-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 }
-
 .preview-card {
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    text-align: center;
-    font-size: 14px;
-    border: 2px solid transparent;
-    display: flex;
-    flex-direction: column;
+    background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 6px;
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-align: center;
+    font-size: 14px; border: 2px solid transparent; display: flex; flex-direction: column;
 }
-
-.preview-card:hover {
-    transform: scale(1.03);
-}
-
+.preview-card:hover { transform: scale(1.03); }
 .preview-card .preview-box {
-    width: 100%;
-    height: 60px;
-    border-radius: 4px 4px 0 0;
-    background-size: cover;
-    background-position: center;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
+    width: 100%; height: 60px; border-radius: 4px 4px 0 0; background-size: cover;
+    background-position: center; margin-bottom: 6px; display: flex;
+    justify-content: center; align-items: center; font-size: 24px;
 }
-
-.preview-card .upload-box {
-    background-color: var(--panel-bg);
-}
-
-.preview-card .preview-name {
-    padding: 4px;
-}
+.preview-card .upload-box { background-color: var(--panel-bg); }
+.preview-card .preview-name { padding: 4px; }
