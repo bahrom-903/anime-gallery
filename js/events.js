@@ -15,58 +15,50 @@ export const setupEventListeners = (elements, handlers) => {
             handlers.hideContextMenu();
         }
     });
-
-    // БЛОК 2: УПРАВЛЕНИЕ ПАНЕЛЯМИ
-       // БЛОК: ЗАКРЫТИЕ ПРОСМОТРЩИКА
-    if (elements.imageViewer) {
-        // Клик по самому оверлею (темному фону)
-        elements.imageViewer.addEventListener('click', () => {
+// БЛОК 2: УПРАВЛЕНИЕ ПАНЕЛЯМИ
+if (elements.imageViewer) {
+    elements.imageViewer.addEventListener('click', (e) => {
+        // Закрываем только если клик был на самом оверлее, а не на картинке внутри
+        if (e.target.classList.contains('image-viewer-overlay')) {
             handlers.closePanel(elements.imageViewer);
-        });
-        // Клик по обертке с картинкой (чтобы он НЕ закрывал окно)
-        const wrapper = elements.imageViewer.querySelector('.viewer-content-wrapper');
-        if (wrapper) {
-            wrapper.addEventListener('click', (e) => {
-                e.stopPropagation(); // Останавливаем "всплытие" клика до оверлея
-            });
         }
-    }
-
-    document.querySelectorAll('.panel-overlay').forEach(panel => {
-        panel.addEventListener('click', (e) => {
-            const target = e.target;
-            const closeBtn = target.closest('.panel-close-btn');
-            const backBtn = target.closest('.panel-back-btn');
-
-            if (closeBtn) {
-                handlers.closePanel(panel);
-            } else if (backBtn) {
-                handlers.closePanel(panel);
-                if (elements.settingsPanel) {
-                    handlers.openPanel(elements.settingsPanel);
-                }
-            }
-        });
     });
+}
 
-    const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
-        if (btn) {
-            btn.addEventListener('click', () => {
-                if (shouldCloseDropdown && elements.dropdownMenu) {
-                    elements.dropdownMenu.classList.add('hidden');
-                }
-                handlers.openPanel(panel);
-            });
+document.querySelectorAll('.panel-overlay').forEach(panel => {
+    panel.addEventListener('click', (e) => {
+        const target = e.target;
+        const closeBtn = target.closest('.panel-close-btn');
+        const backBtn = target.closest('.panel-back-btn');
+
+        if (closeBtn) {
+            handlers.closePanel(panel);
+        } else if (backBtn) {
+            handlers.closePanel(panel);
+            if (elements.settingsPanel) {
+                handlers.openPanel(elements.settingsPanel);
+            }
         }
-    };
-    setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
-    setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
-    setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
-    setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel);
-    setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel);
-    setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
+    });
+});
 
-
+const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
+    if (btn) {
+        btn.addEventListener('click', () => {
+            if (shouldCloseDropdown && elements.dropdownMenu) {
+                elements.dropdownMenu.classList.add('hidden');
+            }
+            handlers.openPanel(panel);
+        });
+    }
+};
+setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
+setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
+setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
+setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel);
+setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel);
+setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
+    
     // БЛОК 3: УПРАВЛЕНИЕ ГЕНЕРАТОРОМ
     if (elements.menuBtn) {
         elements.menuBtn.addEventListener('click', (e) => {
@@ -118,24 +110,19 @@ export const setupEventListeners = (elements, handlers) => {
         });
     }
 
-    // БЛОК 5: УПРАВЛЕНИЕ КАСТОМИЗАЦИЕЙ (ТЕМЫ, ФОНЫ)
+   // БЛОК 5: УПРАВЛЕНИЕ КАСТОМИЗАЦИЕЙ (ТЕМЫ, ФОНЫ)
 if (elements.themeResetBtn) elements.themeResetBtn.addEventListener('click', () => handlers.applyTheme('dark'));
 if (elements.backgroundResetBtn) elements.backgroundResetBtn.addEventListener('click', handlers.resetBackground);
 
-// ⭐⭐ ИСПРАВЛЕННЫЙ ОБРАБОТЧИК ДЛЯ СЕТКИ ФОНОВ ⭐⭐
 if (elements.backgroundGrid) {
     elements.backgroundGrid.addEventListener('click', (e) => {
         const bgCard = e.target.closest('[data-bg-id]');
         if (bgCard) {
-            // Если кликнули по карточке "Загрузить"
             if (bgCard.dataset.bgId === 'upload-new') {
-                // Вызываем клик по скрытому инпуту
                 if (elements.backgroundUploadInput) {
                     elements.backgroundUploadInput.click();
                 }
-            } 
-            // Если кликнули по любой другой карточке с фоном
-            else {
+            } else {
                 handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
             }
         }
@@ -147,7 +134,9 @@ if (elements.backgroundUploadInput) elements.backgroundUploadInput.addEventListe
 if (elements.themeGrid) {
     elements.themeGrid.addEventListener('click', (e) => {
         const themeEl = e.target.closest('[data-theme]');
-        if (themeEl) handlers.applyTheme(themeEl.dataset.theme);
+        if (themeEl) {
+            handlers.applyTheme(themeEl.dataset.theme);
+        }
     });
 }
 
