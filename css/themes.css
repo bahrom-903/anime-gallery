@@ -12,7 +12,6 @@ body.theme-gray {
     --bg-color: #313338; --bg-color-rgb: 49,51,56; --text-color: #f2f3f5; --panel-bg: #1e1f22; 
     --panel-bg-rgb: 30,31,34; --button-bg: #5865f2; --input-bg: #383a40; --input-border: #4e5058;
 }
-/* ИСПРАВЛЕНА ТЕМА РЕТРО */
 body.theme-retro {
     --bg-color: #f4e9d8; --bg-color-rgb: 244,233,216; --text-color: #5a3e2b; --panel-bg: #eaddc7;
     --panel-bg-rgb: 234,221,199; --button-bg: #8d6e63; --button-text: #ffffff; --input-bg: #efebe9; 
