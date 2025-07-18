@@ -17,12 +17,19 @@ export const setupEventListeners = (elements, handlers) => {
     });
 
     // БЛОК 2: УПРАВЛЕНИЕ ПАНЕЛЯМИ
+       // БЛОК: ЗАКРЫТИЕ ПРОСМОТРЩИКА
     if (elements.imageViewer) {
-        elements.imageViewer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('image-viewer-overlay')) {
-                handlers.closePanel(elements.imageViewer);
-            }
+        // Клик по самому оверлею (темному фону)
+        elements.imageViewer.addEventListener('click', () => {
+            handlers.closePanel(elements.imageViewer);
         });
+        // Клик по обертке с картинкой (чтобы он НЕ закрывал окно)
+        const wrapper = elements.imageViewer.querySelector('.viewer-content-wrapper');
+        if (wrapper) {
+            wrapper.addEventListener('click', (e) => {
+                e.stopPropagation(); // Останавливаем "всплытие" клика до оверлея
+            });
+        }
     }
 
     document.querySelectorAll('.panel-overlay').forEach(panel => {
