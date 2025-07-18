@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Generator</title>
+    <!-- БЛОК: ПОДКЛЮЧЕНИЕ СТИЛЕЙ -->
     <link rel="stylesheet" href="./css/base.css">
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/components.css">
     <link rel="stylesheet" href="./css/gallery.css">
     <link rel="stylesheet" href="./css/themes.css">
+    
+    <!-- БЛОК: ПОДКЛЮЧЕНИЕ ШРИФТОВ И СКРИПТОВ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
@@ -16,6 +19,9 @@
 </head>
 <body>
     <div class="container">
+        <!-- =================================================================
+            БЛОК 1: ЗАГОЛОВОК И ГЕНЕРАТОР
+        ================================================================= -->
         <h1>🎨 Аниме Галерея 🧠 AI-генератор</h1>
         
         <div class="generator-area">
@@ -53,6 +59,9 @@
             </div>
         </div>
 
+        <!-- =================================================================
+            БЛОК 2: ГАЛЕРЕЯ
+        ================================================================= -->
         <div class="gallery-wrapper">
             <h2 data-lang-key="gallery">📁 Галерея</h2>
             <div id="category-controls" class="gallery-main-controls"></div>
@@ -64,6 +73,7 @@
                 <button id="delete-btn" data-lang-key="delete">🗑 Удалить</button>
             </div>
 
+            <!-- ИСПРАВЛЕННАЯ ПАНЕЛЬ УПРАВЛЕНИЯ -->
             <div id="selection-controls" class="selection-controls hidden">
                 <button data-action="select_all" data-lang-key="select_all_label">Выбрать всё</button>
                 <button data-action="select_ai" data-lang-key="select_ai_only_label">Выбрать только AI</button>
@@ -77,7 +87,9 @@
             <div class="gallery" id="gallery"></div>
         </div>
     </div>
-
+<!-- =================================================================
+        БЛОК 3: ПАНЕЛИ (MODALS)
+    ================================================================= -->
     <div id="settingsPanel" class="panel-overlay">
         <div class="panel-content">
             <div class="panel-header">
@@ -173,13 +185,15 @@
             <p data-lang-key="suggestion_desc"></p><textarea id="suggestion-text" class="feedback-textarea" data-lang-placeholder-key="suggestion_placeholder"></textarea><button id="submit-suggestion-btn" data-lang-key="send">Отправить</button><p id="suggestion-status" class="hidden"></p>
         </div>
     </div>
-    
+   
+        <!-- БЛОК: ПРОСМОТРЩИК ИЗОБРАЖЕНИЙ -->
     <div id="image-viewer-overlay" class="panel-overlay image-viewer-overlay">
         <div class="viewer-content-wrapper">
             <img id="viewer-img" src="" alt="Image Preview">
         </div>
     </div>
     
+    <!-- Контекстное меню -->
     <div id="context-menu"></div>
 
   <script src="./js/main.js" type="module"></script>
