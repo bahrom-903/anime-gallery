@@ -61,7 +61,7 @@ export const renderBackgrounds = async (elements) => {
         const uploadCard = document.createElement("div");
         uploadCard.className = "preview-card";
         uploadCard.dataset.bgId = "upload-new";
-        uploadCard.innerHTML = `<div class="preview-box upload-box">+</div><div class="preview-name" data-lang-key="upload_your_bg">Загрузить свой фон</div>`;
+        uploadCard.innerHTML = `<div class="preview-box upload-box">📥</div><div class="preview-name" data-lang-key="upload_your_bg">Загрузить свой фон</div>`;
         grid.appendChild(uploadCard);
         const existingObjectURLs = document.querySelectorAll('#backgroundPanel [data-object-url]');
         existingObjectURLs.forEach(el => URL.revokeObjectURL(el.dataset.objectUrl));
@@ -218,12 +218,16 @@ export const showFeedbackStatus = (element, message, type) => {
 
 export const openPanel = (panel) => {
     if (panel) {
+        // Убираем класс hidden, если он есть
+        panel.classList.remove('hidden');
+        // Устанавливаем display: flex, чтобы панель стала видимой
         panel.style.display = 'flex';
     }
 };
 
 export const closePanel = (panel) => {
     if (panel) {
+        // Устанавливаем display: none, чтобы панель скрылась
         panel.style.display = 'none';
     }
 };
@@ -235,7 +239,7 @@ export const viewImage = (elements, src) => {
 
 export const showContextMenu = (elements, buttonElement, itemId, translations, callbacks) => {
     hideContextMenu(elements);
-callbacks.setContextedItemId(itemId);
+    callbacks.setContextedItemId(itemId);
     const langPack = translations[getState().currentLanguage] || translations.ru;
     const rect = buttonElement.getBoundingClientRect();
     const menu = elements.contextMenu;
@@ -253,6 +257,6 @@ export const hideContextMenu = (elements) => {
 
 export const renderChangelog = (elements, translations) => {
     if (elements.changelogContentArea) {
-        elements.changelogContentArea.innerHTML = `<h3>V 2.5 - Golden Master</h3><ul><li>Исправлены все известные баги.</li><li>Переработан дизайн и логика панелей и кнопок.</li><li>Проект стабилизирован и готов к добавлению новых функций.</li></ul>`;
+        elements.changelogContentArea.innerHTML = `<h3>V 1.6 - Absolute Stability Patch</h3><ul><li>Исправлен критический баг с невозможностью закрыть просмотрщик изображений.</li><li>Полностью восстановлена работа всех кнопок в панели управления галереей.</li><li>Переработан дизайн и логика панели управления галереей в соответствии с новым ТЗ.</li><li>Исправлен дизайн кнопок "Назад" и "Сброс".</li><li>Восстановлен главный заголовок.</li></ul>`;
     }
 };

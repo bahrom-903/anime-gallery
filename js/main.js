@@ -277,7 +277,7 @@ const handleFeedbackSubmit = async (type) => {
 
 const setupDefaultBackgrounds = async () => {
     try {
-        const installed_key = 'backgrounds_installed_v1.7';
+        const installed_key = 'backgrounds_installed_v1.6';
         const installed = await dbRequest('settings', 'readonly', store => store.get(installed_key));
         if (installed) return;
         ui.setUIGeneratorState(elements, true, 'Первичная загрузка фонов...');
