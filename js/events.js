@@ -15,50 +15,51 @@ export const setupEventListeners = (elements, handlers) => {
             handlers.hideContextMenu();
         }
     });
-// БЛОК 2: УПРАВЛЕНИЕ ПАНЕЛЯМИ
-if (elements.imageViewer) {
-    elements.imageViewer.addEventListener('click', (e) => {
-        // Закрываем только если клик был на самом оверлее, а не на картинке внутри
-        if (e.target.classList.contains('image-viewer-overlay')) {
-            handlers.closePanel(elements.imageViewer);
-        }
-    });
-}
 
-document.querySelectorAll('.panel-overlay').forEach(panel => {
-    panel.addEventListener('click', (e) => {
-        const target = e.target;
-        const closeBtn = target.closest('.panel-close-btn');
-        const backBtn = target.closest('.panel-back-btn');
-
-        if (closeBtn) {
-            handlers.closePanel(panel);
-        } else if (backBtn) {
-            handlers.closePanel(panel);
-            if (elements.settingsPanel) {
-                handlers.openPanel(elements.settingsPanel);
+    // БЛОК 2: УПРАВЛЕНИЕ ПАНЕЛЯМИ
+    if (elements.imageViewer) {
+        elements.imageViewer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('image-viewer-overlay')) {
+                handlers.closePanel(elements.imageViewer);
             }
-        }
-    });
-});
-
-const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
-    if (btn) {
-        btn.addEventListener('click', () => {
-            if (shouldCloseDropdown && elements.dropdownMenu) {
-                elements.dropdownMenu.classList.add('hidden');
-            }
-            handlers.openPanel(panel);
         });
     }
-};
-setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
-setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
-setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
-setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel);
-setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel);
-setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
-    
+
+    document.querySelectorAll('.panel-overlay').forEach(panel => {
+        panel.addEventListener('click', (e) => {
+            const target = e.target;
+            const closeBtn = target.closest('.panel-close-btn');
+            const backBtn = target.closest('.panel-back-btn');
+
+            if (closeBtn) {
+                handlers.closePanel(panel);
+            } else if (backBtn) {
+                handlers.closePanel(panel);
+                if (elements.settingsPanel) {
+                    handlers.openPanel(elements.settingsPanel);
+                }
+            }
+        });
+    });
+
+    const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
+        if (btn) {
+            btn.addEventListener('click', () => {
+                if (shouldCloseDropdown && elements.dropdownMenu) {
+                    elements.dropdownMenu.classList.add('hidden');
+                }
+                handlers.openPanel(panel);
+            });
+        }
+    };
+    setupPanelButton(elements.settingsOpenBtn, elements.settingsPanel, true);
+    setupPanelButton(elements.themePanelOpenBtn, elements.themePanel);
+    setupPanelButton(elements.backgroundPanelOpenBtn, elements.backgroundPanel);
+    setupPanelButton(elements.changelogOpenBtn, elements.changelogPanel);
+    setupPanelButton(elements.bugReportOpenBtn, elements.bugReportPanel);
+    setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
+
+
     // БЛОК 3: УПРАВЛЕНИЕ ГЕНЕРАТОРОМ
     if (elements.menuBtn) {
         elements.menuBtn.addEventListener('click', (e) => {
@@ -110,35 +111,35 @@ setupPanelButton(elements.suggestionOpenBtn, elements.suggestionPanel);
         });
     }
 
-   // БЛОК 5: УПРАВЛЕНИЕ КАСТОМИЗАЦИЕЙ (ТЕМЫ, ФОНЫ)
-if (elements.themeResetBtn) elements.themeResetBtn.addEventListener('click', () => handlers.applyTheme('dark'));
-if (elements.backgroundResetBtn) elements.backgroundResetBtn.addEventListener('click', handlers.resetBackground);
-
-if (elements.backgroundGrid) {
-    elements.backgroundGrid.addEventListener('click', (e) => {
-        const bgCard = e.target.closest('[data-bg-id]');
-        if (bgCard) {
-            if (bgCard.dataset.bgId === 'upload-new') {
-                if (elements.backgroundUploadInput) {
-                    elements.backgroundUploadInput.click();
+    // БЛОК 5: УПРАВЛЕНИЕ КАСТОМИЗАЦИЕЙ (ТЕМЫ, ФОНЫ)
+    if (elements.themeResetBtn) elements.themeResetBtn.addEventListener('click', () => handlers.applyTheme('dark'));
+    if (elements.backgroundResetBtn) elements.backgroundResetBtn.addEventListener('click', handlers.resetBackground);
+    
+    if (elements.backgroundGrid) {
+        elements.backgroundGrid.addEventListener('click', (e) => {
+            const bgCard = e.target.closest('[data-bg-id]');
+            if (bgCard) {
+                if (bgCard.dataset.bgId === 'upload-new') {
+                    if (elements.backgroundUploadInput) {
+                        elements.backgroundUploadInput.click();
+                    }
+                } else {
+                    handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
                 }
-            } else {
-                handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
             }
-        }
-    });
-}
+        });
+    }
+    
+    if (elements.backgroundUploadInput) elements.backgroundUploadInput.addEventListener('change', handlers.handleBackgroundUpload);
 
-if (elements.backgroundUploadInput) elements.backgroundUploadInput.addEventListener('change', handlers.handleBackgroundUpload);
-
-if (elements.themeGrid) {
-    elements.themeGrid.addEventListener('click', (e) => {
-        const themeEl = e.target.closest('[data-theme]');
-        if (themeEl) {
-            handlers.applyTheme(themeEl.dataset.theme);
-        }
-    });
-}
+    if (elements.themeGrid) {
+        elements.themeGrid.addEventListener('click', (e) => {
+            const themeEl = e.target.closest('[data-theme]');
+            if (themeEl) {
+                handlers.applyTheme(themeEl.dataset.theme);
+            }
+        });
+    }
 
     // БЛОК 6: ПРОЧИЕ ОБРАБОТЧИКИ
     if (elements.langSwitcherBtn) {
