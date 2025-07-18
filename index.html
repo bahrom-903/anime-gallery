@@ -92,8 +92,26 @@
         БЛОК 3: ПАНЕЛИ (MODALS)
     ================================================================= -->
     <div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">Настройки</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div class="panel-items"><button id="theme-panel-open-btn" class="panel-button" data-lang-key="themes">🎨 Темы</button><button id="background-panel-open-btn" class="panel-button" data-lang-key="backgrounds">🖼️ Фоны</button><hr><button id="changelog-open-btn" class="panel-button" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button id="bug-report-open-btn" class="panel-button" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button id="suggestion-open-btn" class="panel-button" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button id="gallery-clear-btn" class="panel-button" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
-    <div id="themePanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="themes">Темы</h2><button id="theme-reset-btn" class="panel-header-icon" title="Сбросить тему">🔄</button></div><div id="themeGrid" class="preview-grid"></div></div></div>
-    <div id="backgroundPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="backgrounds">Фоны</h2><button id="background-reset-btn" class="panel-header-icon" title="Сбросить фон">🔄</button></div><div id="backgroundGrid" class="preview-grid"></div></div></div>
+   <div id="backgroundPanel" class="panel-overlay">
+    <div class="panel-content">
+        <div class="panel-header">
+            <button class="panel-back-btn panel-header-icon">
+                <!-- ИКОНКА НАЗАД -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+            </button>
+            <h2 data-lang-key="backgrounds">Фоны</h2>
+            <button id="background-reset-btn" class="panel-header-icon" title="Сбросить фон">
+                <!-- ИКОНКА СБРОСА -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.667 0l3.181-3.183m-4.991-2.695v4.992h-4.992m0 0l-3.181-3.183a8.25 8.25 0 0111.667 0l3.181 3.183" /></svg>
+            </button>
+        </div>
+        <div id="backgroundGrid" class="preview-grid"></div>
+    </div>
+</div>
+    <button class="panel-close-btn panel-header-icon">
+    <!-- ИКОНКА ЗАКРЫТЬ -->
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+</button>
     <div id="changelogPanel" class="panel-overlay"><div class="panel-content changelog-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="changelog">Зал Славы и Версии</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div id="changelog-content-area"></div></div></div>
     <div id="bugReportPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="report_bug">Сообщить о проблеме</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="bug_report_desc"></p><textarea id="bug-report-text" class="feedback-textarea" data-lang-placeholder-key="bug_report_placeholder"></textarea><button id="submit-bug-report-btn" data-lang-key="send">Отправить</button><p id="bug-report-status" class="hidden"></p></div></div>
     <div id="suggestionPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="suggest_idea">Предложить идею</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="suggestion_desc"></p><textarea id="suggestion-text" class="feedback-textarea" data-lang-placeholder-key="suggestion_placeholder"></textarea><button id="submit-suggestion-btn" data-lang-key="send">Отправить</button><p id="suggestion-status" class="hidden"></p></div></div>
