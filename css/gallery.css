@@ -40,33 +40,17 @@
 }
 
 .selection-controls button {
-    /* ⭐ ЗАДАЕМ ЕДИНЫЙ ФОН ДЛЯ ВСЕХ КНОПОК ⭐ */
-    background-color: var(--input-bg); 
-    border: 1px solid var(--input-border);
-    color: var(--text-color); /* ⭐ ЗАДАЕМ ЕДИНЫЙ ЦВЕТ ТЕКСТА ⭐ */
+    background-color: var(--input-bg); border: 1px solid var(--input-border);
     padding: 8px 12px; margin: 0; font-size: 0.9em; flex-grow: 1;
     flex-basis: 0; text-align: center;
-    transition: all 0.2s ease-in-out; /* Плавный переход */
 }
-
 .selection-controls button:hover {
-    border-color: var(--text-color); /* При наведении меняем цвет рамки */
-    filter: none;
-    background-color: var(--input-bg); /* Фон при наведении не меняется */
+    border-color: var(--button-bg); color: var(--text-color); filter: none; background-color: color-mix(in srgb, var(--input-bg) 80%, white);
 }
-
-/* ⭐ АКТИВНОСТЬ ОБОЗНАЧАЕМ ТОЛЬКО ЯРКОЙ РАМКОЙ И ЦВЕТОМ ТЕКСТА ⭐ */
 .selection-controls button.active {
-    background-color: var(--input-bg); /* Фон активной кнопки такой же, как у всех */
-    color: var(--button-bg); /* А вот текст становится ярким */
-    border-color: var(--button-bg); /* И рамка становится яркой */
-    font-weight: bold; /* Делаем текст жирным для акцента */
+    background-color: var(--button-bg); color: var(--button-text); border-color: var(--button-bg);
 }
-.selection-controls button.active:hover { 
-    color: var(--button-bg);
-    filter: none; 
-}
-
+.selection-controls button.active:hover { color: var(--button-text); filter: brightness(1.1); }
 .selection-controls .separator {
     width: 1px; height: 24px; background-color: var(--input-border); margin: 0 8px;
     flex-grow: 0; flex-shrink: 0;
