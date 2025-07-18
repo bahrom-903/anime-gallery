@@ -20,8 +20,10 @@
 <body>
     <div class="container">
         <!-- =================================================================
-            БЛОК 1: ГЕНЕРАТОР
+            БЛОК 1: ЗАГОЛОВОК И ГЕНЕРАТОР
         ================================================================= -->
+        <h1>🎨 Аниме Галерея 🧠 AI-генератор</h1>
+        
         <div class="generator-area">
             <button id="menu-btn" class="menu-btn">☰</button>
             <div id="dropdownMenu" class="hidden">
@@ -71,7 +73,7 @@
                 <button id="delete-btn" data-lang-key="delete">🗑 Удалить</button>
             </div>
 
-            <!-- НОВАЯ ЕДИНАЯ ПАНЕЛЬ УПРАВЛЕНИЯ -->
+            <!-- ИСПРАВЛЕННАЯ ПАНЕЛЬ УПРАВЛЕНИЯ -->
             <div id="selection-controls" class="selection-controls hidden">
                 <button data-action="select_all" data-lang-key="select_all_label">Выбрать всё</button>
                 <button data-action="select_ai" data-lang-key="select_ai_only_label">Выбрать только AI</button>
@@ -96,7 +98,7 @@
     <div id="bugReportPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="report_bug">Сообщить о проблеме</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="bug_report_desc"></p><textarea id="bug-report-text" class="feedback-textarea" data-lang-placeholder-key="bug_report_placeholder"></textarea><button id="submit-bug-report-btn" data-lang-key="send">Отправить</button><p id="bug-report-status" class="hidden"></p></div></div>
     <div id="suggestionPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="suggest_idea">Предложить идею</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="suggestion_desc"></p><textarea id="suggestion-text" class="feedback-textarea" data-lang-placeholder-key="suggestion_placeholder"></textarea><button id="submit-suggestion-btn" data-lang-key="send">Отправить</button><p id="suggestion-status" class="hidden"></p></div></div>
     
-    <!-- ИСПРАВЛЕН ID ДЛЯ РЕШЕНИЯ КРИТИЧЕСКОГО БАГА -->
+    <!-- ИСПРАВЛЕННЫЙ ПРОСМОТРЩИК ИЗОБРАЖЕНИЙ -->
     <div id="image-viewer-overlay" class="panel-overlay image-viewer-overlay"><div class="viewer-content-wrapper"><img id="viewer-img" src="" alt="Image Preview"></div></div>
     
     <!-- Контекстное меню -->
