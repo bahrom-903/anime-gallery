@@ -166,27 +166,33 @@ hr {
 
 /* БЛОК: ПРОСМОТРЩИК ИЗОБРАЖЕНИЙ */
 .image-viewer-overlay {
-    display: none; 
+    display: none; /* По умолчанию скрыт */
     position: fixed; 
     top: 0; 
     left: 0; 
     width: 100vw; 
     height: 100vh;
     background: rgba(0, 0, 0, 0.85);
-    padding: 2vw;
+    padding: 2vw; /* Отступы со всех сторон, чтобы всегда был "зазор" */
     box-sizing: border-box;
     cursor: pointer;
     z-index: 1001; 
+    /* Используем flex для идеального центрирования */
     display: flex; 
     justify-content: center; 
     align-items: center;
 }
 .viewer-content-wrapper {
+    /* Этот блок нужен, чтобы клик по картинке не закрывал окно */
     cursor: default;
+    /* Убедимся, что он не мешает */
+    width: auto;
+    height: auto;
 }
 #viewer-img {
-    max-width: 100%;
-    max-height: 100%;
+    /* ⭐ ГЛАВНОЕ ИСПРАВЛЕНИЕ: Ограничиваем максимальные размеры ⭐ */
+    max-width: 100%;  /* Максимальная ширина = 100% от родительского контейнера (который уже имеет отступы) */
+    max-height: 100%; /* Максимальная высота = 100% от родительского контейнера */
     object-fit: contain; 
     border-radius: 8px;
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
