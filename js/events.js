@@ -119,32 +119,37 @@ export const setupEventListeners = (elements, handlers) => {
     }
 
     // БЛОК 5: УПРАВЛЕНИЕ КАСТОМИЗАЦИЕЙ (ТЕМЫ, ФОНЫ)
-    if (elements.themeResetBtn) elements.themeResetBtn.addEventListener('click', () => handlers.applyTheme('dark'));
-    if (elements.backgroundResetBtn) elements.backgroundResetBtn.addEventListener('click', handlers.resetBackground);
-    
-    if (elements.backgroundGrid) {
-        elements.backgroundGrid.addEventListener('click', (e) => {
-            const bgCard = e.target.closest('[data-bg-id]');
-            if (bgCard) {
-                if (bgCard.dataset.bgId === 'upload-new') {
-                    if (elements.backgroundUploadInput) {
-                        elements.backgroundUploadInput.click();
-                    }
-                } else {
-                    handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
-                }
-            }
-        });
-    }
-    
-    if (elements.backgroundUploadInput) elements.backgroundUploadInput.addEventListener('change', handlers.handleBackgroundUpload);
+if (elements.themeResetBtn) elements.themeResetBtn.addEventListener('click', () => handlers.applyTheme('dark'));
+if (elements.backgroundResetBtn) elements.backgroundResetBtn.addEventListener('click', handlers.resetBackground);
 
-    if (elements.themeGrid) {
-        elements.themeGrid.addEventListener('click', (e) => {
-            const themeEl = e.target.closest('[data-theme]');
-            if (themeEl) handlers.applyTheme(themeEl.dataset.theme);
-        });
-    }
+// ⭐⭐ ИСПРАВЛЕННЫЙ ОБРАБОТЧИК ДЛЯ СЕТКИ ФОНОВ ⭐⭐
+if (elements.backgroundGrid) {
+    elements.backgroundGrid.addEventListener('click', (e) => {
+        const bgCard = e.target.closest('[data-bg-id]');
+        if (bgCard) {
+            // Если кликнули по карточке "Загрузить"
+            if (bgCard.dataset.bgId === 'upload-new') {
+                // Вызываем клик по скрытому инпуту
+                if (elements.backgroundUploadInput) {
+                    elements.backgroundUploadInput.click();
+                }
+            } 
+            // Если кликнули по любой другой карточке с фоном
+            else {
+                handlers.setBackgroundFromDefault(bgCard.dataset.bgId);
+            }
+        }
+    });
+}
+
+if (elements.backgroundUploadInput) elements.backgroundUploadInput.addEventListener('change', handlers.handleBackgroundUpload);
+
+if (elements.themeGrid) {
+    elements.themeGrid.addEventListener('click', (e) => {
+        const themeEl = e.target.closest('[data-theme]');
+        if (themeEl) handlers.applyTheme(themeEl.dataset.theme);
+    });
+}
 
     // БЛОК 6: ПРОЧИЕ ОБРАБОТЧИКИ
     if (elements.langSwitcherBtn) {
