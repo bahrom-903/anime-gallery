@@ -70,29 +70,29 @@ hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margi
 
 /* БЛОК: ПРОСМОТРЩИК ИЗОБРАЖЕНИЙ */
 .image-viewer-overlay {
+    display: none; /* ⭐ ГЛАВНОЕ: По умолчанию он ПОЛНОСТЬЮ СКРЫТ */
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh;
     background: rgba(0, 0, 0, 0.85);
-    padding: 2.5vh; /* Оставим только вертикальный отступ */
+    padding: 2vw; /* Отступы со всех сторон, чтобы всегда был "зазор" */
     box-sizing: border-box;
     cursor: pointer;
-    /* ⭐ ГЛАВНОЕ ИСПРАВЛЕНИЕ: говорим оверлею, чтобы он был сеткой */
-    display: grid;
-    place-items: center;
+    z-index: 1001; 
+    /* Используем flex для идеального центрирования */
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
 }
-
 .viewer-content-wrapper {
     cursor: default;
-    /* ⭐ УБИРАЕМ ВСЕ РАЗМЕРЫ, ЧТОБЫ ОН НЕ МЕШАЛ */
-    /* width: 100%; - УДАЛЕНО */
-    /* height: 100%; - УДАЛЕНО */
-    /* display: flex; - УДАЛЕНО */
-    /* justify-content: center; - УДАЛЕНО */
-    /* align-items: center; - УДАЛЕНО */
 }
-
 #viewer-img {
-    max-width: 95vw; /* Максимальная ширина - 95% от ширины экрана */
-    max-height: 95vh; /* Максимальная высота - 95% от высоты экрана */
-    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; 
     border-radius: 8px;
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
