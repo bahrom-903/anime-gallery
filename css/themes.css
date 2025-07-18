@@ -1,21 +1,7 @@
-
-/* ===================================
-//      ТЕМЫ ОФОРМЛЕНИЯ
-// =================================== */
-:root {
-    --bg-color: #1f2937; --bg-color-rgb: 31, 41, 55; --text-color: #f9fafb; --panel-bg: #111827;
-    --panel-bg-rgb: 17, 24, 39; --button-bg: #10b981; --button-text: #ffffff; --input-bg: #374151;
-    --input-border: #4b5563; --button-bg-rgb: 16, 185, 129;
-}
-
-body.has-custom-bg .generator-area,
-body.has-custom-bg .gallery-wrapper {
-    background-color: rgba(var(--panel-bg-rgb), 0.85); /* Сделали чуть менее прозрачным */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
+/* =================================================================
+    ФАЙЛ: /css/themes.css
+================================================================= */
+/* БЛОК: ТЕМЫ */
 body.theme-light {
     --bg-color: #f9fafb; --bg-color-rgb: 249,250,251; --text-color: #111827; --panel-bg: #ffffff;
     --panel-bg-rgb: 255,255,255; --button-bg: #3b82f6; --button-text: #ffffff; --input-bg: #e5e7eb;
@@ -25,7 +11,7 @@ body.theme-gray {
     --bg-color: #313338; --bg-color-rgb: 49,51,56; --text-color: #f2f3f5; --panel-bg: #1e1f22; 
     --panel-bg-rgb: 30,31,34; --button-bg: #5865f2; --input-bg: #383a40; --input-border: #4e5058;
 }
-/* ⭐ ИСПРАВЛЕНА ТЕМА РЕТРО ⭐ */
+/* ИСПРАВЛЕНА ТЕМА РЕТРО */
 body.theme-retro {
     --bg-color: #f4e9d8; --bg-color-rgb: 244,233,216; --text-color: #5a3e2b; --panel-bg: #eaddc7;
     --panel-bg-rgb: 234,221,199; --button-bg: #8d6e63; --button-text: #ffffff; --input-bg: #efebe9; 
@@ -76,7 +62,7 @@ body.theme-synthwave {
     --panel-bg-rgb: 32,21,51; --button-bg: #ff6ac1; --input-bg: #4a3a69; --input-border: #6c5a8f;
 }
 
-/* СТИЛИ ДЛЯ ПРЕВЬЮ ТЕМ */
+/* БЛОК: СТИЛИ ДЛЯ ПРЕВЬЮ ТЕМ */
 .preview-box.theme-dark { background-color: #1f2937; }
 .preview-box.theme-light { background-color: #f9fafb; border: 1px solid #e5e7eb; }
 .preview-box.theme-gray { background-color: #313338; }
