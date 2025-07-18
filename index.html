@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Generator</title>
+    <!-- БЛОК: ПОДКЛЮЧЕНИЕ СТИЛЕЙ -->
     <link rel="stylesheet" href="./css/base.css">
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/components.css">
     <link rel="stylesheet" href="./css/gallery.css">
     <link rel="stylesheet" href="./css/themes.css">
     
+    <!-- БЛОК: ПОДКЛЮЧЕНИЕ ШРИФТОВ И СКРИПТОВ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
@@ -17,8 +19,9 @@
 </head>
 <body>
     <div class="container">
-        <h1 data-lang-key="app_title">🎨 Аниме Галерея 🧠 AI-генератор</h1>
-
+        <!-- =================================================================
+            БЛОК 1: ГЕНЕРАТОР
+        ================================================================= -->
         <div class="generator-area">
             <button id="menu-btn" class="menu-btn">☰</button>
             <div id="dropdownMenu" class="hidden">
@@ -54,6 +57,9 @@
             </div>
         </div>
 
+        <!-- =================================================================
+            БЛОК 2: ГАЛЕРЕЯ
+        ================================================================= -->
         <div class="gallery-wrapper">
             <h2 data-lang-key="gallery">📁 Галерея</h2>
             <div id="category-controls" class="gallery-main-controls"></div>
@@ -65,6 +71,7 @@
                 <button id="delete-btn" data-lang-key="delete">🗑 Удалить</button>
             </div>
 
+            <!-- НОВАЯ ЕДИНАЯ ПАНЕЛЬ УПРАВЛЕНИЯ -->
             <div id="selection-controls" class="selection-controls hidden">
                 <button data-action="select_all" data-lang-key="select_all_label">Выбрать всё</button>
                 <button data-action="select_ai" data-lang-key="select_ai_only_label">Выбрать только AI</button>
@@ -79,14 +86,20 @@
         </div>
     </div>
 
-    <!-- Панели, которые открываются поверх всего -->
-    <div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">Настройки</h2><button class="panel-close-btn">✖</button></div><div class="panel-items"><button id="theme-panel-open-btn" class="panel-button" data-lang-key="themes">🎨 Темы</button><button id="background-panel-open-btn" class="panel-button" data-lang-key="backgrounds">🖼️ Фоны</button><hr><button id="changelog-open-btn" class="panel-button" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button id="bug-report-open-btn" class="panel-button" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button id="suggestion-open-btn" class="panel-button" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button id="gallery-clear-btn" class="panel-button" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
+    <!-- =================================================================
+        БЛОК 3: ПАНЕЛИ (MODALS)
+    ================================================================= -->
+    <div id="settingsPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><h2 data-lang-key="settings">Настройки</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div class="panel-items"><button id="theme-panel-open-btn" class="panel-button" data-lang-key="themes">🎨 Темы</button><button id="background-panel-open-btn" class="panel-button" data-lang-key="backgrounds">🖼️ Фоны</button><hr><button id="changelog-open-btn" class="panel-button" data-lang-key="changelog">🏆 Зал Славы и Версии</button><button id="bug-report-open-btn" class="panel-button" data-lang-key="report_bug">🐞 Сообщить о проблеме</button><button id="suggestion-open-btn" class="panel-button" data-lang-key="suggest_idea">💡 Предложить идею</button><hr><button id="gallery-clear-btn" class="panel-button" data-lang-key="clear_gallery">🗑️ Очистить галерею</button></div></div></div>
     <div id="themePanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="themes">Темы</h2><button id="theme-reset-btn" class="panel-header-icon" title="Сбросить тему">🔄</button></div><div id="themeGrid" class="preview-grid"></div></div></div>
     <div id="backgroundPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="backgrounds">Фоны</h2><button id="background-reset-btn" class="panel-header-icon" title="Сбросить фон">🔄</button></div><div id="backgroundGrid" class="preview-grid"></div></div></div>
     <div id="changelogPanel" class="panel-overlay"><div class="panel-content changelog-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="changelog">Зал Славы и Версии</h2><button class="panel-close-btn panel-header-icon">✖</button></div><div id="changelog-content-area"></div></div></div>
     <div id="bugReportPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="report_bug">Сообщить о проблеме</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="bug_report_desc"></p><textarea id="bug-report-text" class="feedback-textarea" data-lang-placeholder-key="bug_report_placeholder"></textarea><button id="submit-bug-report-btn" data-lang-key="send">Отправить</button><p id="bug-report-status" class="hidden"></p></div></div>
     <div id="suggestionPanel" class="panel-overlay"><div class="panel-content"><div class="panel-header"><button class="panel-back-btn panel-header-icon">←</button><h2 data-lang-key="suggest_idea">Предложить идею</h2><button class="panel-close-btn panel-header-icon">✖</button></div><p data-lang-key="suggestion_desc"></p><textarea id="suggestion-text" class="feedback-textarea" data-lang-placeholder-key="suggestion_placeholder"></textarea><button id="submit-suggestion-btn" data-lang-key="send">Отправить</button><p id="suggestion-status" class="hidden"></p></div></div>
+    
+    <!-- ИСПРАВЛЕН ID ДЛЯ РЕШЕНИЯ КРИТИЧЕСКОГО БАГА -->
     <div id="image-viewer-overlay" class="panel-overlay image-viewer-overlay"><div class="viewer-content-wrapper"><img id="viewer-img" src="" alt="Image Preview"></div></div>
+    
+    <!-- Контекстное меню -->
     <div id="context-menu"></div>
 
   <script src="./js/main.js" type="module"></script>
