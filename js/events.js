@@ -8,28 +8,23 @@ export const setupEventListeners = (elements, handlers) => {
     
     // БЛОК 1: ГЛОБАЛЬНЫЕ КЛИКИ (BODY)
     document.body.addEventListener('click', (e) => {
-        // Закрытие главного меню по клику вне его
         if (elements.menuBtn && !elements.menuBtn.contains(e.target) && elements.dropdownMenu && !elements.dropdownMenu.contains(e.target)) {
             elements.dropdownMenu.classList.add('hidden');
         }
-        // Закрытие контекстного меню по клику вне его
         if (elements.contextMenu && !elements.contextMenu.contains(e.target) && !e.target.classList.contains('item-menu-btn')) {
             handlers.hideContextMenu();
         }
     });
 
     // БЛОК 2: УПРАВЛЕНИЕ ПАНЕЛЯМИ
-    // Закрытие просмотрщика по клику на фон
     if (elements.imageViewer) {
         elements.imageViewer.addEventListener('click', (e) => {
-            // Закрываем только если клик был на самом оверлее, а не на картинке внутри
             if (e.target.classList.contains('image-viewer-overlay')) {
                 handlers.closePanel(elements.imageViewer);
             }
         });
     }
 
-    // Закрытие всех панелей по кнопкам "X" и "<-"
     document.querySelectorAll('.panel-overlay').forEach(panel => {
         panel.addEventListener('click', (e) => {
             const target = e.target;
@@ -47,7 +42,6 @@ export const setupEventListeners = (elements, handlers) => {
         });
     });
 
-    // Открытие панелей
     const setupPanelButton = (btn, panel, shouldCloseDropdown = false) => {
         if (btn) {
             btn.addEventListener('click', () => {
@@ -96,7 +90,6 @@ export const setupEventListeners = (elements, handlers) => {
     if (elements.setBgFromGalleryBtn) elements.setBgFromGalleryBtn.addEventListener('click', handlers.setBgFromGalleryBtn);
     if (elements.clearGalleryBtn) elements.clearGalleryBtn.addEventListener('click', handlers.clearGallery);
     
-    // Новый единый обработчик для панели управления
     if (elements.selectionControls) {
         elements.selectionControls.addEventListener('click', (e) => {
             const button = e.target.closest('button');
