@@ -1,12 +1,14 @@
 /* =================================================================
     ФАЙЛ: /css/layout.css
 ================================================================= */
+
 /* БЛОК: ОСНОВНЫЕ КОНТЕЙНЕРЫ */
 .container { max-width: 1200px; margin: auto; padding: 20px; box-sizing: border-box; }
 
 .generator-area, .gallery-wrapper {
     position: relative; background: var(--panel-bg); padding: 20px; border-radius: 12px;
     margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
 }
 
 body.has-custom-bg .generator-area, body.has-custom-bg .gallery-wrapper {
@@ -31,4 +33,3 @@ body.has-custom-bg .generator-area, body.has-custom-bg .gallery-wrapper {
 }
 
 .result-controls { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
-
