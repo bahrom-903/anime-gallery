@@ -4,201 +4,42 @@
 
 /* БЛОК: ПАНЕЛИ */
 .panel-overlay {
-    display: none; 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100vw; 
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.7); 
-    z-index: 1001; 
-    justify-content: center; 
-    align-items: center;
+    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.7); z-index: 1001; justify-content: center; align-items: center;
 }
+
 .panel-content {
-    background: var(--panel-bg); 
-    width: 90%; 
-    max-width: 500px; 
-    padding: 20px;
-    border-radius: 12px; 
-    color: var(--text-color); 
-    box-sizing: border-box;
-    overflow-y: auto; 
-    max-height: 90vh;
+    background: var(--panel-bg); width: 90%; max-width: 500px; padding: 20px;
+    border-radius: 12px; color: var(--text-color); box-sizing: border-box;
+    overflow-y: auto; max-height: 90vh;
 }
-.panel-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 20px; 
-}
-.panel-header h2 { 
-    margin: 0; 
-    flex-grow: 1; 
-    text-align: center; 
-}
+
+.panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.panel-header h2 { margin: 0; flex-grow: 1; text-align: center; }
+/* Убираем лишние отступы у иконок, чтобы заголовок был идеально по центру */
 .panel-header > .panel-header-icon:first-child { margin-right: auto; }
 .panel-header > .panel-header-icon:last-child { margin-left: auto; }
 
+
 .panel-header-icon {
-    all: unset; 
-    box-sizing: border-box; 
-    cursor: pointer; 
-    color: #a0a0a0; 
-    line-height: 1;
-    width: 40px; 
-    height: 40px; 
-    display: grid; 
-    place-content: center;
-    border-radius: 50%; 
-    transition: background-color 0.2s, color 0.2s;
+    all: unset; box-sizing: border-box; cursor: pointer; color: #a0a0a0; line-height: 1;
+    width: 40px; height: 40px; display: grid; place-content: center;
+    border-radius: 50%; transition: background-color 0.2s, color 0.2s;
 }
 .panel-header-icon:hover { 
     background-color: var(--input-bg); 
     color: var(--text-color);
 }
 .panel-header-icon svg {
-    width: 24px; 
-    height: 24px; 
-    stroke: currentColor;
+    width: 24px; height: 24px; stroke: currentColor;
 }
 
-.panel-items { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 10px; 
-}
+.panel-items { display: flex; flex-direction: column; gap: 10px; }
 .panel-button {
-    all: unset; 
-    box-sizing: border-box; 
-    display: flex; 
-    align-items: center; 
-    gap: 10px;
-    width: 100%; 
-    text-align: left; 
-    background: var(--input-bg); 
-    color: var(--text-color);
-    padding: 12px; 
-    border-radius: 5px; 
-    border: 1px solid var(--input-border); 
-    cursor: pointer;
+    all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
+    width: 100%; text-align: left; background: var(--input-bg); color: var(--text-color);
+    padding: 12px; border-radius: 5px; border: 1px solid var(--input-border); cursor: pointer;
     transition: background-color 0.2s, box-shadow 0.2s;
 }
 .panel-button:hover { background-color: rgba(255, 255, 255, 0.1); }
-hr { 
-    border: none; 
-    border-top: 1px solid var(--input-border); 
-    width: 100%; 
-    margin: 10px 0; 
-}
-
-/* БЛОК: ЛОАДЕР */
-#loader { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 10px; 
-}
-.spinner {
-    border: 8px solid #f3f3f340; 
-    border-top: 8px solid var(--button-bg);
-    border-radius: 50%; 
-    width: 60px; 
-    height: 60px; 
-    animation: spin 1s linear infinite;
-}
-@keyframes spin { 
-    0% { transform: rotate(0deg); } 
-    100% { transform: rotate(360deg); } 
-}
-
-/* БЛОК: ГЛАВНОЕ И КОНТЕКСТНОЕ МЕНЮ */
-.menu-btn {
-    position: absolute; 
-    top: 15px; 
-    right: 15px; 
-    z-index: 1001; 
-    font-size: 20px; 
-    padding: 5px 10px; 
-    margin: 0;
-}
-#dropdownMenu {
-    position: absolute; 
-    top: 55px; 
-    right: 15px; 
-    z-index: 1002; 
-    background: var(--panel-bg);
-    color: var(--text-color); 
-    border-radius: 8px; 
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    padding: 10px; 
-    min-width: 200px; 
-    border: 1px solid var(--input-border);
-}
-#dropdownMenu button { 
-    width: 100%; 
-    text-align: left; 
-    margin: 2px 0; 
-    padding: 8px 12px; 
-}
-#context-menu {
-    display: none; 
-    position: absolute; 
-    z-index: 1010; 
-    background: var(--panel-bg);
-    border-radius: 5px; 
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3); 
-    padding: 5px;
-    border: 1px solid var(--input-border);
-}
-#context-menu button {
-    width: 100%; 
-    background: none; 
-    border: none; 
-    color: var(--text-color);
-    text-align: left; 
-    padding: 8px 12px; 
-    margin: 0; 
-    font-size: 14px; 
-    cursor: pointer;
-}
-#context-menu button:hover { background-color: rgba(255, 255, 255, 0.1); }
-
-/* БЛОК: ПРОСМОТРЩИК ИЗОБРАЖЕНИЙ */
-.image-viewer-overlay {
-    display: none; /* По умолчанию скрыт */
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100vw; 
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.85);
-    padding: 2vw; /* Отступы со всех сторон, чтобы всегда был "зазор" */
-    box-sizing: border-box;
-    cursor: pointer;
-    z-index: 1001; 
-    /* Используем flex для идеального центрирования */
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-}
-.viewer-content-wrapper {
-    /* Этот блок нужен, чтобы клик по картинке не закрывал окно */
-    cursor: default;
-    /* Убедимся, что он не мешает */
-    width: auto;
-    height: auto;
-}
-#viewer-img {
-    /* ⭐ ГЛАВНОЕ ИСПРАВЛЕНИЕ: Ограничиваем максимальные размеры ⭐ */
-    max-width: 100%;  /* Максимальная ширина = 100% от родительского контейнера (который уже имеет отступы) */
-    max-height: 100%; /* Максимальная высота = 100% от родительского контейнера */
-    object-fit: contain; 
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
-}
-
-/* БЛОК: ПРОЧИЕ КОМПОНЕНТЫ */
-.feedback-textarea { 
-    height: 150px; 
-}
+hr { border: none; border-top: 1px solid var(--input-border); width: 100%; margin: 10px 0; }
