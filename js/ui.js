@@ -16,9 +16,7 @@ export const renderThemes = (elements, applyTheme) => {
         const card = document.createElement("div");
         card.className = "preview-card";
         card.dataset.theme = item.id;
-        
         const name = item.id.charAt(0).toUpperCase() + item.id.slice(1).replace(/_/g, ' ');
-        
         card.innerHTML = `<div class="preview-box theme-${item.id}"></div><div class="preview-name">${name}</div>`;
         card.addEventListener('click', () => applyTheme(item.id));
         grid.appendChild(card);
@@ -29,7 +27,6 @@ export const renderStyles = (elements, translations) => {
     const selector = elements.styleSelector;
     if (!selector) return;
     selector.innerHTML = '';
-
     const langPack = translations[getState().currentLanguage] || translations.ru;
     for (const [id, value] of Object.entries(STYLES)) {
         const option = document.createElement('option');
@@ -43,7 +40,6 @@ export const renderCategories = (elements, translations, handleCategoryClick) =>
     const controls = elements.categoryControls;
     if (!controls) return;
     controls.innerHTML = '';
-
     const langPack = translations[getState().currentLanguage] || translations.ru;
     for (const id of Object.keys(CATEGORIES)) {
         const btn = document.createElement('button');
@@ -62,16 +58,13 @@ export const renderBackgrounds = async (elements) => {
         
         const storedBgs = await dbRequest('defaultBackgrounds', 'readonly', store => store.getAll());
         grid.innerHTML = '';
-
         const uploadCard = document.createElement("div");
         uploadCard.className = "preview-card";
         uploadCard.dataset.bgId = "upload-new";
         uploadCard.innerHTML = `<div class="preview-box upload-box">📥</div><div class="preview-name" data-lang-key="upload_your_bg">Загрузить свой фон</div>`;
         grid.appendChild(uploadCard);
-
         const existingObjectURLs = document.querySelectorAll('#backgroundPanel [data-object-url]');
         existingObjectURLs.forEach(el => URL.revokeObjectURL(el.dataset.objectUrl));
-        
         storedBgs.forEach(bg => {
             const objectURL = URL.createObjectURL(bg.blob);
             const card = document.createElement("div");
@@ -80,24 +73,17 @@ export const renderBackgrounds = async (elements) => {
             card.innerHTML = `<div class="preview-box" style="background-image: url(${objectURL});" data-object-url="${objectURL}"></div><div class="preview-name">${bg.id}</div>`;
             grid.appendChild(card);
         });
-    } catch(e) {
-        console.error("Ошибка рендера фонов:", e);
-    }
+    } catch(e) { console.error("Ошибка рендера фонов:", e); }
 };
-
 
 // БЛОК 2: ФУНКЦИИ РЕНДЕРА ДЛЯ ГАЛЕРЕИ
 const renderControlButtons = (elements) => {
     if (!elements.selectionControls) return;
     
     const { currentSort, isFavFilterActive } = getState();
-
-    // Обновляем кнопки сортировки
     elements.selectionControls.querySelectorAll('.sort-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.sort === currentSort);
     });
-
-    // Обновляем кнопку-фильтр
     const filterBtn = elements.selectionControls.querySelector('.filter-btn');
     if (filterBtn) {
         filterBtn.classList.toggle('active', isFavFilterActive);
@@ -133,30 +119,24 @@ export const renderGallery = async (elements, toggleFavorite, showContextMenu, v
             const item = document.createElement('div');
             item.className = "gallery-item";
             item.dataset.id = entry.id;
-
             const img = document.createElement('img');
             img.src = entry.data;
             img.loading = "lazy";
             img.alt = entry.prompt;
             img.addEventListener('dblclick', () => viewImage(entry.data));
-
             const controls = document.createElement('div');
             controls.className = 'item-controls';
-
             const cb = document.createElement('input');
             cb.type = 'checkbox';
             cb.className = 'select-checkbox';
-
             const fav = document.createElement('div');
             fav.innerText = entry.favorite ? '⭐' : '☆';
             fav.className = 'favorite-star';
             fav.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(entry.id, !entry.favorite); });
-
             const menuBtn = document.createElement('button');
             menuBtn.className = 'item-menu-btn';
             menuBtn.innerHTML = '⋮';
             menuBtn.addEventListener('click', (e) => { e.stopPropagation(); showContextMenu(e.target, entry.id); });
-
             controls.append(cb, fav, menuBtn);
             item.append(img, controls);
             elements.galleryContainer.appendChild(item);
@@ -193,12 +173,10 @@ export const applyTheme = (id) => {
 export const setUIGeneratorState = (elements, isLoading, message = '') => {
     const btns = [elements.generateBtn, elements.findSimilarBtn, elements.randomImageBtn, elements.randomPromptBtn];
     btns.forEach(btn => { if (btn) btn.disabled = isLoading; });
-    
     if (elements.loader) elements.loader.classList.toggle('hidden', !isLoading);
     if (elements.errorMessage) elements.errorMessage.classList.add('hidden');
     if (elements.imageContainer) elements.imageContainer.innerHTML = '';
     if (elements.resultControls) elements.resultControls.classList.add('hidden');
-
     if (isLoading && elements.loaderText) {
         elements.loaderText.textContent = message;
     }
@@ -252,7 +230,6 @@ export const showContextMenu = (elements, buttonElement, itemId, translations, c
     const langPack = translations[getState().currentLanguage] || translations.ru;
     const rect = buttonElement.getBoundingClientRect();
     const menu = elements.contextMenu;
-
     if (menu) {
         menu.style.display = 'block';
         menu.style.left = `${rect.left + window.scrollX}px`;
@@ -267,6 +244,6 @@ export const hideContextMenu = (elements) => {
 
 export const renderChangelog = (elements, translations) => {
     if (elements.changelogContentArea) {
-        elements.changelogContentArea.innerHTML = `<h3>V 1.6 - Absolute Stability Patch</h3><ul><li>Исправлен критический баг с невозможностью закрыть просмотрщик изображений.</li><li>Полностью восстановлена работа всех кнопок в панели управления галереей.</li><li>Переработан дизайн и логика панели управления галереей в соответствии с новым ТЗ.</li></ul><div class="contributor-thanks">Работаем дальше!</div>`;
+        elements.changelogContentArea.innerHTML = `<h3>V 1.6 - Absolute Stability Patch</h3><ul><li>Исправлен критический баг с невозможностью закрыть просмотрщик изображений.</li><li>Полностью восстановлена работа всех кнопок в панели управления галереей.</li><li>Переработан дизайн и логика панели управления галереей в соответствии с новым ТЗ.</li><li>Исправлен дизайн кнопок "Назад" и "Сброс".</li><li>Восстановлен главный заголовок.</li></ul>`;
     }
 };
