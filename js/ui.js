@@ -216,8 +216,21 @@ export const showFeedbackStatus = (element, message, type) => {
     }
 };
 
-export const openPanel = (panel) => { if (panel) panel.style.display = 'flex'; };
-export const closePanel = (panel) => { if (panel) panel.style.display = 'none'; };
+export const openPanel = (panel) => {
+    if (panel) {
+        // Убираем класс hidden, если он есть
+        panel.classList.remove('hidden');
+        // Устанавливаем display: flex, чтобы панель стала видимой
+        panel.style.display = 'flex';
+    }
+};
+
+export const closePanel = (panel) => {
+    if (panel) {
+        // Устанавливаем display: none, чтобы панель скрылась
+        panel.style.display = 'none';
+    }
+};
 
 export const viewImage = (elements, src) => {
     if (elements.viewerImg) elements.viewerImg.src = src;
